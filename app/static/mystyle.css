@@ -1,12 +1,12 @@
 .navbar {
-  background-color: #003cb3;
+  background-color: #286090;
 }
 .navbar .navbar-brand {
-  color: #ecf0f1;
+  color: #286090;
 }
 .navbar .navbar-brand:hover,
 .navbar .navbar-brand:focus {
-  color: #f9f7f7;
+  color: #286090;
 }
 .navbar .navbar-text {
   color: #ecf0f1;
@@ -27,14 +27,14 @@
 .navbar .navbar-nav .nav-item.show .nav-link:hover,
 .navbar .navbar-nav .nav-item.show .nav-link:focus {
   color: #b3d9ff;
-  background-color: #0066cc;
+  background-color: #286090;
 }
 .navbar .navbar-toggle {
-  border-color: #0066cc;
+  border-color: #286090;
 }
 .navbar .navbar-toggle:hover,
 .navbar .navbar-toggle:focus {
-  background-color: #0066cc;
+  background-color: #286090;
 }
 .navbar .navbar-toggle .navbar-toggler-icon {
   color: #ecf0f1;
