@@ -1,0 +1,8 @@
+<h4><u><a href="{{url_for('show_detail', id = result.new_id)}}">{{ result._source.title }}</a></u></h4>
+{% if (result._source.teaser) and (result._source.teaser|length < 200) and (result._source.leaser|length > 0) %}
+  <p> {{ result._source.teaser }} <a href= "{{url_for('show_detail', id = result.new_id)}}">Ganzen Artikel lesen</a></p>
+{% elif (result._source.teaser) and (result._source.teaser|length > 200) %}
+  <p>{{ result._source.teaser[:200]}}...<a href="{{url_for('show_detail', id = result.new_id)}}">Ganzen Artikel lesen</a></p>
+{% else %}
+  <p>{{ result._source.text[:200]}}...<a href="{{url_for('show_detail', id = result.new_id)}}">Ganzen Artikel lesen</a></p>
+{% endif %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<div class = "container-fluid">
+<div class = "row.row-eq-height">
+  <div class="col-lg-12 text-center">
+  <h1>Nachrichten</h1>
+    <div class = "col-lg-12 bg-info row.row-eq-height text-left">
+      <div class = "col-lg-4">
+      {% for result in results[:3] %}
+        {% include '_result.html' %}
+      {%endfor %}
+      </div>
+      <div class = "col-lg-4">
+      {% for result in results[3:6] %}
+        {% include '_result.html' %}
+      {%endfor %}
+      </div>
+      <div class = "col-lg-4">
+      {% for result in results[6:9] %}
+        {% include '_result.html' %}
+      {%endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

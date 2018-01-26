@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>Anmelden</h1>
+    <form action="" method = "post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username(size=32) }}<br>
+	    {% for error in form.username.errors %}
+	    <span style="color: red;">[{{ error }}]</span>
+	    {% endfor %}
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(size =32) }}
+	    {% for error in form.password.errors %}
+	    <span style="color: red;">[{{ error }}]</span>
+	    {% endfor %}
+        </p>
+	<p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+	<p>{{ form.submit() }}</p>
+	<p>Neuer Nutzer? <a href="{{ url_for('register')}}">Hier registrieren!</a></p>
+	<p>Passwort vergessen? <a href = "{{ url_for('reset_password_request') }}">Hier zurücksetzen!</a>
+    </form>
+{% endblock %}    
+	
+	
+

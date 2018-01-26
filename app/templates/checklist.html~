@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Checkliste</h1>
+    <form action="" method = "post">
+      <fieldset>
+	{% for item in form.fields.
+	<ul>
+	  <li>
+	    <label>
+              <input type = "checkbox" name = "section" value = "politik">Politik
+            </label>
+	  </li>
+	  <li>
+	    <label>
+	      <input type = "checkbox" name = "section" value = "wirtschaft">Wirtschaft
+	    </label>
+	  </li>
+	</ul>
+      </fieldset>
+    </form>
+{% endblock %}    
+      
+	
+
+				    

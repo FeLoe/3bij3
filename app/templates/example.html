@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<h1>Auswahl Kategorien</h1>
+    <form action="" method = "post">
+    {{ form.hidden_tag() }}
+      {{form.example }}
+      	<p>{{ form.submit() }}</p>
+    </form>  
+{% endblock %}
