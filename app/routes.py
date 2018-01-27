@@ -61,33 +61,9 @@ def register():
         flash('Glückwunsch, Sie sind nun ein registrierter Nutzer!')
         return redirect(url_for('login'))
     return render_template('register.html', title = 'Registrieren', form=form)
-
-@app.route('/kategorien', methods = ['GET', 'POST'])
-@login_required
-def checkliste_auswahl():
-    if current_user.group != 1:
-        return redirect(url_for('index'))
-    else:
-        form = ChecklisteForm()
-        if form.validate_on_submit():
-            sel_categories = form.data["example"]
-            all_categories = ["Sport", "Wirtschaft", "Politik"]
-            categories_dict = {}
-            for category in all_categories: 
-                if category in sel_categories: 
-                    categories_dict[category] = 1
-                else:
-                    categories_dict[category] = 0
-            category = Category(Sport = categories_dict["Sport"], Wirtschaft = categories_dict["Wirtschaft"], \
-                       Politik = categories_dict["Politik"], user_id = current_user.id)
-            db.session.add(category)
-            db.session.commit()  
-            return redirect(url_for('index')) 
-        return render_template('example.html', title = 'Auswahl Kategorien', form=form)
                        
 
-
-@app.route('/newsitems')
+@app.route('/newsitems', methods = ['GET', 'POST'])
 @login_required
 #def which_recommender():
 #have the output of the three recommender systems and choose depending on the group 
@@ -105,7 +81,22 @@ def search():
             db.session.commit()
             result["new_id"] = news_displayed.id
             results.append(result)
-    return render_template('newspage.html', results = results)
+    form = ChecklisteForm()
+    if form.validate_on_submit():
+        sel_categories = form.data["example"]
+        all_categories = ["Sport", "Wirtschaft", "Politik"]
+        categories_dict = {}
+        for category in all_categories: 
+            if category in sel_categories: 
+                categories_dict[category] = 1
+            else:
+                categories_dict[category] = 0
+        category = Category(Sport = categories_dict["Sport"], Wirtschaft = categories_dict["Wirtschaft"], \
+                   Politik = categories_dict["Politik"], user_id = current_user.id)
+        db.session.add(category)
+        db.session.commit()  
+        return redirect(url_for('search')) 
+    return render_template('newspage.html', results = results, form = form, title = 'Kategorien')
 
 def doctype_last(doctype, num=20, by_field = "META.ADDED", query = None):
     body = {

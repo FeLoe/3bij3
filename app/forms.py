@@ -27,14 +27,14 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Bitte nutzen Sie eine andere Email Adresse')
 
 class MultiCheckboxField(SelectMultipleField):
-    widget = widgets.ListWidget(prefix_label = False)
     option_widget = widgets.CheckboxInput()
+    widget = widgets.ListWidget(prefix_label = False)
 
 class ChecklisteForm(FlaskForm):
     list_of_files = ['Politik', 'Wirtschaft', 'Sport']
     files = [(x, x) for x in list_of_files]
     example = MultiCheckboxField('Label', choices=files)
-    submit = SubmitField('Speichern')
+    submit = SubmitField('Ändern')
 
 class ResetPasswordRequestForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])

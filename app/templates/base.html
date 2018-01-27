@@ -24,9 +24,6 @@
     </div>
     <div class = "collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class = "nav navbar-nav">
-        {% if current_user.group == 1 %}
-	<li><a href = "{{ url_for('checkliste_auswahl') }}">Kategorien</a></li>
-        {% endif %}
         {% if current_user.is_authenticated %}
         <li><a href = "{{ url_for('search') }}">Nachrichten</a></li>
         {% endif %}
