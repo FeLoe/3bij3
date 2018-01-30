@@ -12,3 +12,5 @@ Initializing, migrating and upgrading a sqlite database (needed for this app to 
 flask db init
 flask db migrate
 flask db upgrade
+
+To finally start the app, type "flask run", it can the be found in the browser under localhost:5000
