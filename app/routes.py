@@ -9,6 +9,7 @@ import string
 import random
 import re
 from app.email import send_password_reset_email
+from datetime import datetime
 
 
 host = "http://localhost:9200"
@@ -18,17 +19,10 @@ es = Elasticsearch(host)
 list_of_sources = ["nu"]
 
 
-@app.route('/')
-@app.route('/index')
-@login_required
-def index():
-    return render_template("index.html",
-                           title="Home Page")
-
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('newspage'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username = form.username.data).first()
@@ -38,19 +32,19 @@ def login():
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index')
+            next_page = url_for('newspage')
         return redirect(next_page)
     return render_template('login.html', title='Anmelden', form=form)
 
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('newspage'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('newspage'))
     form = RegistrationForm()
     if form.validate_on_submit():
         group = random.randint(1,4)
@@ -62,8 +56,8 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title = 'Registrieren', form=form)
                        
-
-@app.route('/newsitems', methods = ['GET', 'POST'])
+@app.route('/', methods = ['GET', 'POST'])
+@app.route('/homepage', methods = ['GET', 'POST'])
 @login_required
 #def which_recommender():
 #have the output of the three recommender systems and choose depending on the group 
@@ -71,7 +65,7 @@ def register():
 #already: random (can be used for two groups) 
 
  
-def search():
+def newspage():
     results_dict=random_selection()
     results = []
     for source in results_dict:
@@ -82,6 +76,10 @@ def search():
             result["new_id"] = news_displayed.id
             results.append(result)
     form = ChecklisteForm()
+    difference = time_logged_in()['difference']
+    selected_news = number_read()['selected_news']
+    if difference == 0 and selected_news > 0:
+        flash('Sie können die Studie jetzt beenden und einen finalen Fragebogen ausfüllen (Link rechts oben). Sie können die App aber auch gerne noch weiter benutzen.')
     if form.validate_on_submit():
         sel_categories = form.data["example"]
         all_categories = ["Sport", "Wirtschaft", "Politik"]
@@ -95,7 +93,7 @@ def search():
                    Politik = categories_dict["Politik"], user_id = current_user.id)
         db.session.add(category)
         db.session.commit()  
-        return redirect(url_for('search')) 
+        return redirect(url_for('newspage')) 
     return render_template('newspage.html', results = results, form = form, title = 'Kategorien')
 
 def doctype_last(doctype, num=20, by_field = "META.ADDED", query = None):
@@ -141,7 +139,6 @@ def random_selection(num_select = 9):
                     articles.remove(article)
             except KeyError:
                 articles.remove(article)
-                print (article["_source"]["title"])
         random_sample = random.sample(articles, num_select)
         random_list.append(random_sample)
     return random_list
@@ -158,15 +155,22 @@ def show_detail(id):
          teaser = item['_source']['teaser']
          title = item['_source']['title']
          url = item['_source']['url']
+         try:
+             for image in item['_source']['images']:
+                 image_url = image['url']
+                 image_caption = image['alt']
+         except KeyError:
+             image_url = []
+             image_caption = []
          news_selected = News_sel(news_id = selected.es_id, user_id =current_user.id)
          db.session.add(news_selected)
          db.session.commit()
-     return render_template('detail.html', text = text, teaser = teaser, title = title, url = url)
+     return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, image_caption = image_caption)
 
 @app.route('/reset_password_request', methods= ['GET', 'POST'])
 def reset_password_request():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('newspage'))
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -179,7 +183,7 @@ def reset_password_request():
 @app.route('/reset_password/<token>', methods = ['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('newspage'))
     user = User.verify_reset_password_token(token)
     form = ResetPasswordForm()
     if form.validate_on_submit():
@@ -188,3 +192,30 @@ def reset_password(token):
         flash('Ihr Passwort wurde zurückgesetzt.')
         return redirect(url_for('login'))
     return render_template('reset_password.html', form=form)
+
+@app.route('/final_questionnaire', methods = ['GET', 'POST'])
+@login_required
+def final_form():
+    return render_template('final_questionnaire.html')
+
+@app.context_processor
+def time_logged_in():
+    if current_user.is_authenticated:
+        first_login = current_user.first_login
+        difference_raw = datetime.utcnow() - first_login
+        difference = difference_raw.days
+    else: 
+        difference = 0
+    return dict(difference = difference)
+
+@app.context_processor
+def number_read():
+    if current_user.is_authenticated:
+        try:
+            selected_news = News_sel.query.filter_by(user_id = current_user.id).all()
+            selected_news = len(selected_news)
+        except: 
+            selected_news = 0
+    else:
+        selected_news = 0
+    return dict(selected_news = selected_news)

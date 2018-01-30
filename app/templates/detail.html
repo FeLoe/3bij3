@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 {% block app_content %}
 <h1>{{title}}</h1>
+{% if image != [] %}
+<div class="col-md-12">
+   <div class="pull-left"><img src = {{image}} alt = {{image_caption}} hspace = "20"/></div>
+   <div>
+      <p><b> {{teaser}}</b></p>
+      <p> {{text}} </p>
+   </div>
+</div>
+{% else %}
 <p><b> {{teaser}}</b></p>
 <p> {{text}} </p>
+{%endif %}
 {% endblock %}
