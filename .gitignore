@@ -3,6 +3,7 @@ venv/
 
 #Database
 app.db
+/migrations
 
 #logs 
 /logs
