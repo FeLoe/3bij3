@@ -1,8 +1,0 @@
-{% extends "base.html" %}
-
-{% block content %}
-<h1>Checkliste</h1>
-    <form action="" method = "post">
-      {{form.example }}
-    </form>  
-{% endblock %}
