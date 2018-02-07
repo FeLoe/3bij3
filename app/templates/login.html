@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-    <h1>Anmelden</h1>
+    <h1>Inloggen</h1>
     <form action="" method = "post">
         {{ form.hidden_tag() }}
         <p>
@@ -20,8 +20,8 @@
         </p>
 	<p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
 	<p>{{ form.submit() }}</p>
-	<p>Neuer Nutzer? <a href="{{ url_for('register')}}">Hier registrieren!</a></p>
-	<p>Passwort vergessen? <a href = "{{ url_for('reset_password_request') }}">Hier zurücksetzen!</a>
+	<p>Nieuw gebruiker? <a href="{{ url_for('register')}}">Hier registreren!</a></p>
+	<p>Wachtwoord vergeten? <a href = "{{ url_for('reset_password_request') }}">Hier opnieuw instellen!</a>
     </form>
 {% endblock %}    
 	

@@ -1,13 +1,19 @@
 {% extends 'bootstrap/base.html' %}
 
 {% block title %}
-{% if title %}{{title}} - Nachrichtenseite{% else %} Willkommen auf der Nachrichtenseite {% endif %}
+{% if title %}{{title}} - Nieuwspagina{% else %} Welkom op de Nieuwspagina{% endif %}
 {% endblock %}
 
 {% block styles %}
 {{super()}}
 <link rel="stylesheet"
       href="{{url_for('.static', filename='mystyle.css')}}">
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+{{ moment.include_moment() }}
+{{ moment.lang("nl") }}
 {% endblock %}
 
 {% block navbar %}
@@ -22,8 +28,8 @@
     </div>
     <div class = "collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav navbar-right">
-        {% if (difference > 7) and (selected_news > 10) %}
-        <li><a href ="{{ url_for('final_form') }}">End Study</a></li>
+        {% if (difference > 0) and (selected_news > 0) %}
+        <li><a href ="{{ url_for('final_form') }}">Studie afsluiten</a></li>
         {% endif %} 
 	{% if current_user.is_anonymous %}
 	<li><a href="{{ url_for('login') }}">Login</a></li>

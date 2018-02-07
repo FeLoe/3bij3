@@ -5,11 +5,13 @@
 <div class="col-md-12">
    <div class="pull-left"><img src = {{image}} alt = {{image_caption}} hspace = "20"/></div>
    <div>
+      <p style="color: grey;">{{moment(time).fromNow() }}</p>
       <p><b> {{teaser}}</b></p>
       <p> {{text}} </p>
    </div>
 </div>
 {% else %}
+<p>{{moment(time).fromNow() }}</p>
 <p><b> {{teaser}}</b></p>
 <p> {{text}} </p>
 {%endif %}

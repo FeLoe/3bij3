@@ -117,3 +117,11 @@
   color: #b3d9ff;
   background-color: #0066cc;
 }
+
+.cliente {
+	margin-top:10px;
+	border: #cdcdcd medium solid;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+}

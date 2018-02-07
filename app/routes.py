@@ -27,14 +27,14 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username = form.username.data).first()
         if user is None or not user.check_password(form.password.data): 
-            flash('Ungültiger Nutzername oder Passwort')
+            flash('Ongeldige gebruikersnaam of wachtwoord')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('newspage')
         return redirect(next_page)
-    return render_template('login.html', title='Anmelden', form=form)
+    return render_template('login.html', title='Inloggen', form=form)
 
 @app.route('/logout')
 def logout():
@@ -52,9 +52,9 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Glückwunsch, Sie sind nun ein registrierter Nutzer!')
+        flash('Gefeliciteerd, u bent nu een ingeschreven gebruiker!')
         return redirect(url_for('login'))
-    return render_template('register.html', title = 'Registrieren', form=form)
+    return render_template('register.html', title = 'Registratie', form=form)
                        
 @app.route('/', methods = ['GET', 'POST'])
 @app.route('/homepage', methods = ['GET', 'POST'])
@@ -78,23 +78,23 @@ def newspage():
     form = ChecklisteForm()
     difference = time_logged_in()['difference']
     selected_news = number_read()['selected_news']
-    if difference == 0 and selected_news > 0:
-        flash('Sie können die Studie jetzt beenden und einen finalen Fragebogen ausfüllen (Link rechts oben). Sie können die App aber auch gerne noch weiter benutzen.')
+    if difference > 0 and selected_news > 0:
+        flash('U kunt deze studie nu afsluiten en een finale vragenlijst invullen (link rechtsboven) - maar u kunt de webapp ook nog wel verder gebruiken.')
     if form.validate_on_submit():
         sel_categories = form.data["example"]
-        all_categories = ["Sport", "Wirtschaft", "Politik"]
+        all_categories = ["sport", "economie", "politiek"]
         categories_dict = {}
         for category in all_categories: 
             if category in sel_categories: 
                 categories_dict[category] = 1
             else:
                 categories_dict[category] = 0
-        category = Category(Sport = categories_dict["Sport"], Wirtschaft = categories_dict["Wirtschaft"], \
-                   Politik = categories_dict["Politik"], user_id = current_user.id)
+        category = Category(sport = categories_dict["sport"], economie = categories_dict["economie"], \
+                   politiek = categories_dict["politiek"], user_id = current_user.id)
         db.session.add(category)
         db.session.commit()  
         return redirect(url_for('newspage')) 
-    return render_template('newspage.html', results = results, form = form, title = 'Kategorien')
+    return render_template('newspage.html', results = results, form = form)
 
 def doctype_last(doctype, num=20, by_field = "META.ADDED", query = None):
     body = {
@@ -155,6 +155,9 @@ def show_detail(id):
          teaser = item['_source']['teaser']
          title = item['_source']['title']
          url = item['_source']['url']
+         publication_date = item['_source']['publication_date']
+         publication_date = datetime.strptime(publication_date, '%Y-%m-%dT%H:%M:%S')
+         print(publication_date)   
          try:
              for image in item['_source']['images']:
                  image_url = image['url']
@@ -165,7 +168,7 @@ def show_detail(id):
          news_selected = News_sel(news_id = selected.es_id, user_id =current_user.id)
          db.session.add(news_selected)
          db.session.commit()
-     return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, image_caption = image_caption)
+     return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, image_caption = image_caption, time = publication_date)
 
 @app.route('/reset_password_request', methods= ['GET', 'POST'])
 def reset_password_request():
@@ -176,9 +179,9 @@ def reset_password_request():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             send_password_reset_email(user)
-        flash('Schauen Sie in ihren Emails nach Anweisungen, wie sie ihr Passwort zurücksetzen können')
+        flash('Controleer uw email, u hebt informatie ontvangen hoe u uw wachtwoord opnieuw kunt instellen.')
         return redirect(url_for('login'))
-    return render_template('reset_password_request.html', title="Passwort zurücksetzen", form=form)
+    return render_template('reset_password_request.html', title="Wachtwoord opnieuw instellen", form=form)
 
 @app.route('/reset_password/<token>', methods = ['GET', 'POST'])
 def reset_password(token):
@@ -189,7 +192,7 @@ def reset_password(token):
     if form.validate_on_submit():
         user.set_password(form.password.data)
         db.session.commit()
-        flash('Ihr Passwort wurde zurückgesetzt.')
+        flash('Uw wachtwoord is opnieuw ingesteld worden.')
         return redirect(url_for('login'))
     return render_template('reset_password.html', form=form)
 
@@ -201,9 +204,12 @@ def final_form():
 @app.context_processor
 def time_logged_in():
     if current_user.is_authenticated:
-        first_login = current_user.first_login
-        difference_raw = datetime.utcnow() - first_login
-        difference = difference_raw.days
+        try:
+            first_login = current_user.first_login
+            difference_raw = datetime.utcnow() - first_login
+            difference = difference_raw.days
+        except:
+            difference = 0
     else: 
         difference = 0
     return dict(difference = difference)
