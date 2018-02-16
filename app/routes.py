@@ -3,7 +3,7 @@ from app import app, db
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, News, News_sel, Category
 from werkzeug.urls import url_parse
-from app.forms import RegistrationForm, ChecklisteForm, LoginForm, ResetPasswordRequestForm, ResetPasswordForm
+from app.forms import RegistrationForm, ChecklisteForm, LoginForm, SurveyForm,  ResetPasswordRequestForm, ResetPasswordForm, rating
 from elasticsearch import Elasticsearch
 import string
 import random
@@ -40,6 +40,14 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('newspage'))
+
+@app.route('/consent', methods = ['GET', 'POST'])
+def consent():
+    return render_template('consent.html')
+
+@app.route('/no_consent')
+def no_consent():
+    return render_template('no_consent.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -168,7 +176,16 @@ def show_detail(id):
          news_selected = News_sel(news_id = selected.es_id, user_id =current_user.id)
          db.session.add(news_selected)
          db.session.commit()
-     return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, image_caption = image_caption, time = publication_date)
+     form = rating()
+     if request.method == 'POST' and form.validate():
+         stars = star_rating.data
+         print(stars)
+     return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, image_caption = image_caption, time = publication_date, form = form)
+
+@app.route('/detail/give_rating', methods = ['GET', 'POST'])
+def store_rating():
+    rating = request.form['score']
+    return(rating)
 
 @app.route('/reset_password_request', methods= ['GET', 'POST'])
 def reset_password_request():
@@ -199,7 +216,8 @@ def reset_password(token):
 @app.route('/final_questionnaire', methods = ['GET', 'POST'])
 @login_required
 def final_form():
-    return render_template('final_questionnaire.html')
+    form = SurveyForm()
+    return render_template('final_questionnaire.html', form=form)
 
 @app.context_processor
 def time_logged_in():

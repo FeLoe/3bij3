@@ -1,18 +1,82 @@
 {% extends "base.html" %}
 {% block app_content %}
+
+{% block styles %}
+{{super()}}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+<link rel="stylesheet"
+      href="{{url_for('.static', filename='mystyle.css')}}">
+<style type="text/css">  
+.star-rating {
+  line-height:32px;
+  font-size:1.25em;
+}
+
+.star-rating .fa-star{color: green;}
+</style>
+{% endblock %}
+
+
+
 <h1>{{title}}</h1>
 {% if image != [] %}
 <div class="col-md-12">
-   <div class="pull-left"><img src = {{image}} alt = {{image_caption}} hspace = "20"/></div>
+   <div class="pull-left"><img src = {{image}} alt = {{image_caption}} style="width:500px; heigth:400px" hspace = "20" vspace = "20"/></div>
    <div>
       <p style="color: grey;">{{moment(time).fromNow() }}</p>
       <p><b> {{teaser}}</b></p>
       <p> {{text}} </p>
    </div>
 </div>
+<form action="" method = "POST" action="/detail/give_rating">
+<div class="container">
+  <div class="row">
+    <div class="col-md-11">
+      <div class="pull-right">
+      <div class="star-rating">
+        <span class="fa fa-star-o fa-2x" data-rating="1"></span>
+        <span class="fa fa-star-o fa-2x" data-rating="2"></span>
+        <span class="fa fa-star-o fa-2x" data-rating="3"></span>
+        <span class="fa fa-star-o fa-2x" data-rating="4"></span>
+        <span class="fa fa-star-o fa-2x" data-rating="5"></span>
+        <input type="hidden" name="score" class="rating-value" value="2.56">
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+<script>var $star_rating = $('.star-rating .fa');
+
+var SetRatingStar = function() {
+  return $star_rating.each(function() {
+    if (parseInt($star_rating.siblings('input.rating-value').val()) >= parseInt($(this).data('rating'))) {
+  return $(this).removeClass('fa-star-o').addClass('fa-star');
+    } else {
+      return $(this).removeClass('fa-star').addClass('fa-star-o');
+    }
+  });
+};
+
+$star_rating.on('click', function() {
+  $star_rating.siblings('input.rating-value').val($(this).data('rating'));
+  return SetRatingStar()
+});
+  SetRatingStar();
+$(document).ready(function() {
+
+  })
+  
+</script>
+
 {% else %}
+
 <p>{{moment(time).fromNow() }}</p>
 <p><b> {{teaser}}</b></p>
 <p> {{text}} </p>
+
+
 {%endif %}
 {% endblock %}
+
