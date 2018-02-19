@@ -29,7 +29,8 @@
       <p> {{text}} </p>
    </div>
 </div>
-<form action="" method = "POST" action="/detail/give_rating">
+<form action="" method = "post">
+   {{ form.hidden_tag() }}
 <div class="container">
   <div class="row">
     <div class="col-md-11">
@@ -40,19 +41,21 @@
         <span class="fa fa-star-o fa-2x" data-rating="3"></span>
         <span class="fa fa-star-o fa-2x" data-rating="4"></span>
         <span class="fa fa-star-o fa-2x" data-rating="5"></span>
-        <input type="hidden" name="score" class="rating-value" value="2.56">
+        <input type="hidden" id="rating" name="rating" class="rating-value" value="2.56">
+	<button type="submit" id="rating1" name="submitBtn">Submit</button><br /><br />
+	</form>
       </div>
       </div>
     </div>
   </div>
 </div>
-</form>
-<script>var $star_rating = $('.star-rating .fa');
+<script>
+  var $star_rating = $('.star-rating .fa');
 
 var SetRatingStar = function() {
   return $star_rating.each(function() {
     if (parseInt($star_rating.siblings('input.rating-value').val()) >= parseInt($(this).data('rating'))) {
-  return $(this).removeClass('fa-star-o').addClass('fa-star');
+      return $(this).removeClass('fa-star-o').addClass('fa-star');
     } else {
       return $(this).removeClass('fa-star').addClass('fa-star-o');
     }
@@ -61,14 +64,12 @@ var SetRatingStar = function() {
 
 $star_rating.on('click', function() {
   $star_rating.siblings('input.rating-value').val($(this).data('rating'));
-  return SetRatingStar()
+  return SetRatingStar();
 });
-  SetRatingStar();
-$(document).ready(function() {
 
-  })
-  
+SetRatingStar();
 </script>
+
 
 {% else %}
 

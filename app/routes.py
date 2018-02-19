@@ -178,14 +178,11 @@ def show_detail(id):
          db.session.commit()
      form = rating()
      if request.method == 'POST' and form.validate():
-         stars = star_rating.data
-         print(stars)
+         stars = request.form['rating']
+         #SAFE RATING IN DATABASE
+         return redirect(url_for('decision'))
      return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, image_caption = image_caption, time = publication_date, form = form)
 
-@app.route('/detail/give_rating', methods = ['GET', 'POST'])
-def store_rating():
-    rating = request.form['score']
-    return(rating)
 
 @app.route('/reset_password_request', methods= ['GET', 'POST'])
 def reset_password_request():
@@ -243,3 +240,9 @@ def number_read():
     else:
         selected_news = 0
     return dict(selected_news = selected_news)
+
+@app.route('/decision', methods= ['GET', 'POST'])
+@login_required
+def decision():
+    return render_template('decision.html')
+    
