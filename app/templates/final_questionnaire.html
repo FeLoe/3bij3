@@ -2,6 +2,9 @@
 
 {% block app_content %}
 
-<p> here will be a questionnaire </p>
+<form action="" method = "post">
+     {{ form.hidden_tag() }}
+     {{ form.gender }}
+</form>
 
 {% endblock %}

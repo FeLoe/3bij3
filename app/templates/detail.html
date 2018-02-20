@@ -3,21 +3,33 @@
 
 {% block styles %}
 {{super()}}
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 <link rel="stylesheet"
       href="{{url_for('.static', filename='mystyle.css')}}">
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 <style type="text/css">  
 .star-rating {
   line-height:32px;
   font-size:1.25em;
 }
 
-.star-rating .fa-star{color: green;}
+.star-rating .fa-star{color: DeepSkyBlue;}
+
+.btn-xlarge {
+    padding: 10px 15px;
+    font-size: 15px;
+    line-height: normal;
+    -webkit-border-radius: 8px;
+       -moz-border-radius: 8px;
+            border-radius: 8px;
+}
 </style>
 {% endblock %}
 
+{% block scripts %}
+{{super()}}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
+{% endblock %}
 
 <h1>{{title}}</h1>
 {% if image != [] %}
@@ -29,25 +41,32 @@
       <p> {{text}} </p>
    </div>
 </div>
+{% else %}
+
+<p>{{moment(time).fromNow() }}</p>
+<p><b> {{teaser}}</b></p>
+<p> {{text}} </p>
+
+
+{%endif %}
+
 <form action="" method = "post">
    {{ form.hidden_tag() }}
 <div class="container">
   <div class="row">
-    <div class="col-md-11">
-      <div class="pull-right">
-      <div class="star-rating">
+      <div class="text-center">
+	<div class="star-rating">
+	  Hoe relevant was dit artikel voor u?<br>
         <span class="fa fa-star-o fa-2x" data-rating="1"></span>
         <span class="fa fa-star-o fa-2x" data-rating="2"></span>
         <span class="fa fa-star-o fa-2x" data-rating="3"></span>
         <span class="fa fa-star-o fa-2x" data-rating="4"></span>
-        <span class="fa fa-star-o fa-2x" data-rating="5"></span>
-        <input type="hidden" id="rating" name="rating" class="rating-value" value="2.56">
-	<button type="submit" id="rating1" name="submitBtn">Submit</button><br /><br />
-	</form>
-      </div>
-      </div>
+        <span class="fa fa-star-o fa-2x" data-rating="5"></span><br>
+        <input type="hidden" id="rating" name="rating" class="rating-value" value="0">
+	<button type="submit" id="rating1" name="submitBtn" class="btn btn-info btn-xlarge center">Submit</button>
+</form>
+</div>	
     </div>
-  </div>
 </div>
 <script>
   var $star_rating = $('.star-rating .fa');
@@ -71,13 +90,6 @@ SetRatingStar();
 </script>
 
 
-{% else %}
 
-<p>{{moment(time).fromNow() }}</p>
-<p><b> {{teaser}}</b></p>
-<p> {{text}} </p>
-
-
-{%endif %}
 {% endblock %}
 

@@ -173,16 +173,19 @@ def show_detail(id):
          except KeyError:
              image_url = []
              image_caption = []
-         news_selected = News_sel(news_id = selected.es_id, user_id =current_user.id)
-         db.session.add(news_selected)
-         db.session.commit()
      form = rating()
      if request.method == 'POST' and form.validate():
          stars = request.form['rating']
-         #SAFE RATING IN DATABASE
+         news_selected = News_sel(news_id = selected.es_id, user_id =current_user.id, rating = stars)
+         db.session.add(news_selected)
+         db.session.commit()
          return redirect(url_for('decision'))
      return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, image_caption = image_caption, time = publication_date, form = form)
 
+@app.route('/decision', methods = ['GET', 'POST'])
+@login_required
+def decision():
+    return render_template('decision.html')
 
 @app.route('/reset_password_request', methods= ['GET', 'POST'])
 def reset_password_request():
@@ -241,8 +244,5 @@ def number_read():
         selected_news = 0
     return dict(selected_news = selected_news)
 
-@app.route('/decision', methods= ['GET', 'POST'])
-@login_required
-def decision():
-    return render_template('decision.html')
+
     

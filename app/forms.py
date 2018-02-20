@@ -53,7 +53,7 @@ class SurveyForm(FlaskForm):
     for number in range(16,100):
         choice = (number, "{}".format(number))
         years.append(choice)
-    age = SelectField('Hoe oud ben je?',choices=years, validators=[DataRequired()])
+    age = TextAreaField('In welk jaar bent u geboren?', validators=[DataRequired()])
     education = RadioField('Wat is uw hoogst behaalde opleidingsniveau?',
         choices=[('1', 'Geen onderwijs / basisonderwijs / lagere school'),
             ('2', 'LBO / VBO / VMBO (kader- en beroepsgerichte leerweg)'), ('3', 'MAVO / eerste 3 jaar HAVO en VWO / VMBO (theoretische en gemengde leerweg)'),('4', 'MBO'), ('Grad', 'HAVO en VWO bovenbouw / WO-propedeuse'),('5', 'HBO / WO-bachelor of kandidaats '), ('6', 'WO-doctoraal of master')],validators=[DataRequired()])

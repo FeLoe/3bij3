@@ -118,11 +118,11 @@
   background-color: #0066cc;
 }
 
-
-.star-rating {
-  line-height:32px;
-  font-size:1.25em;
+.btn-xlarge {
+    padding: 30px 35px;
+    font-size: 22px; //change this to your desired size
+    line-height: normal;
+    -webkit-border-radius: 8px;
+       -moz-border-radius: 8px;
+            border-radius: 8px;
 }
-
-.star-rating .fa-star{color: yellow;}
-

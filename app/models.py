@@ -60,8 +60,10 @@ class News_sel(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     news_id = db.Column(db.Integer, db.ForeignKey('news.es_id'))
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    rating = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    
+
+
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
