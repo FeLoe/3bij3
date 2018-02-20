@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block app_content %}
+<div class="pull-left"><img src = "static/logo.jpg" alt="Universiteit van Amsterdam" style="width: 300px; height: 60px"></div>
+<div class="container-fluid">
+    <div class="col-lg-12">
+        <div class="col-lg-9">
+            <p>&nbsp;</p>
+	    <p><span>Beste deelnemer,</span></p>
+            <p>&nbsp;</p>
+            <p><span>Voordat het onderzoek begint, is het belangrijk dat u op de hoogte bent van de procedure die in dit onderzoek wordt gevolgd. Lees daarom onderstaande tekst zorgvuldig door en aarzel niet om opheldering te vragen over deze tekst, mocht deze niet duidelijk zijn. We beantwoorden uw vragen graag via email (felicia.locherbach@student.uva.nl).</span></p>
+            <p>&nbsp;</p>
+            <p><strong><span>Doel van het onderzoek</span></strong></p>
+            <p><span>Het doel van het onderzoek is na te gaan hoe nieuwssites worden gebruikt.</span></p>
+            <p>&nbsp;</p>
+            <p><strong><span>Gang van zaken tijdens het onderzoek</span></strong></p>
+            <p><span>Wij stellen u een nieuwssite ter beschikking en slaan op hoe u er gebruik van maakt. Na afloop stellen we u enkele vragen. Het is de bedoeling dat u deze site de komende weken regelmatig blijft gebruiken.</span></p>
+            <p>&nbsp;</p>
+            <p><strong><span>Vrijwilligheid</span></strong></p>
+            <p>Als u nu besluit af te zien van deelname aan dit experiment, zal dit op geen enkele wijze gevolgen voor u hebben. Als u gaandeweg het onderzoek besluit om te stoppen, dan kan dat op elk moment, zonder opgaaf van redenen en zonder dat dit op enige wijze gevolgen voor u heeft. U kunt binnen 7 dagen na het onderzoek verzoeken om uw onderzoeksgegevens te laten verwijderen.</span></p>
+            <p>&nbsp;</p>
+            <p><strong><span>Ongemak, risico&rsquo;s en verzekering </span></strong></p>
+            <p>Zoals bij elk onderzoek van de Universiteit van Amsterdam geldt een standaard aansprakelijkheidsverzekering.</span></p>
+            <p>&nbsp;</p>
+            <p><strong><span>Uw privacy is gewaarborgd</span></strong></p>
+            <p ><span>Uw onderzoeksgegevens worden door de onderzoekers nader geanalyseerd. Onderzoeksgegevens die worden gepubliceerd in wetenschappelijke tijdschriften zijn anoniem en zijn dus niet tot u te herleiden. Volledig geanonimiseerde onderzoeksgegevens kunnen voor wetenschappelijke doeleinden worden gedeeld met andere onderzoekers. Uw persoonsgegevens (over wie u bent) blijven vertrouwelijk en worden niet gedeeld zonder uw uitdrukkelijke toestemming. Uw privacy is dus gewaarborgd.</span></p>
+            <p>&nbsp;</p>
+            <p><strong><span>Nadere inlichtingen</span></strong></p>
+            <p><span>Mocht u vragen hebben over dit onderzoek, vooraf of achteraf, dan kunt u zich wenden tot de verantwoordelijke onderzoeker; Felicia L&ouml;cherbach (felicia.locherbach@student.uva.nl) . Voor eventuele formele klachten over dit onderzoek kunt u zich wenden tot het lid van de Facultaire Commissie Ethiek (FMG) van de Universiteit van Amsterdam, per adres:</span></p>
+            <p>&nbsp;</p>
+            <p><span>ASCoR Secretariat,</span><span><br /></span><span >Ethics Committee,</span><span><br /></span><span>Universiteit van Amsterdam,</span><span><br /></span><span>Postbus 15793,</span></p>
+            <p><span>1001 NG Amsterdam;</span><span><br /></span><span>020-525 3680;</span><span><br /></span><span>ascor-secr-fmg@uva.nl.</span><span><br /></span><span>&nbsp;&nbsp;&nbsp; </span><span><br /></span><span>Een vertrouwelijke behandeling van uw klacht of opmerking is daarbij gewaarborgd.</span></p>
+            <p>&nbsp;</p>
+            <p ><span>Door op &ldquo;Ik doe mee!&rdquo; te klikken bevestigt u het volgende:</span></p>
+            <p>&nbsp;</p>
+            <ul>
+                <li ><em><span>Ik ben 16 jaar of ouder.</span></em></li>
+            </ul>
+            <ul>
+                <li><span>Ik heb de informatie gelezen en begrepen. </span></li>
+            </ul>
+            <ul>
+                <li><span>Ik stem toe met deelname aan het onderzoek en gebruik van de daarmee verkregen gegevens. </span></li>
+            </ul>
+            <ul>
+                <li><span>Ik behoud het recht om zonder opgaaf van reden deze instemming weer in te trekken. </span></li>
+            </ul>
+            <ul>
+                <li ><span>Ik behoud het recht op ieder door mij gewenst moment te stoppen met het onderzoek.</span></li>
+            </ul>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p>Mocht u niet akkoord zijn, dan kunt u nu u deelname alsnog beindigen door op &ldquo;Ik wil liever toch niet meedoen.&rdquo; te klikken.</span></p>
+            <p>&nbsp;</p>
+            <p>Met vriendelijke groet,</span></p>
+            <p>&nbsp;</p>
+            <p>Felicia L&ouml;cherbach</span></p>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <div class="button-group">
+                <a href = {{url_for('register')}} class="btn btn-primary btn-md">Ik doe mee!</a>
+                <a href = {{url_for('no_consent')}} class="btn btn-primary btn-md">Ik wil liever toch niet meedoen.</a>
+                <p>&nbsp;</p>
+                <p>&nbsp;</p>
+                <p>&nbsp;</p>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
