@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, make_response
 from app import app, db
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, News, News_sel, Category
@@ -244,5 +244,26 @@ def number_read():
         selected_news = 0
     return dict(selected_news = selected_news)
 
+@app.route('/decision/popup_back')
+@login_required
+def popup_back():
+    return render_template('information_goback.html')
 
-    
+@app.route('/categories/information')
+@login_required
+def popup_categories():
+    return render_template('information_categories.html')
+
+@app.route('/setcookie', methods = ['POST', 'GET'])
+def setcookie():
+   if request.method == 'POST':
+       user = request.form['username']
+       form = LoginForm()
+       resp = make_response(render_template('login.html', form = form))
+       resp.set_cookie('userID', user)
+   return resp
+
+@app.route('/getcookie')
+def getcookie():
+   name = request.cookies.get('userID')
+   return '<h1>welcome '+name+'</h1>'
