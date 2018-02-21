@@ -3,8 +3,15 @@
 {% block app_content %}
 
 <form action="" method = "post">
-     {{ form.hidden_tag() }}
-     {{ form.gender }}
+     <p>{{ form.hidden_tag() }}</div>
+     <p>{{ form.gender.label }}</p>
+     <p>{{ form.gender (class = "list-unstyled")}}</p>
+     <p>{{ form.age.label }}<br></p>
+     <p>{{ form.age }}<br></p>
+     <p>&nbsp;</p>
+     <p>{{ form.education.label }}</p>
+     <p>{{ form.education (class = "list-unstyled")}}</p>
+<button {{ form.submit (class="btn btn-info btn-large center")}}></button>
 </form>
 
 {% endblock %}

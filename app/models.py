@@ -59,11 +59,17 @@ class News(db.Model):
 class News_sel(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     news_id = db.Column(db.Integer, db.ForeignKey('news.es_id'))
-    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    starttime = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    endtime = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    time_spent = db.Column(db.Interval)
     rating = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-
+class Decision(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    decision = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))

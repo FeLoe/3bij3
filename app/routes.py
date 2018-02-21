@@ -1,9 +1,9 @@
-from flask import render_template, flash, redirect, url_for, request, make_response
+from flask import render_template, flash, redirect, url_for, request, make_response, session
 from app import app, db
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, News, News_sel, Category
 from werkzeug.urls import url_parse
-from app.forms import RegistrationForm, ChecklisteForm, LoginForm, SurveyForm,  ResetPasswordRequestForm, ResetPasswordForm, rating
+from app.forms import RegistrationForm, ChecklisteForm, LoginForm, SurveyForm,  ResetPasswordRequestForm, ResetPasswordForm, rating, DecisionForm
 from elasticsearch import Elasticsearch
 import string
 import random
@@ -83,10 +83,11 @@ def newspage():
             db.session.commit()
             result["new_id"] = news_displayed.id
             results.append(result)
+    session['start_time'] = datetime.utcnow()
     form = ChecklisteForm()
     difference = time_logged_in()['difference']
     selected_news = number_read()['selected_news']
-    if difference > 0 and selected_news > 0:
+    if difference >= 0 and selected_news > 0:
         flash('U kunt deze studie nu afsluiten en een finale vragenlijst invullen (link rechtsboven) - maar u kunt de webapp ook nog wel verder gebruiken.')
     if form.validate_on_submit():
         sel_categories = form.data["example"]
@@ -176,16 +177,27 @@ def show_detail(id):
      form = rating()
      if request.method == 'POST' and form.validate():
          stars = request.form['rating']
-         news_selected = News_sel(news_id = selected.es_id, user_id =current_user.id, rating = stars)
+         starttime= session.pop('start_time', None)
+         endtime = datetime.utcnow()
+         time_spent = endtime - starttime
+         news_selected = News_sel(news_id = selected.es_id, user_id =current_user.id, rating = stars, 
+starttime=starttime, endtime=endtime, time_spent = time_spent)
          db.session.add(news_selected)
          db.session.commit()
          return redirect(url_for('decision'))
+
+     session['start_time'] = datetime.utcnow()
+         
      return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, image_caption = image_caption, time = publication_date, form = form)
 
 @app.route('/decision', methods = ['GET', 'POST'])
 @login_required
 def decision():
-    return render_template('decision.html')
+    form = DecisionForm()
+    decision = request.form
+    print(decision)
+    return render_template('decision.html', form = form)
+
 
 @app.route('/reset_password_request', methods= ['GET', 'POST'])
 def reset_password_request():
@@ -254,16 +266,3 @@ def popup_back():
 def popup_categories():
     return render_template('information_categories.html')
 
-@app.route('/setcookie', methods = ['POST', 'GET'])
-def setcookie():
-   if request.method == 'POST':
-       user = request.form['username']
-       form = LoginForm()
-       resp = make_response(render_template('login.html', form = form))
-       resp.set_cookie('userID', user)
-   return resp
-
-@app.route('/getcookie')
-def getcookie():
-   name = request.cookies.get('userID')
-   return '<h1>welcome '+name+'</h1>'

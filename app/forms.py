@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, RadioField, SelectField,  SubmitField, SelectMultipleField, TextAreaField, widgets
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
+from wtforms import StringField, PasswordField, BooleanField, RadioField, SelectField,  SubmitField, SelectMultipleField, TextAreaField, widgets, IntegerField
+from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, InputRequired, Length, NumberRange
 from app.models import User
 
 class LoginForm(FlaskForm):
@@ -49,11 +49,7 @@ class ResetPasswordForm(FlaskForm):
 class SurveyForm(FlaskForm):
     gender = RadioField('Wat is uw geslacht?',
         choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Ik geef liever geen antwoord')],validators=[DataRequired()], default=None)
-    years = []
-    for number in range(16,100):
-        choice = (number, "{}".format(number))
-        years.append(choice)
-    age = TextAreaField('In welk jaar bent u geboren?', validators=[DataRequired()])
+    age = IntegerField('In welk jaar bent u geboren?', validators=[DataRequired(), InputRequired(), Length(min = 4, max = 4, message = "Geef een geldig geboortejaar op"), NumberRange(min = 1918, max = 2002, message = "Geef een geldig geboortejaar op")])
     education = RadioField('Wat is uw hoogst behaalde opleidingsniveau?',
         choices=[('1', 'Geen onderwijs / basisonderwijs / lagere school'),
             ('2', 'LBO / VBO / VMBO (kader- en beroepsgerichte leerweg)'), ('3', 'MAVO / eerste 3 jaar HAVO en VWO / VMBO (theoretische en gemengde leerweg)'),('4', 'MBO'), ('Grad', 'HAVO en VWO bovenbouw / WO-propedeuse'),('5', 'HBO / WO-bachelor of kandidaats '), ('6', 'WO-doctoraal of master')],validators=[DataRequired()])
@@ -61,3 +57,7 @@ class SurveyForm(FlaskForm):
 
 class rating(FlaskForm):
     rating = TextAreaField()
+
+class DecisionForm(FlaskForm):
+    goback = SubmitField()
+    getnew = SubmitField()

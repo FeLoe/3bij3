@@ -116,7 +116,7 @@
     </div>
     <div class = "collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav navbar-right">
-        {% if (difference > 0) and (selected_news > 0) %}
+        {% if (difference >= 0) and (selected_news > 0) %}
         <li><a href ="{{ url_for('final_form') }}">Studie afsluiten</a></li>
         {% endif %} 
 	{% if current_user.is_anonymous %}
