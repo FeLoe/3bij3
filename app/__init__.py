@@ -9,6 +9,7 @@ from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
 from flask_mail import Mail
 from flask_moment import Moment
+#import pickle
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -18,6 +19,8 @@ login = LoginManager(app)
 bootstrap = Bootstrap(app)
 mail = Mail(app)
 moment = Moment(app)
+#lda_model = pickle.load("pretrained_model.pkl")
+#softcosine_model = pickle.load("pretrained_model2.pkl")
 login.login_view = 'login'
 if not app.debug:
     if app.config['MAIL_SERVER']:
@@ -44,4 +47,4 @@ if not app.debug:
     app.logger.setLevel(logging.INFO)
     app.logger.info('Nachrichtenseite startup')
 
-from app import routes, models, errors
+from app import routes, models, errors, recommender

@@ -23,9 +23,6 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-    def avatar(self, size):
-        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
-        return 'https://www.gravatar.com/avatar/{}?d=identicon&s = {}'.format(digest, size)
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(
             {'reset_password': self.id, 'exp':time() + expires_in},
@@ -64,6 +61,11 @@ class News_sel(db.Model):
     time_spent = db.Column(db.Interval)
     rating = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+class News_proc(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    news_id = db.Column(db.Integer, db.ForeignKey(news.es_id'))
+    text = db.Column(db.Text)
 
 class Decision(db.Model):
     id = db.Column(db.Integer, primary_key=True)

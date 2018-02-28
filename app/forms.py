@@ -57,7 +57,3 @@ class SurveyForm(FlaskForm):
 
 class rating(FlaskForm):
     rating = TextAreaField()
-
-class DecisionForm(FlaskForm):
-    goback = SubmitField()
-    getnew = SubmitField()
