@@ -9,6 +9,7 @@ from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
 from flask_mail import Mail
 from flask_moment import Moment
+import gensim
 #import pickle
 
 app = Flask(__name__)
@@ -20,7 +21,7 @@ bootstrap = Bootstrap(app)
 mail = Mail(app)
 moment = Moment(app)
 #lda_model = pickle.load("pretrained_model.pkl")
-#softcosine_model = pickle.load("pretrained_model2.pkl")
+softcosine_model = gensim.models.Word2Vec.load("/home/felicia/newsapp/newsapp/app/mymodel")
 login.login_view = 'login'
 if not app.debug:
     if app.config['MAIL_SERVER']:

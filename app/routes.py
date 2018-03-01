@@ -15,7 +15,7 @@ from app.recommender import recommender
 host = "http://localhost:9200"
 indexName = "inca"
 es = Elasticsearch(host)
-
+rec = recommender()
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -64,22 +64,10 @@ def register():
                        
 @app.route('/', methods = ['GET', 'POST'])
 @app.route('/homepage', methods = ['GET', 'POST'])
-@login_required
-
-def which_recommender():
-    user = User.query.get(current_user.id)
-    group = user.group.all()
-    if group == 1:
-        recommender = recommender.category_selection()
-    elif group == 2:
-        recommender = recommender.past_behavior()
-    else:
-        recommender = recommender.random_selection()
-    return(recommender)
-
- 
+@login_required 
 def newspage():
     documents =which_recommender()
+    rec.category_selection()
     results = []
     for result in documents:
         news_displayed = News(es_id = result["_id"], user_id = current_user.id)
@@ -88,11 +76,11 @@ def newspage():
         result["new_id"] = news_displayed.id
         results.append(result)
     session['start_time'] = datetime.utcnow()
-    form = ChecklisteForm()
     difference = time_logged_in()['difference']
     selected_news = number_read()['selected_news']
     if difference >= 0 and selected_news > 0:
         flash('U kunt deze studie nu afsluiten en een finale vragenlijst invullen (link rechtsboven) - maar u kunt de webapp ook nog wel verder gebruiken.')
+    form = ChecklisteForm()
     if form.validate_on_submit():
         sel_categories = form.data["example"]
         all_categories = ["sport", "economie", "politiek"]
@@ -107,9 +95,23 @@ def newspage():
         db.session.add(category)
         db.session.commit()  
         return redirect(url_for('newspage')) 
+
     return render_template('newspage.html', results = results, form = form)
 
-    
+def which_recommender():
+    group = current_user.group
+    if group == 1:
+        method = rec.random_selection()
+    elif group == 2:
+        selected_news = number_read()['selected_news']
+        if selected_news < 3:
+            method = rec.random_selection()
+        else:
+            method = rec.past_behavior()
+    else:
+        method = rec.random_selection()
+    return(method)
+   
 @app.route('/detail/<id>', methods = ['GET', 'POST'])
 @login_required
 def show_detail(id):

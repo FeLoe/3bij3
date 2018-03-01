@@ -62,16 +62,6 @@ class News_sel(db.Model):
     rating = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-class News_proc(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    news_id = db.Column(db.Integer, db.ForeignKey(news.es_id'))
-    text = db.Column(db.Text)
-
-class Decision(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
-    decision = db.Column(db.Integer)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
