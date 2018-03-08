@@ -29,6 +29,11 @@
          Kies kategorie </span> <span class="caret"></span></button>
      <ul class="dropdown-menu text-center">
      <li><a href = "#">{{form.example(class = "list-unstyled")}}</a></li>
+     {% for key in form.errors %}                                            
+        {% for error in form.errors[key] %}                                 
+            <span style="color: red;">{{ error }}</span>                  
+        {% endfor %}                                                        
+     {% endfor %}  
      <li><a href = "#"> {{form.submit(class = "btn btn-info")}}</a></li>
      </ul>
 </div>    

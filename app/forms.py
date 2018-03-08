@@ -36,6 +36,15 @@ class ChecklisteForm(FlaskForm):
     example = MultiCheckboxField('Label', choices=files)
     submit = SubmitField('Wijzigen')
 
+    def validate(self):                                                         
+        rv = FlaskForm.validate(self)                                           
+        if not rv:                                                              
+            return False                                                                                                       
+        if len(self.example.data) > 2:                                          
+            self.example.errors.append('Let op! U kunt maximaal drie categoriën kiezen.')    
+            return False                                                        
+        return True 
+
 class ResetPasswordRequestForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Verzoek wachtwoord reset')

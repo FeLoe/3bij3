@@ -10,7 +10,7 @@ import os
 from flask_mail import Mail
 from flask_moment import Moment
 import gensim
-#import pickle
+
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -20,7 +20,8 @@ login = LoginManager(app)
 bootstrap = Bootstrap(app)
 mail = Mail(app)
 moment = Moment(app)
-#lda_model = pickle.load("pretrained_model.pkl")
+lda_model = gensim.models.LdaModel.load("/home/felicia/newsapp/newsapp/app/testmodel")
+lda_dict = gensim.corpora.Dictionary.load("/home/felicia/newsapp/newsapp/app/testmodel.dict")
 softcosine_model = gensim.models.Word2Vec.load("/home/felicia/newsapp/newsapp/app/mymodel")
 login.login_view = 'login'
 if not app.debug:

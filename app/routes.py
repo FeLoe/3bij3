@@ -66,15 +66,18 @@ def register():
 @app.route('/homepage', methods = ['GET', 'POST'])
 @login_required 
 def newspage():
-    documents =which_recommender()
-    rec.category_selection()
+    group = current_user.group
+    print(group)
+    documents = which_recommender()
     results = []
+    if documents == "not enough stories":
+        return render_template('no_stories_error.html')
     for result in documents:
         news_displayed = News(es_id = result["_id"], user_id = current_user.id)
         db.session.add(news_displayed)
         db.session.commit()
         result["new_id"] = news_displayed.id
-        results.append(result)
+        results.append(result) 
     session['start_time'] = datetime.utcnow()
     difference = time_logged_in()['difference']
     selected_news = number_read()['selected_news']
@@ -95,20 +98,25 @@ def newspage():
         db.session.add(category)
         db.session.commit()  
         return redirect(url_for('newspage')) 
+    else:
+        flash('U kunt maximal 3 categorien kiezen!')
+        return redirect(url_for('login')) 
 
     return render_template('newspage.html', results = results, form = form)
 
 def which_recommender():
     group = current_user.group
     if group == 1:
-        method = rec.random_selection()
+        method = rec.category_selection()
     elif group == 2:
         selected_news = number_read()['selected_news']
         if selected_news < 3:
             method = rec.random_selection()
         else:
             method = rec.past_behavior()
-    else:
+    elif group == 3:
+        method = rec.random_selection()
+    elif group == 4:
         method = rec.random_selection()
     return(method)
    
