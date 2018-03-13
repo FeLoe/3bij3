@@ -20,9 +20,9 @@ login = LoginManager(app)
 bootstrap = Bootstrap(app)
 mail = Mail(app)
 moment = Moment(app)
-lda_model = gensim.models.LdaModel.load("/home/felicia/newsapp/newsapp/app/testmodel")
-lda_dict = gensim.corpora.Dictionary.load("/home/felicia/newsapp/newsapp/app/testmodel.dict")
-softcosine_model = gensim.models.Word2Vec.load("/home/felicia/newsapp/newsapp/app/mymodel")
+lda_model = gensim.models.LdaModel.load("/home/felicia/newsapp/app/testmodel")
+lda_dict = gensim.corpora.Dictionary.load("/home/felicia/newsapp/app/testmodel.dict")
+softcosine_model = gensim.models.Word2Vec.load("/home/felicia/newsapp/app/mymodel")
 login.login_view = 'login'
 if not app.debug:
     if app.config['MAIL_SERVER']:
