@@ -98,10 +98,6 @@ def newspage():
         db.session.add(category)
         db.session.commit()  
         return redirect(url_for('newspage')) 
-    else:
-        flash('U kunt maximal 3 categorien kiezen!')
-        return redirect(url_for('login')) 
-
     return render_template('newspage.html', results = results, form = form)
 
 def which_recommender():
@@ -129,7 +125,10 @@ def show_detail(id):
                   body={"query":{"term":{"_id":es_id}}}).get('hits',{}).get('hits',[""])
      for item in doc: 
          text = item['_source']['text']
-         teaser = item['_source']['teaser']
+         try: 
+             teaser = item['_source']['teaser']
+         except KeyError:
+             teaser = item['_source']['teaser_rss']
          title = item['_source']['title']
          url = item['_source']['url']
          publication_date = item['_source']['publication_date']

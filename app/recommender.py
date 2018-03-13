@@ -16,7 +16,7 @@ from sqlalchemy import desc
 host = "http://localhost:9200"
 indexName = "inca"
 es = Elasticsearch(host, timeout = 60)
-list_of_sources = ["ad (www)", "bd (www)", "belangvanlimburg (www)", "telegraaf (www)", "volkskrant (www)"]
+list_of_sources = ["ad (www)", "bd (www)", "belangvanlimburg (www)", "telegraaf (www)", "volkskrant (www)", "nrc (www)", "nos (www)", "nu"]
 
 
 
@@ -66,7 +66,12 @@ class recommender():
                 if doc["_id"] not in displayed_ids:
                     final_docs.append(doc)
             except KeyError:
-                pass
+                try:
+                    text = doc["_source"]["text"] 
+                    teaser = doc["_source"]["teaser_rss"]
+                    final_docs.append(doc)
+                except KeyError:
+                        pass
         return final_docs
  
     def random_selection(self):
