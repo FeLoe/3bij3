@@ -53,7 +53,7 @@ class recommender():
                       "query": { "bool":
                           { "filter":
                               { "term":
-                                  { "doctype.keyword": doctype
+                                  { "doctype": doctype
                                   }
                               }
                           }

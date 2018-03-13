@@ -11,6 +11,7 @@ import re
 from app.email import send_password_reset_email
 from datetime import datetime
 from app.recommender import recommender
+from sqlalchemy import desc
 
 host = "http://localhost:9200"
 indexName = "inca"
@@ -65,26 +66,9 @@ def register():
 @app.route('/', methods = ['GET', 'POST'])
 @app.route('/homepage', methods = ['GET', 'POST'])
 @login_required 
-def newspage():
-    group = current_user.group
-    print(group)
-    documents = which_recommender()
-    results = []
-    if documents == "not enough stories":
-        return render_template('no_stories_error.html')
-    for result in documents:
-        news_displayed = News(es_id = result["_id"], user_id = current_user.id)
-        db.session.add(news_displayed)
-        db.session.commit()
-        result["new_id"] = news_displayed.id
-        results.append(result) 
-    session['start_time'] = datetime.utcnow()
-    difference = time_logged_in()['difference']
-    selected_news = number_read()['selected_news']
-    if difference >= 0 and selected_news > 0:
-        flash('U kunt deze studie nu afsluiten en een finale vragenlijst invullen (link rechtsboven) - maar u kunt de webapp ook nog wel verder gebruiken.')
+def newspage(show_again = False):
     form = ChecklisteForm()
-    if form.validate_on_submit():
+    if form.validate_on_submit() and request.method == 'POST' :
         sel_categories = form.data["example"]
         all_categories = ["sport", "economie", "politiek"]
         categories_dict = {}
@@ -98,12 +82,43 @@ def newspage():
         db.session.add(category)
         db.session.commit()  
         return redirect(url_for('newspage')) 
+    elif not form.validate_on_submit() and request.method == 'POST':
+        show_again = True
+    results = []
+    if show_again == True:
+        documents = last_seen()
+        for result in documents:
+            news_displayed = News(es_id = result["_id"], user_id = current_user.id)
+            db.session.add(news_displayed)
+            db.session.commit()
+            result["new_id"] = news_displayed.id
+            results.append(result) 
+    elif show_again == False:
+        group = current_user.group
+        documents = which_recommender()
+        if documents == "not enough stories":
+            return render_template('no_stories_error.html')
+        for result in documents:
+            news_displayed = News(es_id = result["_id"], user_id = current_user.id)
+            db.session.add(news_displayed)
+            db.session.commit()
+            result["new_id"] = news_displayed.id
+            results.append(result) 
+    session['start_time'] = datetime.utcnow()
+    difference = time_logged_in()['difference']
+    selected_news = number_read()['selected_news']
+    if difference >= 0 and selected_news > 0:
+        flash('U kunt deze studie nu afsluiten en een finale vragenlijst invullen (link rechtsboven) - maar u kunt de webapp ook nog wel verder gebruiken.')   
     return render_template('newspage.html', results = results, form = form)
 
 def which_recommender():
     group = current_user.group
     if group == 1:
-        method = rec.category_selection()
+        categories = Category.query.filter_by(user_id = current_user.id).order_by(desc(Category.id)).first()
+        if categories == None:
+            method  = rec.random_selection()
+        else:
+            method = rec.category_selection()
     elif group == 2:
         selected_news = number_read()['selected_news']
         if selected_news < 3:
@@ -115,7 +130,18 @@ def which_recommender():
     elif group == 4:
         method = rec.random_selection()
     return(method)
-   
+ 
+def last_seen():
+    news = News.query.filter_by(user_id = current_user.id).order_by(desc(News.id)).limit(9)
+    news_ids = [item.es_id for item in news]
+    news_last_seen = []
+    for item in news_ids:
+        doc = es.search(index=indexName,
+                  body={"query":{"term":{"_id":item}}}).get('hits',{}).get('hits',[""])
+        for text in doc:
+            news_last_seen.append(text)
+    return news_last_seen
+
 @app.route('/detail/<id>', methods = ['GET', 'POST'])
 @login_required
 def show_detail(id):
