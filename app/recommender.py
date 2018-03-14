@@ -27,7 +27,10 @@ class recommender():
         self.num_more = 100
         self.num_select = 9
         self.num_recommender = 6
-        self.num_random = 3
+        self.textfield = "text"
+        self.teaserfield = "teaser"
+        self.teaseralt = "teaser_rss"
+        self.categories =  {"politiek":3, "sport":8, "economie":10}
 
     def get_selected(self):
         user = User.query.get(current_user.id)
@@ -61,14 +64,14 @@ class recommender():
         final_docs = []
         for doc in docs: 
             try:
-                text = doc["_source"]["text"]
-                teaser = doc["_source"]["teaser"]
+                text = doc["_source"][self.textfield]
+                teaser = doc["_source"][self.teaserfield]
                 if doc["_id"] not in displayed_ids:
                     final_docs.append(doc)
             except KeyError:
                 try:
-                    text = doc["_source"]["text"] 
-                    teaser = doc["_source"]["teaser_rss"]
+                    text = doc["_source"][self.textfield] 
+                    teaser = doc["_source"][self.teaseralt]
                     final_docs.append(doc)
                 except KeyError:
                         pass
@@ -88,6 +91,8 @@ class recommender():
                 random_sample = random.sample(all_articles, self.num_select)
             except ValueError:
                 random_sample = "not enough stories"
+        for article in random_sample:
+            article['recommended'] = 0
         return random_sample
 
     def past_behavior(self):
@@ -95,7 +100,7 @@ class recommender():
         #retrieve past articles and append their processed text to the query list
         docs = self.get_selected()
         query_list = [a for a in docs]
-        query_generator = (tfidf[dictionary.doc2bow(n["_source"]["text"].split())] for n in query_list)
+        query_generator = (tfidf[dictionary.doc2bow(n["_source"][self.textfield].split())] for n in query_list)
 
         #get newest articles, list ids, make corpus (+dictionary, + similarity_matrix) and finally index (against which the query is run)
         new_articles = [self.doctype_last(s) for s in list_of_sources]
@@ -122,19 +127,21 @@ class recommender():
         num_random = self.num_select - len(recommender_selection)
         random_list = [a for a in new_articles if a["_id"] not in recommender_ids]
         random_selection = random.sample(random_list, num_random)
+        for article in random_selection:
+            article['recommended'] = 0
+        for article in recommender_selection:
+            article['recommended'] = 1
         final_list = recommender_selection + random_selection
         return(final_list)
  
    
     def category_selection(self): 
         categories = Category.query.filter_by(user_id = current_user.id).order_by(desc(Category.id)).first().__dict__
-        category_list = ["politiek", "economie", "sport"]
-        categories = [c for c in category_list if categories[c] == 1]
-        if categories == None:
-            categories = ["politiek", "sport"]
+        categories_topics = self.categories
+        categories = [c for c in categories_topics.keys() if categories[c] == 1]
         new_articles = [self.doctype_last(s) for s in list_of_sources]
         new_articles = [a for b in new_articles for a in b]
-        corpus = [a["_source"]["text"].split() for a in new_articles]
+        corpus = [a["_source"][self.textfield].split() for a in new_articles]
         article_ids = [a["_id"] for a in new_articles]
         ids_text = dict(zip(article_ids, corpus))
         topic_dictionary = defaultdict(list)
@@ -143,9 +150,7 @@ class recommender():
             topic_per_text = lda_model.get_document_topics(bow)
             for tuple_topic in topic_per_text:
                 topic_dictionary[tuple_topic[0]].append((article_id, tuple_topic[1]))
-        #match topics and categories
-        categories_topics = {"politiek":3, "sport":8, "economie":10}
-        #IMPORTANT: SELECT HOW MANY PER CATEGORY? HOW MANY CATEGORIES DO WE HAVE? ALSO A RANDOM ELEMENT IN HERE? 
+                
         selection = []
         if len(categories) == 1: 
             num_category_select = 6
@@ -160,10 +165,15 @@ class recommender():
             most_selected = sorted(list_documents,key=itemgetter(1))[:num_category_select]
             for item in most_selected: 
                 selection.append(item[0])
+                
         recommender_selection = [a for a in new_articles if a["_id"] in selection]
+        for article in recommender_selection:
+            article['recommended'] = 1
         num_random = self.num_select - len(recommender_selection)
         random_list = [a for a in new_articles if a["_id"] not in selection]
         random_selection = random.sample(random_list, num_random)
+        for article in random_selection:
+            article['recommended'] = 0
         final_list = random_selection + recommender_selection
         return final_list
             

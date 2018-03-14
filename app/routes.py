@@ -17,6 +17,8 @@ host = "http://localhost:9200"
 indexName = "inca"
 es = Elasticsearch(host)
 rec = recommender()
+day_min = 0
+story_min = 0
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -88,7 +90,7 @@ def newspage(show_again = False):
     if show_again == True:
         documents = last_seen()
         for result in documents:
-            news_displayed = News(es_id = result["_id"], user_id = current_user.id)
+            news_displayed = News(es_id = result["_id"], user_id = current_user.id, recommended = result['recommended'])
             db.session.add(news_displayed)
             db.session.commit()
             result["new_id"] = news_displayed.id
@@ -99,7 +101,7 @@ def newspage(show_again = False):
         if documents == "not enough stories":
             return render_template('no_stories_error.html')
         for result in documents:
-            news_displayed = News(es_id = result["_id"], user_id = current_user.id)
+            news_displayed = News(es_id = result["_id"], user_id = current_user.id, recommended = result['recommended'])
             db.session.add(news_displayed)
             db.session.commit()
             result["new_id"] = news_displayed.id
@@ -107,7 +109,7 @@ def newspage(show_again = False):
     session['start_time'] = datetime.utcnow()
     difference = time_logged_in()['difference']
     selected_news = number_read()['selected_news']
-    if difference >= 0 and selected_news > 0:
+    if difference >= day_min and selected_news > story_min:
         flash('U kunt deze studie nu afsluiten en een finale vragenlijst invullen (link rechtsboven) - maar u kunt de webapp ook nog wel verder gebruiken.')   
     return render_template('newspage.html', results = results, form = form)
 
@@ -134,12 +136,15 @@ def which_recommender():
 def last_seen():
     news = News.query.filter_by(user_id = current_user.id).order_by(desc(News.id)).limit(9)
     news_ids = [item.es_id for item in news]
+    recommended = [item.recommended for item in news]
+    id_rec = zip(news_ids, recommended)
     news_last_seen = []
-    for item in news_ids:
+    for item in id_rec:
         doc = es.search(index=indexName,
-                  body={"query":{"term":{"_id":item}}}).get('hits',{}).get('hits',[""])
+                  body={"query":{"term":{"_id":item[0]}}}).get('hits',{}).get('hits',[""])
         for text in doc:
-            news_last_seen.append(text)
+                text['recommended'] = item[1]
+                news_last_seen.append(text)
     return news_last_seen
 
 @app.route('/detail/<id>', methods = ['GET', 'POST'])
