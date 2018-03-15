@@ -22,6 +22,17 @@
        -moz-border-radius: 8px;
             border-radius: 8px;
 }
+
+.twoColumns{
+    -webkit-column-gap: 20px;
+       -moz-column-gap: 20px;
+            column-gap: 20px;
+    -webkit-column-count: 2;
+       -moz-column-count: 2;
+            column-count: 2;
+}
+
+
 </style>
 {% endblock %}
 
@@ -31,21 +42,28 @@
 
 {% endblock %}
 
-<h1>{{title}}</h1>
+
 {% if image != [] %}
 <div class="col-md-12">
-   <div class="pull-left"><img src = {{image}} alt = {{image_caption}} style="width:500px; heigth:400px" hspace = "20" vspace = "20"/></div>
-   <div>
-      <p style="color: grey;">{{moment(time).fromNow() }}</p>
-      <p><b> {{teaser}}</b></p>
-      <p> {{text}} </p>
-   </div>
-</div>
+<div class='col-md-10'>
+<h3 class='text-center'>{{title}}</h3>
+      <p style="color: grey;" class = 'text-center'>{{moment(time).fromNow() }}</p>
+     <p class='text-center'><b> {{teaser}}</b></p>
+<img src = {{image}}  width="350" height="250" hspace = "10" vspace = "10"  align="right">
+      {% for paragraph in text%}
+      <p class='text-justify'> {{paragraph}} </p>
+     {%endfor%}
 {% else %}
-
-<p>{{moment(time).fromNow() }}</p>
-<p><b> {{teaser}}</b></p>
-<p> {{text}} </p>
+<div class="col-md-12">
+<div class="col-md-10">
+<h3 class = 'text-center' >{{title}}</h3>
+<p style="color: grey;" class = 'text-center'>{{moment(time).fromNow() }}</p>
+<p class = 'text-center'><b> {{teaser}}</b></p>
+{%if text|join(' ')|length > 500 %}
+<p class = "twoColumns text-justify" > {{text|join(' ')}} </p>
+{%else %}
+<p> {{text|join(' ')}} </p>
+{%endif%}
 
 
 {%endif %}
@@ -54,6 +72,7 @@
    {{ form.hidden_tag() }}
 <div class="container">
   <div class="row">
+<div class="col-md-10">
       <div class="text-center">
 	<div class="star-rating">
 	  Hoe relevant was dit artikel voor u?<br>

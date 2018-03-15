@@ -8,6 +8,6 @@
 {% elif (result._source.teaser) and (result._source.teaser|length > 220) %}
   <p>{{ result._source.teaser[:220]}}...<a href="{{url_for('show_detail', id = result.new_id)}}">Hele artikel lezen</a></p><br>
 {% else %}
-  <p>{{ result._source.text[:220]}}...<a href="{{url_for('show_detail', id = result.new_id)}}">Hele artikel lezen</a></p><br>
+  <p>{{ result._source.text_clean[:220]}}...<a href="{{url_for('show_detail', id = result.new_id)}}">Hele artikel lezen</a></p><br>
 {% endif %}
 </div>

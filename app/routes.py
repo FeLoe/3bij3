@@ -94,6 +94,7 @@ def newspage(show_again = False):
             db.session.add(news_displayed)
             db.session.commit()
             result["new_id"] = news_displayed.id
+            result["_source"]["text_clean"] = re.sub(r'\|','', result["_source"]["text"])
             results.append(result) 
     elif show_again == False:
         group = current_user.group
@@ -105,6 +106,7 @@ def newspage(show_again = False):
             db.session.add(news_displayed)
             db.session.commit()
             result["new_id"] = news_displayed.id
+            result["_source"]["text_clean"] = re.sub(r'\|','', result["_source"]["text"])
             results.append(result) 
     session['start_time'] = datetime.utcnow()
     difference = time_logged_in()['difference']
@@ -154,12 +156,19 @@ def show_detail(id):
      es_id = selected.es_id
      doc = es.search(index=indexName,
                   body={"query":{"term":{"_id":es_id}}}).get('hits',{}).get('hits',[""])
-     for item in doc: 
+     for item in doc:
          text = item['_source']['text']
+         if "||" in text:
+             text = re.split(r'\|\|\.\|\|', text)
+             text = re.split(r'\|\|\|', text[0])
+             text = re.split(r'\|\|', text[1])
+         else:
+             text = [text]
          try: 
              teaser = item['_source']['teaser']
          except KeyError:
-             teaser = item['_source']['teaser_rss']
+            teaser = item['_source']['teaser_rss']
+            teaser = re.sub(r'<.*?>',' ', teaser)
          title = item['_source']['title']
          url = item['_source']['url']
          publication_date = item['_source']['publication_date']
@@ -167,11 +176,9 @@ def show_detail(id):
          try:
              for image in item['_source']['images']:
                  image_url = image['url']
-                 image_caption = image['alt']
          except KeyError:
              image_url = []
              image_caption = []
-         all_text = text + teaser + title
      form = rating()
      if request.method == 'POST' and form.validate():
          stars = request.form['rating']
@@ -186,7 +193,7 @@ starttime=starttime, endtime=endtime, time_spent = time_spent)
 
      session['start_time'] = datetime.utcnow()
          
-     return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, image_caption = image_caption, time = publication_date, form = form)
+     return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, time = publication_date, form = form)
 
 
 @app.route('/decision', methods = ['GET', 'POST'])

@@ -16,7 +16,7 @@ from sqlalchemy import desc
 host = "http://localhost:9200"
 indexName = "inca"
 es = Elasticsearch(host, timeout = 60)
-list_of_sources = ["ad (www)", "bd (www)", "belangvanlimburg (www)", "telegraaf (www)", "volkskrant (www)", "nrc (www)", "nos (www)", "nu"]
+list_of_sources = ["ad (www)", "bd (www)", "telegraaf (www)", "volkskrant (www)", "nu"]
 
 
 
@@ -72,7 +72,8 @@ class recommender():
                 try:
                     text = doc["_source"][self.textfield] 
                     teaser = doc["_source"][self.teaseralt]
-                    final_docs.append(doc)
+                    if doc["_id"] not in displayed_ids:
+                        final_docs.append(doc)
                 except KeyError:
                         pass
         return final_docs
@@ -89,10 +90,10 @@ class recommender():
                 articles = [self.doctype_last(s, num = newtry) for s in list_of_sources]
                 all_articles = [a for b in articles for a in b]
                 random_sample = random.sample(all_articles, self.num_select)
+                for article in random_sample:
+                    article['recommended'] = 0
             except ValueError:
                 random_sample = "not enough stories"
-        for article in random_sample:
-            article['recommended'] = 0
         return random_sample
 
     def past_behavior(self):
