@@ -84,6 +84,8 @@ class recommender():
         all_articles = [a for b in articles for a in b]
         try: 
             random_sample = random.sample(all_articles, self.num_select)
+            for article in random_sample:
+                article['recommended'] = 0
         except ValueError:
             try:
                 newtry = self.num_more
@@ -126,8 +128,21 @@ class recommender():
         recommender_ids = [a for a, count in Counter(selection).most_common(self.num_recommender)]
         recommender_selection = [a for a in new_articles if a["_id"] in recommender_ids]
         num_random = self.num_select - len(recommender_selection)
-        random_list = [a for a in new_articles if a["_id"] not in recommender_ids]
-        random_selection = random.sample(random_list, num_random)
+        random_list = [a for a in new_articles if a["_id"] not in recommender_ids]             
+        try:
+            random_selection = random.sample(random_list, num_random)
+            for article in random_selection:
+                article['recommended'] = 0
+        except ValueError:
+            try:
+                newtry = self.num_more
+                articles = [self.doctype_last(s, num = newtry) for s in list_of_sources]
+                all_articles = [a for b in articles for a in b]
+                random_list = [a for a in all_articles if a["_id"] not in recommender_ids] 
+                random_selection = random.sample(random_list, self.num_select)
+            except:
+                random_selection = "not enough stories"
+                return(random_selection)
         for article in random_selection:
             article['recommended'] = 0
         for article in recommender_selection:
@@ -172,7 +187,20 @@ class recommender():
             article['recommended'] = 1
         num_random = self.num_select - len(recommender_selection)
         random_list = [a for a in new_articles if a["_id"] not in selection]
-        random_selection = random.sample(random_list, num_random)
+        try:
+            random_selection = random.sample(random_list, num_random)
+            for article in random_selection:
+                article['recommended'] = 0
+        except ValueError:
+            try:
+                newtry = self.num_more
+                articles = [self.doctype_last(s, num = newtry) for s in list_of_sources]
+                all_articles = [a for b in articles for a in b]
+                random_list = [a for a in all_articles if a["_id"] not in recommender_ids] 
+                random_selection = random.sample(random_list, self.num_select)
+            except:
+                random_selection = "not enough stories"
+                return(random_selection)
         for article in random_selection:
             article['recommended'] = 0
         final_list = random_selection + recommender_selection

@@ -49,7 +49,7 @@
 <h3 class='text-center'>{{title}}</h3>
       <p style="color: grey;" class = 'text-center'>{{moment(time).fromNow() }}</p>
      <p class='text-center'><b> {{teaser}}</b></p>
-<img src = {{image}}  width="350" height="250" hspace = "10" vspace = "10"  align="right">
+<img src = {{image}}  style="width: 50%; height: 50%" hspace = "10" vspace = "10"  align="right">
       {% for paragraph in text%}
       <p class='text-justify'> {{paragraph}} </p>
      {%endfor%}
