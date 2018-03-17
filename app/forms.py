@@ -41,7 +41,7 @@ class ChecklisteForm(FlaskForm):
         if not rv:                                                              
             return False                                                                                                       
         if len(self.example.data) > 2:                                          
-            self.example.errors.append('Let op! U kunt maximaal drie categoriÃ«n kiezen.')    
+            self.example.errors.append('Let op! U kunt maximaal drie opties kiezen.')    
             return False                                                        
         return True 
 

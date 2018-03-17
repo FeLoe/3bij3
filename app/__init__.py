@@ -20,9 +20,9 @@ login = LoginManager(app)
 bootstrap = Bootstrap(app)
 mail = Mail(app)
 moment = Moment(app)
-lda_model = gensim.models.LdaModel.load("/home/felicia/newsapp/app/testmodel")
-lda_dict = gensim.corpora.Dictionary.load("/home/felicia/newsapp/app/testmodel.dict")
-softcosine_model = gensim.models.Word2Vec.load("/home/felicia/newsapp/app/mymodel")
+lda_model = gensim.models.LdaModel.load("/home/felicia/3bij3/app/testmodel")
+lda_dict = gensim.corpora.Dictionary.load("/home/felicia/3bij3/app/testmodel.dict")
+softcosine_model = gensim.models.Word2Vec.load("/home/felicia/3bij3/app/mymodel")
 login.login_view = 'login'
 if not app.debug:
     if app.config['MAIL_SERVER']:
@@ -35,18 +35,18 @@ if not app.debug:
         mail_handler = SMTPHandler(
             mailhost = (app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
             fromaddr = 'no-reply@' + app.config['MAIL_SERVER'],
-            toaddrs = app.config['ADMINS'], subject= 'Nachrichtenseite Failure',
+            toaddrs = app.config['ADMINS'], subject= '3bij3 Failure',
             credentials=auth, secure=secure)
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
     if not os.path.exists('logs'):
         os.mkdir('logs')
-    file_handler = RotatingFileHandler('logs/nachrichtenseite.log', maxBytes=10240, backupCount=10)
+    file_handler = RotatingFileHandler('logs/3bij3.log', maxBytes=10240, backupCount=10)
     file_handler.setFormatter(logging.Formatter(
         '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
-    app.logger.info('Nachrichtenseite startup')
+    app.logger.info('3bij3 startup')
 
 from app import routes, models, errors, recommender

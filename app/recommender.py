@@ -27,7 +27,7 @@ class recommender():
         self.num_more = 100
         self.num_select = 9
         self.num_recommender = 6
-        self.textfield = "text"
+        self.textfield = "text_njr"
         self.teaserfield = "teaser"
         self.teaseralt = "teaser_rss"
         self.categories =  {"politiek":3, "sport":8, "economie":10}
@@ -109,7 +109,7 @@ class recommender():
         new_articles = [self.doctype_last(s) for s in list_of_sources]
         new_articles = [a for b in new_articles for a in b]
         articles_ids = [a["_id"] for a in new_articles]
-        corpus = [a["_source"]["text"].split() for a in new_articles]
+        corpus = [a["_source"][self.textfield].split() for a in new_articles]
         dictionary = Dictionary(corpus)
         tfidf = TfidfModel(dictionary=dictionary)
         similarity_matrix = softcosine_model.wv.similarity_matrix(dictionary, tfidf)
