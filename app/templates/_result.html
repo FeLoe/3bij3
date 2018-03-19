@@ -1,7 +1,6 @@
 <head><link rel="stylesheet"
       href="{{url_for('.static', filename='mystyle.css')}}"></head>
 
-<div>
 <h4><u><a href="{{url_for('show_detail', id = result.new_id)}}">{{ result._source.title }}</a></u></h4>
 {% if (result._source.teaser) and (result._source.teaser|length < 220) and (result._source.leaser|length > 0) %}
   <p> {{ result._source.teaser }} <a href= "{{url_for('show_detail', id = result.new_id)}}">Hele artikel lezen</a></p><br>
@@ -10,4 +9,3 @@
 {% else %}
   <p>{{ result._source.text_clean[:220]}}...<a href="{{url_for('show_detail', id = result.new_id)}}">Hele artikel lezen</a></p><br>
 {% endif %}
-</div>

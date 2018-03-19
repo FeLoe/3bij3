@@ -31,7 +31,7 @@ class MultiCheckboxField(SelectMultipleField):
     widget = widgets.ListWidget(prefix_label = False)
 
 class ChecklisteForm(FlaskForm):
-    list_of_files = ['politiek', 'economie', 'sport']
+    list_of_files = ['Binnenland', 'Buitenland', 'Economie', 'Milieu', 'Wetenschap en technologie', 'Immigratie en integratie', 'Justitie en Criminaliteit', 'Sport', 'Kunst, cultuur en entertainment', 'Anders/Diversen']
     files = [(x, x) for x in list_of_files]
     example = MultiCheckboxField('Label', choices=files)
     submit = SubmitField('Wijzigen')

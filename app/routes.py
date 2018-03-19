@@ -72,15 +72,15 @@ def newspage(show_again = False):
     form = ChecklisteForm()
     if form.validate_on_submit() and request.method == 'POST' :
         sel_categories = form.data["example"]
-        all_categories = ["sport", "economie", "politiek"]
-        categories_dict = {}
+        all_categories = ['Binnenland', 'Buitenland', 'Economie', 'Milieu', 'Wetenschap en technologie', 'Immigratie en integratie', 'Justitie en Criminaliteit', 'Sport', 'Kunst, cultuur en entertainment', 'Anders/Diversen']
+        categories = []
         for category in all_categories: 
             if category in sel_categories: 
-                categories_dict[category] = 1
+                categories.append(1)
             else:
-                categories_dict[category] = 0
-        category = Category(sport = categories_dict["sport"], economie = categories_dict["economie"], \
-                   politiek = categories_dict["politiek"], user_id = current_user.id)
+                categories.append(0)
+        category = Category(Binnenland = categories[0], Buitenland = categories[1], Economie = categories[2], Milieu = categories[3], Wetenschap = categories[4], \
+Immigratie = categories[5], Justitie = categories[6], Sport = categories[7], Entertainment = categories[8], Anders = categories[9],  user_id = current_user.id)
         db.session.add(category)
         db.session.commit()  
         return redirect(url_for('newspage')) 
@@ -89,25 +89,18 @@ def newspage(show_again = False):
     results = []
     if show_again == True:
         documents = last_seen()
-        for result in documents:
-            news_displayed = News(es_id = result["_id"], user_id = current_user.id, recommended = result['recommended'])
-            db.session.add(news_displayed)
-            db.session.commit()
-            result["new_id"] = news_displayed.id
-            result["_source"]["text_clean"] = re.sub(r'\|','', result["_source"]["text"])
-            results.append(result) 
     elif show_again == False:
         group = current_user.group
         documents = which_recommender()
         if documents == "not enough stories":
             return render_template('no_stories_error.html')
-        for result in documents:
-            news_displayed = News(es_id = result["_id"], user_id = current_user.id, recommended = result['recommended'])
-            db.session.add(news_displayed)
-            db.session.commit()
-            result["new_id"] = news_displayed.id
-            result["_source"]["text_clean"] = re.sub(r'\|','', result["_source"]["text"])
-            results.append(result) 
+    for result in documents:
+        news_displayed = News(es_id = result["_id"], user_id = current_user.id, recommended = result['recommended'])
+        db.session.add(news_displayed)
+        db.session.commit()
+        result["new_id"] = news_displayed.id
+        result["_source"]["text_clean"] = re.sub(r'\|','', result["_source"]["text"])
+        results.append(result) 
     session['start_time'] = datetime.utcnow()
     difference = time_logged_in()['difference']
     selected_news = number_read()['selected_news']
@@ -122,7 +115,7 @@ def which_recommender():
         if categories == None:
             method  = rec.random_selection()
         else:
-            method = rec.category_selection()
+            method = rec.category_selection_classifier()
     elif group == 2:
         selected_news = number_read()['selected_news']
         if selected_news < 3:
