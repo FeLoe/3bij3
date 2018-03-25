@@ -42,13 +42,7 @@ class recommender():
         self.textfield = "text_processed"
         self.teaserfield = "teaser"
         self.teaseralt = "teaser_rss"
-        self.lda_dict =  {"politiek":3, "sport":8, "economie":10}
-        self.categories_topics = ['Binnenland', 'Buitenland', 'Economie', 'Milieu', 'Wetenschap', 'Immigratie', 'Justitie', 'Sport', 'Entertainment', 'Anders']
-        self.classifier_dict = {1:['Economie'], 10:['Anders'], 12:['Justitie'], 13:['Binnenland'], 14:['Binnenland'], 15:['Economie'], \
-16:['Binnenland','Buitenland'], 17:['Wetenschap'], 18:['Buitenland'],19:['Buitenland'], 2:['Buitenland'], 20:['Binneland'], \
-21:['Binnenland'], 23:['Entertainment'], 24:['Binnenland'], 27:['Anders'], 28:['Anders'], 29:['Sport'], 3:['Binnenland'], 30:['Anders'], 
-31:['Anders'], 4:['Binnenland'], 5:['Binnenland','Economie'], 6:['Binnenland'], 7:['Milieu'], 8:['Milieu', 'Binnenland'], \
-9:[' Immigratie'], 99:['Anders']}
+        self.classifier_dict = {'Binnenland':['13','14','20', '3', '4', '5', '6'], 'Buitenland':['16', '19', '2'], 'Economie':['1','15'], 'Milieu':['8', '7'],  'Wetenschap':['17'], 'Immigratie':['9'],  'Justitie':['12'], 'Sport':['29'], 'Entertainment':['23'], 'Anders':['10','99']}
 
     def get_selected(self):
         user = User.query.get(current_user.id)
@@ -179,23 +173,24 @@ class recommender():
         '''
         #Get the categories the user selected last
         categories = Category.query.filter_by(user_id = current_user.id).order_by(desc(Category.id)).first().__dict__
-        categories = [c for c in self.categories_topics if categories[c] == 1]
-        print(categories)
+        categories = [c for c in self.classifier_dict.keys() if categories[c] == 1]
         #Retrieve new articles, make one list containing the processed texts and one of all the ids and zip them into a dict
         new_articles = [self.doctype_last(s) for s in list_of_sources]
         new_articles = [a for b in new_articles for a in b]
-        text = [a["_source"][self.textfield] for a in new_articles]
+        texts = [' '.join(a["_source"][self.textfield]) for a in new_articles]
         article_ids = [a["_id"] for a in new_articles]
-        ids_text = dict(zip(article_ids, text))
 
         #Determine the article topic (or topics) by vectorizing the article (tfidf), predicting the topic with the classifier and putting the article id and the category (retrieved by looking up the topic in the classifier_dict) in a tuple, appending it to the overall list
         article_topic = []
-        for article_id, text in ids_text.items():
-            tfidf_vectorizer = vectorizer
-            tfidf_article = tfidf_vectorizer.transform([''.join(text)])
-            topic = classifier.predict(tfidf_article)
-            topic_category = self.classifier_dict[topic]
-            article_topic.append((article_id, topic_category))
+        print(len(vectorizer.vocabulary_))
+        tfidf_articles = vectorizer.transform(texts)
+        topics = classifier.predict(tfidf_articles)
+        topic_category = []
+        for key, value in self.classifier_dict.items():
+            for t in topics:
+                if t in value:   
+                    topic_category.append(key)       
+        article_topic = zip(article_ids, topic_category)
             
         #Determine how many articles per topic will be retrieved (dependent on the number of categories selected) 
         selection = []
@@ -250,15 +245,15 @@ class recommender():
         '''
         #Get the categories the user selected last
         categories = Category.query.filter_by(user_id = current_user.id).order_by(desc(Category.id)).first().__dict__
-        categories_topics = self.lda_dict
         
         #Retrieve the numbers the selected categories have in the lda model
-        categories = [c for c in self.categories_topics if categories[c] == 1]
+        categories = [c for c in self.classifier_dict.keys() if categories[c] == 1]
         
         #Retrieve new articles, build one corpus (containing the processed texts) and a list of all the ids and zip them into a dict
         new_articles = [self.doctype_last(s) for s in list_of_sources]
         new_articles = [a for b in new_articles for a in b]
         corpus = [a["_source"][self.textfield] for a in new_articles]
+        lda_dict = Dictionary(corpus)
         article_ids = [a["_id"] for a in new_articles]
         ids_text = dict(zip(article_ids, corpus))
         

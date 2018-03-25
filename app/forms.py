@@ -57,7 +57,7 @@ class ResetPasswordForm(FlaskForm):
 
 class SurveyForm(FlaskForm):
     gender = RadioField('Wat is uw geslacht?',
-        choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Ik geef liever geen antwoord')],validators=[DataRequired()], default=None)
+        choices=[('M', 'Man'), ('V', 'Vrouw'), ('O', 'Ik geef liever geen antwoord')],validators=[DataRequired()], default=None)
     age = IntegerField('In welk jaar bent u geboren?', validators=[DataRequired(), InputRequired(), Length(min = 4, max = 4, message = "Geef een geldig geboortejaar op"), NumberRange(min = 1918, max = 2002, message = "Geef een geldig geboortejaar op")])
     education = RadioField('Wat is uw hoogst behaalde opleidingsniveau?',
         choices=[('1', 'Geen onderwijs / basisonderwijs / lagere school'),

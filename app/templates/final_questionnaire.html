@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-
+<div class = "container-fluid">
 <form action="" method = "post">
-     <p>{{ form.hidden_tag() }}</div>
+     <p>{{ form.hidden_tag() }}</p>
      <p>{{ form.gender.label }}</p>
-     <p>{{ form.gender (class = "list-unstyled")}}</p>
+     <p>{{ form.gender (class_ = "list-unstyled")}}</p>
      <p>{{ form.age.label }}<br></p>
      <p>{{ form.age }}<br></p>
      <p>&nbsp;</p>
      <p>{{ form.education.label }}</p>
-     <p>{{ form.education (class = "list-unstyled")}}</p>
-<button {{ form.submit (class="btn btn-info btn-large center")}}></button>
+     <p>{{ form.education (class_ = "list-unstyled")}}</p>
+<button>{{ form.submit (class="btn btn-info btn-large center")}}Afzenden</button>
 </form>
-
+</div>
 {% endblock %}

@@ -41,9 +41,16 @@ class User(UserMixin, db.Model):
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key =True)
-    sport = db.Column(db.Integer)
-    politiek = db.Column(db.Integer)
-    economie = db.Column(db.Integer)
+    Binnenland = db.Column(db.Integer)
+    Buitenland = db.Column(db.Integer)
+    Economie = db.Column(db.Integer)
+    Milieu=db.Column(db.Integer)
+    Wetenschap=db.Column(db.Integer)
+    Immigratie=db.Column(db.Integer)
+    Justitie=db.Column(db.Integer)
+    Sport=db.Column(db.Integer)
+    Entertainment=db.Column(db.Integer)
+    Anders=db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 

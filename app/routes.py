@@ -68,7 +68,7 @@ def register():
 @app.route('/', methods = ['GET', 'POST'])
 @app.route('/homepage', methods = ['GET', 'POST'])
 @login_required 
-def newspage(show_again = False):
+def newspage(show_again = 'False'):
     form = ChecklisteForm()
     if form.validate_on_submit() and request.method == 'POST' :
         sel_categories = form.data["example"]
@@ -85,11 +85,16 @@ Immigratie = categories[5], Justitie = categories[6], Sport = categories[7], Ent
         db.session.commit()  
         return redirect(url_for('newspage')) 
     elif not form.validate_on_submit() and request.method == 'POST':
-        show_again = True
+        show_again = 'True'
     results = []
-    if show_again == True:
+    parameter = request.args.to_dict()
+    try:
+        show_again = parameter['show_again']
+    except KeyError:
+        shwo_again = "False"
+    if show_again == 'True':
         documents = last_seen()
-    elif show_again == False:
+    elif show_again == 'False':
         group = current_user.group
         documents = which_recommender()
         if documents == "not enough stories":
