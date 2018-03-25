@@ -10,7 +10,8 @@ import os
 from flask_mail import Mail
 from flask_moment import Moment
 import gensim
-
+import pickle
+import joblib
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -20,9 +21,11 @@ login = LoginManager(app)
 bootstrap = Bootstrap(app)
 mail = Mail(app)
 moment = Moment(app)
-lda_model = gensim.models.LdaModel.load("/home/felicia/3bij3/app/testmodel")
-lda_dict = gensim.corpora.Dictionary.load("/home/felicia/3bij3/app/testmodel.dict")
+#lda_model = gensim.models.LdaModel.load("/home/felicia/3bij3/app/testmodel")
+#lda_dict = gensim.corpora.Dictionary.load("/home/felicia/3bij3/app/testmodel.dict")
 softcosine_model = gensim.models.Word2Vec.load("/home/felicia/3bij3/app/mymodel")
+classifier = joblib.load(open('/home/felicia/3bij3/app/topic_classifier.pkl', 'rb'))
+vectorizer = joblib.load(open('/home/felicia/3bij3/app/vectorizer.pkl', 'rb'))
 login.login_view = 'login'
 if not app.debug:
     if app.config['MAIL_SERVER']:
