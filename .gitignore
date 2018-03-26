@@ -5,6 +5,14 @@ venv/
 app.db
 /migrations
 
+#Models
+*.pkl
+mymodel
+
+#pyc files and pycache
+*.pyc
+__pycache__/
+
 #logs 
 /logs
 
@@ -60,3 +68,4 @@ target/
 *~
 \#*
 *.bak
+

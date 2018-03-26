@@ -56,14 +56,14 @@ class Category(db.Model):
 
 class News(db.Model):
     id = db.Column(db.Integer, primary_key = True) 
-    es_id = db.Column(db.String(140))
+    elasticsearch = db.Column(db.String(140))
     recommended = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 class News_sel(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    news_id = db.Column(db.Integer, db.ForeignKey('news.es_id'))
+    news_id = db.Column(db.String(140))
     starttime = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     endtime = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     time_spent = db.Column(db.Interval)

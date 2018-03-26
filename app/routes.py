@@ -17,8 +17,8 @@ host = "http://localhost:9200"
 indexName = "inca"
 es = Elasticsearch(host)
 rec = recommender()
-day_min = 0
-story_min = 0
+day_min = 7
+story_min = 30
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -91,7 +91,7 @@ Immigratie = categories[5], Justitie = categories[6], Sport = categories[7], Ent
     try:
         show_again = parameter['show_again']
     except KeyError:
-        shwo_again = "False"
+        show_again = "False"
     if show_again == 'True':
         documents = last_seen()
     elif show_again == 'False':
@@ -100,7 +100,7 @@ Immigratie = categories[5], Justitie = categories[6], Sport = categories[7], Ent
         if documents == "not enough stories":
             return render_template('no_stories_error.html')
     for result in documents:
-        news_displayed = News(es_id = result["_id"], user_id = current_user.id, recommended = result['recommended'])
+        news_displayed = News(elasticsearch = result["_id"], user_id = current_user.id, recommended = result['recommended'])
         db.session.add(news_displayed)
         db.session.commit()
         result["new_id"] = news_displayed.id
@@ -135,7 +135,7 @@ def which_recommender():
  
 def last_seen():
     news = News.query.filter_by(user_id = current_user.id).order_by(desc(News.id)).limit(9)
-    news_ids = [item.es_id for item in news]
+    news_ids = [item.elasticsearch for item in news]
     recommended = [item.recommended for item in news]
     id_rec = zip(news_ids, recommended)
     news_last_seen = []
@@ -151,7 +151,7 @@ def last_seen():
 @login_required
 def show_detail(id):
      selected = News.query.filter_by(id = id).first()
-     es_id = selected.es_id
+     es_id = selected.elasticsearch
      doc = es.search(index=indexName,
                   body={"query":{"term":{"_id":es_id}}}).get('hits',{}).get('hits',[""])
      for item in doc:
@@ -183,7 +183,7 @@ def show_detail(id):
          starttime= session.pop('start_time', None)
          endtime = datetime.utcnow()
          time_spent = endtime - starttime
-         news_selected = News_sel(news_id = selected.es_id, user_id =current_user.id, rating = stars, 
+         news_selected = News_sel(news_id = selected.elasticsearch, user_id =current_user.id, rating = stars, 
 starttime=starttime, endtime=endtime, time_spent = time_spent)
          db.session.add(news_selected)
          db.session.commit()

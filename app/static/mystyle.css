@@ -148,7 +148,8 @@
             border-radius: 8px;
 }
 
-.articleLink{
+.articleLink,
+.articleLink:hover{
     color: black; 
     text-decoration: none;
 }
