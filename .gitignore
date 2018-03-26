@@ -76,3 +76,4 @@ target/
 \#*
 *.bak
 
+*testmodel*
