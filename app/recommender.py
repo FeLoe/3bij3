@@ -12,15 +12,18 @@ from collections import Counter, defaultdict
 from operator import itemgetter
 from sqlalchemy import desc
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+import logging
 
 #Connect with elasticsearch, specify the name of the index and the sources that should be included
+
+logger = logging.getLogger(__name__)
 
 host = "http://localhost:9200"
 indexName = "inca"
 es = Elasticsearch(host, timeout = 60)
 list_of_sources = ["ad (www)", "bd (www)", "telegraaf (www)", "volkskrant (www)", "nu"]
 
-
+logger.debug('Das ist elasticsearch {}'.format(es))
 
 class recommender():
 
@@ -58,7 +61,7 @@ class recommender():
         user = User.query.get(current_user.id)
         selected_articles = self.get_selected()
         displayed_articles = user.displayed_news.all()
-        displayed_ids = [a.es_id for a in displayed_articles]
+        displayed_ids = [a.elasticsearch for a in displayed_articles]
         docs = es.search(index=indexName,
                   body={
                       "sort": [
@@ -74,6 +77,7 @@ class recommender():
                           }
                       }}).get('hits',{}).get('hits',[""])
         final_docs = []
+        logger.debug(docs)
         for doc in docs: 
             try:
                 text = doc["_source"][self.textfield]
