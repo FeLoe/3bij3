@@ -16,6 +16,13 @@ __pycache__/
 #logs 
 /logs
 
+#certificates
+certs/
+
+#environment files
+
+.env
+
 # Distribution / packaging
 .Python
 env/
