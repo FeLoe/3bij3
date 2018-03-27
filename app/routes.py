@@ -104,7 +104,10 @@ Immigratie = categories[5], Justitie = categories[6], Sport = categories[7], Ent
         db.session.add(news_displayed)
         db.session.commit()
         result["new_id"] = news_displayed.id
-        result["_source"]["text_clean"] = re.sub(r'\|','', result["_source"]["text"])
+        text_clean = re.sub(r'\|','', result["_source"]["text"])
+        if text_clean.startswith('artikel '):
+            text_clean = text_clean[8:]
+        result["_source"]["text_clean"] = text_clean
         results.append(result) 
     session['start_time'] = datetime.utcnow()
     difference = time_logged_in()['difference']
