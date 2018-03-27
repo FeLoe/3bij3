@@ -1,7 +1,15 @@
 <head><link rel="stylesheet"
       href="{{url_for('.static', filename='mystyle.css')}}"></head>
 
-<h5><b><a  href="{{url_for('show_detail', id = result.new_id)}}" class="articleLink">{{ result._source.title }}</a></b></h5>
+{% if (result._source.title|length > 100) %}
+{% set title_list = result._source.title.split('.') %}
+{% set title_list = title_list[0].split('!') %}
+{% set title_list = title_list[0].split('?') %}
+{% set title_list = title_list[0].split(':') %}
+  <h5><b><a  href="{{url_for('show_detail', id = result.new_id)}}" class="articleLink">{{title_list[0]}}</a></b></h5>
+{% else %}
+  <h5><b><a  href="{{url_for('show_detail', id = result.new_id)}}" class="articleLink">{{ result._source.title }}</a></b></h5>
+{% endif %}
 {% if (result._source.teaser) and (result._source.teaser|length < 100) and (result._source.leaser|length > 0) %}
   <p><a  href="{{url_for('show_detail', id = result.new_id)}}" class="articleLink"> {{ result._source.teaser }} </a><a href="{{url_for('show_detail', id = result.new_id)}}" >Hele artikel lezen</a></p><br>
 {% elif (result._source.teaser) and (result._source.teaser|length > 100) %}
