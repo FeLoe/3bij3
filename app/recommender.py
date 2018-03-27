@@ -152,6 +152,7 @@ class recommender():
             recommender_selection = [a for a in new_articles if a["_id"] in recommender_ids]
         except:
             recommender_selection = []
+            recommender_ids = []
         #Mark the selected articles as recommended, select random articles from the non-recommended articles (and get more if not enough unseen articles available), put the two lists together, randomize the ordering and return them 
         num_random = self.num_select - len(recommender_selection)
         random_list = [a for a in new_articles if a["_id"] not in recommender_ids]             
