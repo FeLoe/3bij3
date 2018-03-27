@@ -105,8 +105,10 @@ Immigratie = categories[5], Justitie = categories[6], Sport = categories[7], Ent
         db.session.commit()
         result["new_id"] = news_displayed.id
         text_clean = re.sub(r'\|','', result["_source"]["text"])
-        if text_clean.startswith('artikel '):
-            text_clean = text_clean[8:]
+        if text_clean.startswith(('artikel ', 'live ')):
+            text_clean = text_clean.split(' ', 1)[1]
+        elif re.match('[A-Z]*? - ', text_clean):
+            text_clean = re.sub('[A-Z]*? - ', '', text_clean)
         result["_source"]["text_clean"] = text_clean
         results.append(result) 
     session['start_time'] = datetime.utcnow()
