@@ -114,11 +114,11 @@
 	<span class="icon-bar"></span>
 	<span class="icon-bar"></span>
       </button>
-      <a href="#" class="navbar-left"><img src="/static/logo_3bij3.png" style="width: 108px; height: 93px; padding-top: 10px;"></a>
+      <a href="#" class="navbar-left"><img src="/static/logo_3bij3.png" style="width: 80px; height: 70px; padding-top: 8px;"></a>
     </div>
     <div class = "collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav navbar-right">
-        {% if (difference >= 0) and (selected_news > 0) %}
+        {% if (difference >= 7) and (selected_news > 30) %}
         <li><a href="{{ url_for('final_form') }}" style="color:#ffffff;font-size:16px;">Studie afsluiten</a></li>
         {% endif %} 
 	{% if current_user.is_anonymous %}

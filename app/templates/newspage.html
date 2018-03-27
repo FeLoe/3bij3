@@ -10,9 +10,6 @@
 {% endblock %}
 <div class = "container-fluid">
       <div class="col-lg-12 text-center">
-         <h1>Nieuws</h1>
-      </div>
-      <br/>
       {% if current_user.group == 1 %}
       <form action="" method = "post">
          {{ form.hidden_tag() }}

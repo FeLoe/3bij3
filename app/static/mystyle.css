@@ -1,11 +1,10 @@
 .navbar {
     background-color: #990000;
-    min-height: 100px;
 }
 .navbar .navbar-brand {
-      padding: 10px;
-      height: 100px;
-      line-height: 100px;
+      padding: 8px;
+      height: 60px;
+      line-height: 60px;
       color: #ffffff;
       font-size: 50px;
 }
@@ -56,15 +55,15 @@
 
 .navbar-toggle {
   /* (80px - button height 34px) / 2 = 23px */
-  margin-top: 33px;
+  margin-top: 25px;
   padding: 9px 10px !important;
 }
 
 @media (min-width: 768px) {
   .navbar-nav > li > a {
     /* (80px - line-height of 27px) / 2 = 26.5px */
-    padding-top: 35px;
-    padding-bottom: 35px;
+    padding-top: 24px;
+    padding-bottom: 24px;
     line-height: 30px;
   }
 }
@@ -77,13 +76,18 @@
             border-radius: 8px;
 }
 
-
+.container-fluid { 
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-bottom: 40px;
+    padding-top: 4px;
+}
 
 .square {
     float:left;
     position: relative;
     width: 32%;
-    padding-bottom : 27%;
+    padding-bottom : 19%;
     margin:0.5%;
     background-color:#e6f2ff;
     overflow:hidden;
@@ -93,8 +97,8 @@
     position:absolute;
     height:90%;
     width:90%;
-    padding-left: 12%;
-    padding-top: 10%
+    padding-left: 8%;
+    padding-top: 5%
 }
 
 .table{

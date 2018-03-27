@@ -22,9 +22,10 @@
 <h3 class='text-center'>{{title}}</h3>
       <p style="color: grey;" class = 'text-center'>{{moment(time).fromNow() }}</p>
      <p class='text-center'><b> {{teaser}}</b></p>
-<img src = {{image}}  style="width: 50%; height: 50%" hspace = "10" vspace = "10"  align="right">
+<img src = {{image}}  style="width: 50%; height: 50%; margin-left:25px; margin-bottom:25px"  align="right">
       {% for paragraph in text%}
-      <p class='text-justify'> {{paragraph}} </p>
+<p class='text-justify'> {{paragraph}} </p>
+<br style="line-height: 9px" />
      {%endfor%}
 {% else %}
 <div class="col-md-12">
