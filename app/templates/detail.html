@@ -14,39 +14,37 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 {% endblock %}
-
-
-{% if image != [] %}
-<div class="col-md-12">
-<div class='col-md-10'>
+<div class="container-fluid">
+<div class="row">
+  <div class="col-md-3"></div>
+<div class="col-md-6">
 <h3 class='text-center'>{{title}}</h3>
       <p style="color: grey;" class = 'text-center'>{{moment(time).fromNow() }}</p>
-     <p class='text-center'><b> {{teaser}}</b></p>
-<img src = {{image}}  style="width: 50%; height: 50%; margin-left:25px; margin-bottom:25px"  align="right">
-      {% for paragraph in text%}
+<p class='text-center'><b> {{teaser}}</b></p>
+{% if image != [] %}
+<img src = {{image}}  class="img-responsive" style="margin-bottom:25px">
+{% endif %}
+{% if text |length > 1 %}
+      {% for paragraph in text[:-1]%}
 <p class='text-justify'> {{paragraph}} </p>
 <br style="line-height: 9px" />
-     {%endfor%}
-{% else %}
-<div class="col-md-12">
-<div class="col-md-10">
-<h3 class = 'text-center' >{{title}}</h3>
-<p style="color: grey;" class = 'text-center'>{{moment(time).fromNow() }}</p>
-<p class = 'text-center'><b> {{teaser}}</b></p>
-{%if text|join(' ')|length > 500 %}
-<p class = "twoColumns text-justify" > {{text|join(' ')}} </p>
-{%else %}
-<p> {{text|join(' ')}} </p>
-{%endif%}
-
-
-{%endif %}
+{% endfor %}
+<p class='text-justify'>{{text[-1]}}</p>
+{%else%}
+      {% for paragraph in text%}
+<p class='text-justify'> {{paragraph}} </p>
+{% endfor %}
+{% endif %}
+</div>
+</div>
+</div>
 
 <form action="" method = "post">
    {{ form.hidden_tag() }}
-<div class="container">
+<div class="container-fluid">
   <div class="row">
-<div class="col-md-10">
+      <div class="col-md-3"></div>
+<div class="col-md-6">
       <div class="text-center">
 	<div class="star-rating">
 	  Hoe relevant was dit artikel voor u?<br>
@@ -56,7 +54,7 @@
         <span class="fa fa-star-o fa-2x" data-rating="4"></span>
         <span class="fa fa-star-o fa-2x" data-rating="5"></span><br>
         <input type="hidden" id="rating" name="rating" class="rating-value" value="0">
-	<button type="submit" id="rating1" name="submitBtn" class="btn btn-info btn-xlarge center">Submit</button>
+	<button type="submit" id="rating1" name="submitBtn" class="btn btn-info btn-xlarge center" onclick="submitFormOkay = true;">Submit</button>
 </form>
 </div>	
     </div>
@@ -88,7 +86,15 @@ $star_rating.on('click', function() {
 SetRatingStar();
 </script>
 
-
+<script>
+  var submitFormOkay = false;
+  
+window.onbeforeunload = function () {
+    if (!submitFormOkay) {
+        return true;
+  }
+  }
+  </script>
 
 {% endblock %}
 
