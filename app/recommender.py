@@ -130,22 +130,28 @@ class recommender():
         corpus = [a["_source"][self.textfield] for a in new_articles]
         dictionary = Dictionary(corpus)
         tfidf = TfidfModel(dictionary=dictionary)
-        similarity_matrix = softcosine_model.wv.similarity_matrix(dictionary, tfidf)
-        index = SoftCosineSimilarity(tfidf[[dictionary.doc2bow(d) for d in corpus]],similarity_matrix)  
+        try:
+            similarity_matrix = softcosine_model.wv.similarity_matrix(dictionary, tfidf)
+            index = SoftCosineSimilarity(tfidf[[dictionary.doc2bow(d) for d in corpus]],similarity_matrix)  
 
         #Get the three most similar new articles for each past article and store their ids in a list                
-        selection = []
-        ids = []
-        for text in query_generator:
-            sims = index[text]
-            dict_ids = dict(zip(sims, articles_ids))
-            for i in range(3):
-                selection.append(dict_ids[sims[i]])
-
+            selection = []
+            ids = []
+            for text in query_generator:
+                sims = index[text]
+                dict_ids = dict(zip(sims, articles_ids))
+                try:
+                    for i in range(3):
+                        selection.append(dict_ids[sims[i]])
+                except:
+                    length = len(sims)
+                    for i in range(length):
+                        selection.append(dict_ids[sims[i]])
         #Use a counter to determine the most frequently named articles and take the first ones (specified by variable)
-        recommender_ids = [a for a, count in Counter(selection).most_common(self.num_recommender)]
-        recommender_selection = [a for a in new_articles if a["_id"] in recommender_ids]
-
+            recommender_ids = [a for a, count in Counter(selection).most_common(self.num_recommender)]
+            recommender_selection = [a for a in new_articles if a["_id"] in recommender_ids]
+        except:
+            recommender_selection = []
         #Mark the selected articles as recommended, select random articles from the non-recommended articles (and get more if not enough unseen articles available), put the two lists together, randomize the ordering and return them 
         num_random = self.num_select - len(recommender_selection)
         random_list = [a for a in new_articles if a["_id"] not in recommender_ids]             

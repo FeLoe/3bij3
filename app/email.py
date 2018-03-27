@@ -12,7 +12,7 @@ def send_email(subject, sender, recipients, text_body, html_body):
 
 def send_password_reset_email(user):
     token = user.get_reset_password_token()
-    send_email('(Nieuwspagina) Wachtwoord opnieuw instellen',
+    send_email('(3bij3) Wachtwoord opnieuw instellen',
                sender=app.config['ADMINS'][0],
                recipients=[user.email],
                text_body=render_template('email/reset_password.txt',
