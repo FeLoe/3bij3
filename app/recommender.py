@@ -6,13 +6,9 @@ import random
 from collections import Counter, defaultdict
 from operator import itemgetter
 from sqlalchemy import desc
-from sklearn.feature_extraction.text import TfidfVectorizer
-import logging
 from gensim.models import TfidfModel
 
 #Connect with elasticsearch, specify the name of the index and the sources that should be included
-
-logger = logging.getLogger(__name__)
 
 host = "http://localhost:9200"
 indexName = "inca"
@@ -167,24 +163,13 @@ class recommender():
         '''
         #Get the categories the user selected last
         categories = Category.query.filter_by(user_id = current_user.id).order_by(desc(Category.id)).first().__dict__
-        categories = [c for c in self.classifier_dict.keys() if categories[c] == 1]
+        sel_categories = []
+        for key, value in self.classifier_dict.items():
+            if categories[key] == 1:
+                sel_categories.append(value)
         #Retrieve new articles, make one list containing the processed texts and one of all the ids and zip them into a dict
         new_articles = [self.doctype_last(s) for s in list_of_sources]
         new_articles = [a for b in new_articles for a in b]
-        texts = [' '.join(a["_source"][self.topictextfield]) for a in new_articles]
-        article_ids = [a["_id"] for a in new_articles]
-
-        #Determine the article topic (or topics) by vectorizing the article (tfidf), predicting the topic with the classifier and putting the article id and the category (retrieved by looking up the topic in the classifier_dict) in a tuple, appending it to the overall list
-        article_topic = []
-        tfidf_articles = vectorizer.transform(texts)
-        topics = classifier.predict(tfidf_articles)
-        topic_category = []
-        for key, value in self.classifier_dict.items():
-            for t in topics:
-                if t in value:   
-                    topic_category.append(key)       
-        article_topic = zip(article_ids, topic_category)
-            
         #Determine how many articles per topic will be retrieved (dependent on the number of categories selected) 
         selection = []
         if len(categories) == 1: 
@@ -195,15 +180,15 @@ class recommender():
             num_category_select = 2
 
         #For each selected category retrieve the articles that fit this category (and randomly select if the list is longer than needed) and fill the rest with random articles (could also be more than normally as some topics might not appear in the article selection often enough)
-        for category in categories:
-            category_selection = []
-            for item in article_topic:
-                if category in item[1]:
-                    category_selection.append(item[0])
-            if len(category_selection) > num_category_select:
-                category_selection = random.sample(category_selection, num_category_select)
-            for a_id in category_selection:
-                selection.append(a_id)
+        category_selection = []
+        for category in sel_categories:
+            for item in new_articles:
+                if item['_source']['topic'] in category:
+                    category_selection.append(item["_id"])
+        if len(category_selection) > num_category_select:
+            category_selection = random.sample(category_selection, num_category_select)
+        for a_id in category_selection:
+            selection.append(a_id)
 
         #Mark the selected articles as recommended, select random articles from the non-recommended articles (and get more if not enough unseen articles available), put the two lists together, randomize the ordering and return them        
         recommender_selection = [a for a in new_articles if a["_id"] in selection]

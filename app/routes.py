@@ -69,8 +69,6 @@ def register():
 @app.route('/homepage', methods = ['GET', 'POST'])
 @login_required 
 def newspage(show_again = 'False'):
-    group = current_user.group
-    print(group)
     form = ChecklisteForm()
     if form.validate_on_submit() and request.method == 'POST' :
         sel_categories = form.data["example"]
@@ -111,6 +109,12 @@ Immigratie = categories[5], Justitie = categories[6], Sport = categories[7], Ent
             text_clean = text_clean.split(' ', 1)[1]
         elif re.match('[A-Z]*? - ', text_clean):
             text_clean = re.sub('[A-Z]*? - ', '', text_clean)
+        try:
+            teaser = result["_source"]["teaser"]
+        except:
+            teaser = result["_source"]["teaser_rss"]
+        teaser = re.sub('[A-Z]*? - ', '', teaser)
+        result["_source"]["teaser"] = teaser    
         result["_source"]["text_clean"] = text_clean
         results.append(result) 
     session['start_time'] = datetime.utcnow()
