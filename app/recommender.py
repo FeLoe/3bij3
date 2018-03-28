@@ -1,18 +1,14 @@
-from app import softcosine_model, classifier, vectorizer
+from app import classifier, vectorizer, dictionary, index, article_ids
 from flask_login import current_user
 from app.models import User, News, News_sel, Category
 from elasticsearch import Elasticsearch
 import random
-import gensim
-from gensim.corpora import Dictionary
-from gensim.models import TfidfModel
-from gensim.models import Word2Vec
-from gensim.similarities import SoftCosineSimilarity
 from collections import Counter, defaultdict
 from operator import itemgetter
 from sqlalchemy import desc
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 import logging
+from gensim.models import TfidfModel
 
 #Connect with elasticsearch, specify the name of the index and the sources that should be included
 
@@ -22,8 +18,6 @@ host = "http://localhost:9200"
 indexName = "inca"
 es = Elasticsearch(host, timeout = 60)
 list_of_sources = ["ad (www)", "bd (www)", "telegraaf (www)", "volkskrant (www)", "nu"]
-
-logger.debug('Das ist elasticsearch {}'.format(es))
 
 class recommender():
 
@@ -117,44 +111,34 @@ class recommender():
 
     def past_behavior(self):
         '''
-        Recommends articles based on the stories the user has selected in the past, using CosineSimilarity
+        Recommends articles based on the stories the user has selected in the past, using SoftCosineSimilarity
         '''
         #get newest articles, list ids, make corpus (+dictionary, + similarity_matrix) and finally index (against which the query is run)
-        new_articles = [self.doctype_last(s) for s in list_of_sources]
-        new_articles = [a for b in new_articles for a in b]
-        if len(new_articles) < self.num_select:
-            newtry = self.num_more
-            new_articles = [self.doctype_last(s, num = newtry) for s in list_of_sources]
-            if len(new_articles) < self.num_select:
-                new_articles = "not enough stories"
-                return new_articles
-        articles_ids = [a["_id"] for a in new_articles]
-        corpus = [a["_source"][self.textfield].split() for a in new_articles]
-        dictionary = Dictionary(corpus)
         tfidf = TfidfModel(dictionary=dictionary)
-        similarity_matrix = softcosine_model.wv.similarity_matrix(dictionary, tfidf, threshold = 0.4, nonzero_limit = 200)
-        index = SoftCosineSimilarity(tfidf[[dictionary.doc2bow(d) for d in corpus]],similarity_matrix, num_best = 3)  
-
-        #retrieve past articles and append their processed text to the query list
         docs = self.get_selected()
         query_list = [a for a in docs]
+        query_ids = [a['_id'] for a in query_list]
         query_generator = [tfidf[dictionary.doc2bow(n['_source'][self.textfield].split())] for n in query_list]
         query_generator = (item for item in query_generator)
-                                
+        new_articles = es.search(index=indexName,
+            body={"query":{"terms":{"_id":article_ids}}}).get('hits',{}).get('hits',[""])                        
         #Get the three most similar new articles for each past article and store their ids in a list                
         selection = []
         ids = []
         for text in query_generator:
             sims = index[text]
-            dict_ids = dict(zip(sims, articles_ids))
+            sims_ids = list(zip(sims, article_ids))
+            sims_ids = [n for n in sims_ids if n[1] not in query_ids]
+            new_sims_ids = [n[1] for n in sims_ids]
+            sims_ids = sorted(enumerate(sims_ids), key=lambda item: -item[0])
             for i in range(3):
-                selection.append(dict_ids[sims[i]])
+                selection.append(sims_ids[i][1])
         #Use a counter to determine the most frequently named articles and take the first ones (specified by variable)
         recommender_ids = [a for a, count in Counter(selection).most_common(self.num_recommender)]
         recommender_selection = [a for a in new_articles if a["_id"] in recommender_ids]
         #Mark the selected articles as recommended, select random articles from the non-recommended articles (and get more if not enough unseen articles available), put the two lists together, randomize the ordering and return them 
         num_random = self.num_select - len(recommender_selection)
-        random_list = [a for a in new_articles if a["_id"] not in recommender_ids]             
+        random_list = [a for a in new_articles if a["_id"] not in recommender_ids and a["_id"] not in query_ids]             
         try:
             random_selection = random.sample(random_list, num_random)
             for article in random_selection:
@@ -192,7 +176,6 @@ class recommender():
 
         #Determine the article topic (or topics) by vectorizing the article (tfidf), predicting the topic with the classifier and putting the article id and the category (retrieved by looking up the topic in the classifier_dict) in a tuple, appending it to the overall list
         article_topic = []
-        print(len(vectorizer.vocabulary_))
         tfidf_articles = vectorizer.transform(texts)
         topics = classifier.predict(tfidf_articles)
         topic_category = []

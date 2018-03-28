@@ -12,6 +12,7 @@ from flask_moment import Moment
 import gensim
 import pickle
 import joblib
+from gensim.similarities import SoftCosineSimilarity
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -23,7 +24,9 @@ mail = Mail(app)
 moment = Moment(app)
 #lda_model = gensim.models.LdaModel.load("/home/felicia/3bij3/app/testmodel")
 #lda_dict = gensim.corpora.Dictionary.load("/home/felicia/3bij3/app/testmodel.dict")
-softcosine_model = gensim.models.Word2Vec.load("/home/felicia/3bij3/app/mymodel")
+dictionary = gensim.corpora.Dictionary.load("/home/felicia/index.dict")
+index = SoftCosineSimilarity.load('/home/felicia/SimIndex.index')
+article_ids = pickle.load(open('/home/felicia/sim_list.txt', 'rb'))
 classifier = joblib.load(open('/home/felicia/3bij3/app/topic_classifier.pkl', 'rb'))
 vectorizer = joblib.load(open('/home/felicia/3bij3/app/vectorizer.pkl', 'rb'))
 login.login_view = 'login'

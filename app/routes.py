@@ -69,6 +69,8 @@ def register():
 @app.route('/homepage', methods = ['GET', 'POST'])
 @login_required 
 def newspage(show_again = 'False'):
+    group = current_user.group
+    print(group)
     form = ChecklisteForm()
     if form.validate_on_submit() and request.method == 'POST' :
         sel_categories = form.data["example"]
