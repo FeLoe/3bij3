@@ -132,8 +132,8 @@ class recommender():
         corpus = [a["_source"][self.textfield].split() for a in new_articles]
         dictionary = Dictionary(corpus)
         tfidf = TfidfModel(dictionary=dictionary)
-        similarity_matrix = softcosine_model.wv.similarity_matrix(dictionary, tfidf)
-        index = SoftCosineSimilarity(tfidf[[dictionary.doc2bow(d) for d in corpus]],similarity_matrix)  
+        similarity_matrix = softcosine_model.wv.similarity_matrix(dictionary, tfidf, threshold = 0.4, nonzero_limit = 200)
+        index = SoftCosineSimilarity(tfidf[[dictionary.doc2bow(d) for d in corpus]],similarity_matrix, num_best = 3)  
 
         #retrieve past articles and append their processed text to the query list
         docs = self.get_selected()
