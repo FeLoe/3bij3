@@ -1,9 +1,9 @@
 from flask import render_template, flash, redirect, url_for, request, make_response, session
-from app import app, db
+from app import app, db, mail
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, News, News_sel, Category
 from werkzeug.urls import url_parse
-from app.forms import RegistrationForm, ChecklisteForm, LoginForm, SurveyForm,  ResetPasswordRequestForm, ResetPasswordForm, rating
+from app.forms import RegistrationForm, ChecklisteForm, LoginForm, SurveyForm,  ResetPasswordRequestForm, ResetPasswordForm, rating, ContactForm
 from elasticsearch import Elasticsearch
 import string
 import random
@@ -12,6 +12,7 @@ from app.email import send_password_reset_email
 from datetime import datetime
 from app.recommender import recommender
 from sqlalchemy import desc
+from flask_mail import Message
 
 host = "http://localhost:9200"
 indexName = "inca"
@@ -19,6 +20,7 @@ es = Elasticsearch(host)
 rec = recommender()
 day_min = 7
 story_min = 30
+classifier_dict = {'Binnenland':['13','14','20', '3', '4', '5', '6'], 'Buitenland':['16', '19', '2'], 'Economie':['1','15'], 'Milieu':['8', '7'],  'Wetenschap':['17'], 'Immigratie':['9'],  'Justitie':['12'], 'Sport':['29'], 'Entertainment':['23'], 'Anders':['10','99']}
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -70,24 +72,6 @@ def register():
 @login_required 
 def newspage(show_again = 'False'):
     group = current_user.group
-    print(group)
-    form = ChecklisteForm()
-    if form.validate_on_submit() and request.method == 'POST' :
-        sel_categories = form.data["example"]
-        all_categories = ['Binnenland', 'Buitenland', 'Economie', 'Milieu', 'Wetenschap en technologie', 'Immigratie en integratie', 'Justitie en Criminaliteit', 'Sport', 'Kunst, cultuur en entertainment', 'Anders/Diversen']
-        categories = []
-        for category in all_categories: 
-            if category in sel_categories: 
-                categories.append(1)
-            else:
-                categories.append(0)
-        category = Category(Binnenland = categories[0], Buitenland = categories[1], Economie = categories[2], Milieu = categories[3], Wetenschap = categories[4], \
-Immigratie = categories[5], Justitie = categories[6], Sport = categories[7], Entertainment = categories[8], Anders = categories[9],  user_id = current_user.id)
-        db.session.add(category)
-        db.session.commit()  
-        return redirect(url_for('newspage')) 
-    elif not form.validate_on_submit() and request.method == 'POST':
-        show_again = 'True'
     results = []
     parameter = request.args.to_dict()
     try:
@@ -112,13 +96,18 @@ Immigratie = categories[5], Justitie = categories[6], Sport = categories[7], Ent
         elif re.match('[A-Z]*? - ', text_clean):
             text_clean = re.sub('[A-Z]*? - ', '', text_clean)
         result["_source"]["text_clean"] = text_clean
+        for key, value in classifier_dict.items():
+            if result["_source"]["topic"] in value:
+                result["_source"]["topic_string"] = key
+            else:
+                pass
         results.append(result) 
     session['start_time'] = datetime.utcnow()
     difference = time_logged_in()['difference']
     selected_news = number_read()['selected_news']
     if difference >= day_min and selected_news > story_min:
         flash('U kunt deze studie nu afsluiten en een finale vragenlijst invullen (link rechtsboven) - maar u kunt de webapp ook nog wel verder gebruiken.')   
-    return render_template('newspage.html', results = results, form = form)
+    return render_template('newspage.html', results = results)
 
 def which_recommender():
     group = current_user.group
@@ -264,13 +253,56 @@ def number_read():
         selected_news = 0
     return dict(selected_news = selected_news)
 
+
+
 @app.route('/decision/popup_back')
 @login_required
 def popup_back():
     return render_template('information_goback.html')
 
-@app.route('/categories/information')
-@login_required
-def popup_categories():
-    return render_template('information_categories.html')
 
+@app.route('/homepage/categories', methods = ['POST'])
+@login_required
+def get_categories():
+    sel_categories = request.form.getlist('category')
+    all_categories = classifier_dict.keys()
+    categories = []
+    for category in all_categories: 
+        if category in sel_categories: 
+            categories.append(1)
+        else:
+            categories.append(0)
+    category = Category(Binnenland = categories[0], Buitenland = categories[1], Economie = categories[2], Milieu = categories[3], Wetenschap = categories[4], \
+Immigratie = categories[5], Justitie = categories[6], Sport = categories[7], Entertainment = categories[8], Anders = categories[9],  user_id = current_user.id)
+    db.session.add(category)
+    db.session.commit()  
+    return redirect(url_for('newspage')) 
+
+@app.route('/contact', methods = ['GET', 'POST'])
+@login_required
+def contact():
+    form = ContactForm()
+    if request.method == 'POST':
+        if form.validate() == False:
+            return 'Please fill in all fields <p><a href="/contact">Try Again!!! </a></p>'
+        else:
+            name =  current_user.username
+            email =  current_user.email
+            msg = Message("Message from your visitor" + name,
+                          sender= email,
+                      recipients=app.config['ADMINS'][0])
+            msg.body = """
+            From: %s <%s>,
+            %s
+            """ % (name, email, form.message.data)
+            mail.send(msg)
+            return "Successfully  sent message!"
+    elif request.method == 'GET':
+        return render_template('contact.html', form=form)
+
+@app.route('/faq', methods = ['GET'])
+@login_required
+def faq():
+    return render_template("faq.html")
+
+    

@@ -66,3 +66,7 @@ class SurveyForm(FlaskForm):
 
 class rating(FlaskForm):
     rating = TextAreaField()
+
+class ContactForm(FlaskForm):
+    message = TextAreaField('Uw bericht:', validators = [DataRequired()])
+    submit = SubmitField('Afzenden')

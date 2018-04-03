@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block app_content %}
+
+<h1>Contact Formulier:</h1>
+
+<form action="/contact" method="post">
+      {{ form.hidden_tag() }}
+    <p>
+      {{ form.message.label }}<br>
+      {{ form.message(rows='10',cols='100') }}
+    </p>
+    <button class = "btn btn-info" type="submit">
+     Afzenden
+    </button>
+  </form>
+
+{% endblock %}

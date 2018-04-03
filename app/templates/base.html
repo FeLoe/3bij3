@@ -59,90 +59,121 @@
         });
 </script>
 <script>
-        $(function () {
-            var timer = null;
-            var xhr = null;
-            $('.kiezen_informatie').hover(
-                function(event) {
-                    // mouse in event handler
-                    var elem = $(event.currentTarget);
-                    timer = setTimeout(function() {
-                        timer = null;
-                        xhr = $.ajax(
-                            '/categories/information').done(
-                                function(data) {
-                                    xhr = null;
-                                    elem.popover({
-                                        trigger: 'manual',
-                                        html: true,
-                                        animation: false,
-                                        container: elem,
-                                        content: data
-                                    }).popover('show');
-                                    flask_moment_render_all();
-                                }
-                            );
-                    }, 1000);
-                },
-                function(event) {
-                    // mouse out event handler
-                    var elem = $(event.currentTarget);
-                    if (timer) {
-                        clearTimeout(timer);
-                        timer = null;
-                    }
-                    else if (xhr) {
-                        xhr.abort();
-                        xhr = null;
-                    }
-                    else {
-                        elem.popover('destroy');
-                    }
-                }
-            );
-        });
+jQuery(function(){
+    var max = 3;
+    var checkboxes = $('input[type="checkbox"]');
+
+    checkboxes.change(function(){
+        var current = checkboxes.filter(':checked').length;
+checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
+    });
+});
 </script>
 {% endblock %}
 
 {% block navbar %}
-<nav class = "navbar navbar-default">
-  <div class = "container">
-    <div class = "navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-	<span class="sr-only">Toggle navigation</span>
-	<span class="icon-bar"></span>
-	<span class="icon-bar"></span>
-	<span class="icon-bar"></span>
-      </button>
-      <a href="#" class="navbar-left"><img src="/static/logo_3bij3.png" style="width: 80px; height: 70px; padding-top: 8px;"></a>
-    </div>
-    <div class = "collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav navbar-right">
-        {% if (difference >= 7) and (selected_news > 30) %}
-        <li><a href="{{ url_for('final_form') }}" style="color:#ffffff;font-size:16px;">Studie afsluiten</a></li>
-        {% endif %} 
-	{% if current_user.is_anonymous %}
-	<li><a href="{{ url_for('login') }}" style="color:#ffffff;font-size:16px;">Login</a></li>
-	{% else %}
-	<li><a href="{{url_for('logout') }}"style="color:#ffffff;font-size:16px;">Logout</a></li>
+<div class="wrapper" >
+   <nav id="sidebar">
+      <div class="sidebar-header">
+         <a href="{{ url_for('newspage') }}"><img src="/static/logo_3bij3.png" style="width: 80%; height: 80%; padding-left: 20px;"></a>
+      </div>
+      <ul class="list-unstyled components">
+	<li><a href="{{ url_for('newspage') }}">Hoofdpagina</a></li>
+	{% if current_user.group == 1 %}
+        <li class="active"> 
+            <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">Kies categorieën</a>
+            <form action="{{ url_for('get_categories') }}" method="post">
+               <ul class="collapse list-unstyled" id="homeSubmenu">
+                  <li>
+                     <label class="control control--checkbox checklist-format">
+                        Binnenland<input class="categories" type="checkbox" name="category" value="Binnenland"/>
+                        <div class="control__indicator"></div>
+                     </label>
+                  </li>
+                  <li>
+                     <label class="control control--checkbox checklist-format">
+                        Buitenland<input  class="categories" type="checkbox" name="category" value="Buitenland"/>
+                        <div class="control__indicator"></div>
+                     </label>
+                  </li>
+                  <li>
+                     <label class="control control--checkbox checklist-format">
+                        Economie<input  class="categories" type="checkbox" name="category" value="Economie"/>
+                        <div class="control__indicator"></div>
+                     </label>
+                  </li>
+                  <li>
+                     <label class="control control--checkbox checklist-format">
+                        Justitie<input class="categories"  type="checkbox" name="category" value="Justitie"/>
+                        <div class="control__indicator"></div>
+                     </label>
+                  </li>
+                  <li>
+                     <label class="control control--checkbox checklist-format">
+                        Sport<input  class="categories" type="checkbox" name="category" value="Sport"/>
+                        <div class="control__indicator"></div>
+                     </label>
+                  </li>
+                  <li>
+                     <label class="control control--checkbox checklist-format">
+                        Entertainment<input type="checkbox" name="category" value="Entertainment"/>
+                        <div class="control__indicator"></div>
+                     </label>
+                  </li>
+                  <li>
+                     <label class="control control--checkbox checklist-format">
+                        Immigratie<input type="checkbox" name="category" value="Immigratie"/>
+                        <div class="control__indicator"></div>
+                     </label>
+                  </li>
+                  <li>
+                     <label class="control control--checkbox checklist-format">
+                        Milieu<input type="checkbox" name="category" value="Milieu"/>
+                        <div class="control__indicator"></div>
+                     </label>
+                  </li>
+                  <li>
+                     <label class="control control--checkbox checklist-format">
+                        Anders<input type="checkbox" name="category" value="Anders"/>
+                        <div class="control__indicator"></div>
+                     </label>
+                  </li>
+                  <li style="padding-left: 20px;"><input class = "btn btn-info" type="submit" value="Wijzigen"></li>
+               </ul>
+            </form>
+        </li>
 	{% endif %}
+	 <li><a href="{{ url_for('contact') }}">Mail ons</a></li>
+	 <li><a href="{{ url_for('faq') }}" style="color:#ffffff;font-size:16px;">FAQ</a></li>
+            {% if (difference >= 7) and (selected_news > 30) %}
+         <li><a href="{{ url_for('final_form') }}">Studie afsluiten</a></li>
+         {% endif %} 
+         {% if current_user.is_anonymous %}
+         <li><a href="{{ url_for('login') }}">Login</a></li>
+         {% else %}
+         <li><a href="{{url_for('logout') }}">Logout</a></li>
+         {% endif %}
       </ul>
-    </div>
-  </div>
-</nav>
-{% endblock %}
-
-{% block content %}
-<div class="container">
-  {% with messages = get_flashed_messages() %}
-  {% if messages %}
-  {% for message in messages %}
-  <div class="alert alert-info" role="alert">{{message}}</div>
-  {% endfor %}
-  {% endif %}
-  {% endwith %}
-  {% block app_content %}{% endblock %}
+   </nav>
+   {% endblock %}
+   {% block content %}
+   <div class = "content-new">
+      <div class="container">
+         {% with messages = get_flashed_messages() %}
+         {% if messages %}
+         {% for message in messages %}
+         <div class="alert alert-info" role="alert">{{message}}</div>
+         {% endfor %}
+         {% endif %}
+         {% endwith %}
+         {% block app_content %}{% endblock %}
+      </div>
+   </div>
 </div>
 {% endblock %}
+
+
+
+
   
    

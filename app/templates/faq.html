@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block app_content %}
+<div class="container-fluid">
+  <div class="row">
+  <div class="col-md-7 text-justify">
+<h1>Veelgestelde Vragen/FAQs</h1>
+<h4><b>Wat is 3bij3?</b></h4>
+<p>3bij3 is een nieuwssite waar wij testen hoe mensen diverse artikelen selecteren en beoordelen. Het is daarvoor heel belangrijk dat u deze website regelmatig en actief blijft gebruiken. Als u nog vragen heeft, neem dan gerust contact met ons op over het contact formulier.</p>
+<h4><b>Waar kan ik de studie afsluiten?</b></h4>
+<p>Als u de website over een beperkte tijdspan heeft gebruikt en een bepaald aantal artikelen heeft gelezen en beoordeeld krijgt u een mededeling dat u de studie kunt afsluiten. U kunt dan op een link klikken en een finale vragenlijst invullen. Denkt u dat u al aan de voorwaarden voldoet maar heeft nog geen mededeling gekregen? Stuur ons dan een bericht via de contact formulier.</p>
+<h4><b>Hoe ga ik terug naar de homepage?</b></h4>
+<p>Waneer u een artikel heeft gelezen en een rating heeft gegeven, kunt u kiezen of u naar de homepage met dezelfde artikelen wilt terug gaan of als u liever nieuwe artikelen wilt halen. Dit is de von ons geprefereerde manier omdat wij graag uw mening over de artikelen willen weten. Anders kunt u ook op het 3bij3-logo of op "Hoofdpagina" klikken.</p>
+{% if current_user.group == 1 %}
+<h4><b>Ik kan alleen drie inhoudscategorieën kiezen - is er iets mis?</b></h4>
+<p>Nee, er is niets mis. U kunt helaas alleen drie categorieën kiezen - maar u kunt je selectie zo vaak als u wilt wijzigen om andere categorieën te zien.</p>
+{% endif %}
+<h4><b>Als ik op "Terug naar selectie" ziet de website er anders aus dan eerst, hoe kan dat?</b></h4>
+<p>De artikelen worden altijd in willekeurige volgorde getoond - u ziet dus dezelfde artikelen dan eerder, maar in een andere volgorde. Zou u inderdaad andere artikelen zien is er iets mis - stuur in dit geval een bericht via de contact formulier.</p>
+  </div>
+  </div>
+  </div>
+{% endblock %}

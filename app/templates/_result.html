@@ -1,5 +1,6 @@
 <head><link rel="stylesheet"
-      href="{{url_for('.static', filename='mystyle.css')}}"></head>
+	    href="{{url_for('.static', filename='mystyle.css')}}"></head>
+
 
 {% if (result._source.title|length > 100) %}
 {% set title_list = result._source.title.split('.') %}

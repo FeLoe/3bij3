@@ -8,40 +8,11 @@
 <link rel="stylesheet"
       href="{{url_for('.static', filename='mystyle.css')}}">
 {% endblock %}
-<div class = "container-fluid">
-      <div class="col-lg-12 text-center">
-      {% if current_user.group == 1 %}
-      <form action="" method = "post">
-         {{ form.hidden_tag() }}
-         <div class="container-fluid">
-            <div class="row">
-               <div class="col-lg-12">
-                  <div class="col-lg-4">
-                     {% for key in form.errors %}                                            
-                     {% for error in form.errors[key] %}                                 
-                     <span style="color: red;">{{ error }}</span>                  
-                     {% endfor %}  
-                     <br>                                                      
-                     {% endfor %}  
-                     <div class="button-group">
-                        <span class="kiezen_informatie">
-                        <button type="button" class="btn btn-info btn-large dropdown-toggle" data-toggle="dropdown">
-                        Kies kategorie </span> <span class="caret"></span></button>
-                        <ul class="dropdown-menu text-center">
-                           <li><a href = "#">{{form.example(class = "list-unstyled")}}</a></li>
-                           <li><a href = "#"> {{form.submit(class = "btn btn-info")}}</a></li>
-                        </ul>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-         </br>
-         </br>
-      </form>
-      {% endif %}
       <div class="container-fluid">
-      <div class="square">
+	<div class="square">
+	  {% with result = results[0] %}
+	  <div class ={{result._source.topic_string}} >{{result._source.topic_string}}</div>
+	      {% endwith %}
     <div class="content">
         <div class="table">
             <div class="table-cell">
@@ -52,7 +23,10 @@
         </div>
     </div>
 </div>
-<div class="square">
+	<div class="square">
+	  	  {% with result = results[1] %}
+	  <div class ={{result._source.topic_string}} >{{result._source.topic_string}}</div>
+	      {% endwith %}
     <div class="content">
         <div class="table">
             <div class="table-cell">
@@ -63,7 +37,10 @@
         </div>
     </div>
 </div>
-<div class="square">
+	<div class="square">
+	  	  {% with result = results[2] %}
+	  <div class ={{result._source.topic_string}} >{{result._source.topic_string}}</div>
+	      {% endwith %}
     <div class="content">
         <div class="table">
             <div class="table-cell">               
@@ -75,7 +52,10 @@
     </div>
 </div>
 
-<div class="square">
+	<div class="square">
+	  	  {% with result = results[3] %}
+	  <div class ={{result._source.topic_string}} >{{result._source.topic_string}}</div>
+	      {% endwith %}
    <div class="content">
         <div class="table">
             <div class="table-cell">
@@ -86,7 +66,10 @@
         </div>
     </div>
 </div>
-<div class="square">
+	<div class="square">
+	  	  {% with result = results[4] %}
+	  <div class ={{result._source.topic_string}} >{{result._source.topic_string}}</div>
+	      {% endwith %}
     <div class="content">
         <div class="table">
             <div class="table-cell">
@@ -97,7 +80,10 @@
         </div>
     </div>
 </div>
-<div class="square">
+	<div class="square">
+	  	  {% with result = results[5] %}
+	  <div class ={{result._source.topic_string}} >{{result._source.topic_string}}</div>
+	      {% endwith %}
    <div class="content">
         <div class="table">
             <div class="table-cell">
@@ -110,7 +96,10 @@
 </div>
 
 
-<div class="square">
+	<div class="square">
+	  	  {% with result = results[6] %}
+	  <div class ={{result._source.topic_string}} >{{result._source.topic_string}}</div>
+	      {% endwith %}
    <div class="content">
         <div class="table">
             <div class="table-cell">
@@ -121,7 +110,10 @@
         </div>
     </div>
 </div>
-<div class="square">
+	<div class="square">
+	  	  {% with result = results[7] %}
+	  <div class ={{result._source.topic_string}} >{{result._source.topic_string}}</div>
+	      {% endwith %}
     <div class="content">
         <div class="table">
             <div class="table-cell">
@@ -132,7 +124,10 @@
         </div>
     </div>
 </div>
-<div class="square">
+	<div class="square">
+	  	  {% with result = results[8] %}
+	  <div class ={{result._source.topic_string}} >{{result._source.topic_string}}</div>
+	      {% endwith %}
     <div class="content">
         <div class="table">
             <div class="table-cell">
