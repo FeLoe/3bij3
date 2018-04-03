@@ -296,7 +296,7 @@ def contact():
             email =  current_user.email
             msg = Message("Message from your visitor" + name,
                           sender= email,
-                      recipients=app.config['ADMINS'][0])
+                          recipients=app.config['ADMINS'])
             msg.body = """
             From: %s <%s>,
             %s
