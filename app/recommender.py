@@ -193,7 +193,21 @@ class recommender():
                 topic_selection = random.sample(topic_selection, num_category_select)
             for item in topic_selection:
                 category_selection.append(item)
-
+        if len(category_selection) < self.num_recommender:
+            newtry = self.num_more
+            new_articles = [self.doctype_last(s, num = newtry) for s in list_of_sources]
+            new_articles = [a for b in new_articles for a in b]
+            category_selection = []
+            for category in sel_categories:
+                topic_selection = []
+                for item in new_articles:
+                    if item['_source']['topic'] in category:
+                        topic_selection.append(item['_id'])
+                    if len(topic_selection) > num_category_select:
+                        topic_selection = random.sample(topic_selection, num_category_select)
+                    for item in topic_selection:
+                        category_selection.append(item)
+                
         #Mark the selected articles as recommended, select random articles from the non-recommended articles (and get more if not enough unseen articles available), put the two lists together, randomize the ordering and return them        
         recommender_selection = [a for a in new_articles if a["_id"] in category_selection]
         for article in recommender_selection:
@@ -209,7 +223,7 @@ class recommender():
                 newtry = self.num_more
                 articles = [self.doctype_last(s, num = newtry) for s in list_of_sources]
                 all_articles = [a for b in articles for a in b]
-                random_list = [a for a in all_articles if a["_id"] not in recommender_ids] 
+                random_list = [a for a in all_articles if a["_id"] not in category_selection] 
                 random_selection = random.sample(random_list, self.num_select)
             except:
                 random_selection = "not enough stories"
