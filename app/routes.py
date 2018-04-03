@@ -71,6 +71,7 @@ def register():
 @app.route('/homepage', methods = ['GET', 'POST'])
 @login_required 
 def newspage(show_again = 'False'):
+<<<<<<< HEAD
     group = current_user.group
     results = []
     parameter = request.args.to_dict()
@@ -95,6 +96,12 @@ def newspage(show_again = 'False'):
             text_clean = text_clean.split(' ', 1)[1]
         elif re.match('[A-Z]*? - ', text_clean):
             text_clean = re.sub('[A-Z]*? - ', '', text_clean)
+        try:
+            teaser = result["_source"]["teaser"]
+        except:
+            teaser = result["_source"]["teaser_rss"]
+        teaser = re.sub('[A-Z]*? - ', '', teaser)
+        result["_source"]["teaser"] = teaser    
         result["_source"]["text_clean"] = text_clean
         for key, value in classifier_dict.items():
             if result["_source"]["topic"] in value:

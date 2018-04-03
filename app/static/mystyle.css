@@ -15,7 +15,6 @@
 .container-fluid  {
     padding: 1px;
     padding-top: 40px;
-}
 
 .square {
     float:left;
@@ -59,7 +58,9 @@
     line-height: normal;
     -webkit-border-radius: 8px;
        -moz-border-radius: 8px;
-            border-radius: 8px;
+       border-radius: 8px;
+       background-color: #80bdff;
+       
 }
 
 
@@ -76,7 +77,8 @@
     line-height: normal;
     -webkit-border-radius: 8px;
        -moz-border-radius: 8px;
-            border-radius: 8px;
+       border-radius: 8px;
+       background-color:#80bdff;
 }
 
 .articleLink,
@@ -92,6 +94,7 @@ border-color:#80bdff;
 
 }
 
+<<<<<<< HEAD
 #sidebar {
     width: 220px;
     position: fixed;
@@ -319,4 +322,3 @@ border-color:#80bdff;
   border: solid #fff;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
-}
