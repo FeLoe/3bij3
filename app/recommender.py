@@ -72,12 +72,14 @@ class recommender():
             try:
                 text = doc["_source"][self.textfield]
                 teaser = doc["_source"][self.teaserfield]
+                topic = doc["_source"]["topic"]
                 if doc["_id"] not in displayed_ids:
                     final_docs.append(doc)
             except KeyError:
                 try:
                     text = doc["_source"][self.textfield] 
                     teaser = doc["_source"][self.teaseralt]
+                    topic = doc["_source"]["topic"]
                     if doc["_id"] not in displayed_ids:
                         final_docs.append(doc)
                 except KeyError:
@@ -166,6 +168,7 @@ class recommender():
         for key, value in self.classifier_dict.items():
             if categories[key] == 1:
                 sel_categories.append(value)
+        print(sel_categories)
         #Retrieve new articles, make one list containing the processed texts and one of all the ids and zip them into a dict
         new_articles = [self.doctype_last(s) for s in list_of_sources]
         new_articles = [a for b in new_articles for a in b]
@@ -177,15 +180,20 @@ class recommender():
             num_category_select = 3
         elif len(categories) == 3: 
             num_category_select = 2
+        else:
+            num_category_select = 0
 
         #For each selected category retrieve the articles that fit this category (and randomly select if the list is longer than needed) and fill the rest with random articles (could also be more than normally as some topics might not appear in the article selection often enough)
         category_selection = []
         for category in sel_categories:
+            topic_selection = []
             for item in new_articles:
                 if item['_source']['topic'] in category:
-                    category_selection.append(item["_id"])
-        if len(category_selection) > num_category_select:
-            category_selection = random.sample(category_selection, num_category_select)
+                    topic_selection.append(item["_id"])
+            if len(topic_selection) > num_category_select:
+                topic_selection = random.sample(topic_selection, num_category_select)
+            for item in topic_selection:
+                category_selection.append(item)
         for a_id in category_selection:
             selection.append(a_id)
 
