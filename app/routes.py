@@ -71,7 +71,6 @@ def register():
 @app.route('/homepage', methods = ['GET', 'POST'])
 @login_required 
 def newspage(show_again = 'False'):
-<<<<<<< HEAD
     group = current_user.group
     results = []
     parameter = request.args.to_dict()

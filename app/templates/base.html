@@ -72,7 +72,6 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
 {% endblock %}
 
 {% block navbar %}
-<div class="wrapper" >
    <nav id="sidebar">
       <div class="sidebar-header">
          <a href="{{ url_for('newspage') }}"><img src="/static/logo_3bij3.png" style="width: 80%; height: 80%; padding-left: 20px;"></a>
@@ -151,7 +150,7 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
          {% if current_user.is_anonymous %}
          <li><a href="{{ url_for('login') }}">Login</a></li>
          {% else %}
-         <li><a href="{{url_for('logout') }}">Logout</a></li>
+         <li><a  href="{{url_for('logout') }}">Logout</a></li>
          {% endif %}
       </ul>
    </nav>
@@ -169,7 +168,6 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
          {% block app_content %}{% endblock %}
       </div>
    </div>
-</div>
 {% endblock %}
 
 

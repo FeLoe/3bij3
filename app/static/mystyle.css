@@ -15,6 +15,7 @@
 .container-fluid  {
     padding: 1px;
     padding-top: 40px;
+}
 
 .square {
     float:left;
@@ -94,7 +95,6 @@ border-color:#80bdff;
 
 }
 
-<<<<<<< HEAD
 #sidebar {
     width: 220px;
     position: fixed;
@@ -123,10 +123,11 @@ border-color:#80bdff;
 }
 
 #sidebar ul li a {
-    padding: 10px;
+    padding: 15px;
     color:#ffffff;
-    font-size:18px;
+    font-size:20px;
     display: block;
+    height:55px;
 }
 #sidebar ul li a:hover {
     color: #fff;
@@ -252,8 +253,8 @@ border-color:#80bdff;
     background-color: #ff99dd;
     position: relative;
     padding-top: 2px;
-    width: 50%;
-    height : 30%;
+    width: 40%;
+    height : 35%;
     overflow:hidden;
     margin:auto;
     font-weight: bold;
@@ -322,3 +323,4 @@ border-color:#80bdff;
   border: solid #fff;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}

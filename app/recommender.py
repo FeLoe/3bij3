@@ -68,7 +68,6 @@ class recommender():
                           }
                       }}).get('hits',{}).get('hits',[""])
         final_docs = []
-        logger.debug(docs)
         for doc in docs: 
             try:
                 text = doc["_source"][self.textfield]
