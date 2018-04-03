@@ -271,7 +271,7 @@ def popup_back():
 @login_required
 def get_categories():
     sel_categories = request.form.getlist('category')
-    all_categories = classifier_dict.keys()
+    all_categories = ["Binnenland", "Buitenland", "Economie", "Milieu", "Wetenschap", "Immigratie", "Justitie", "Sport", "Entertainment", "Anders"]
     categories = []
     for category in all_categories: 
         if category in sel_categories: 

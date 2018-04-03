@@ -168,17 +168,16 @@ class recommender():
         for key, value in self.classifier_dict.items():
             if categories[key] == 1:
                 sel_categories.append(value)
-        print(sel_categories)
         #Retrieve new articles, make one list containing the processed texts and one of all the ids and zip them into a dict
         new_articles = [self.doctype_last(s) for s in list_of_sources]
         new_articles = [a for b in new_articles for a in b]
         #Determine how many articles per topic will be retrieved (dependent on the number of categories selected) 
         selection = []
-        if len(categories) == 1: 
+        if len(sel_categories) == 1: 
             num_category_select = 6
-        elif len(categories) == 2: 
+        elif len(sel_categories) == 2: 
             num_category_select = 3
-        elif len(categories) == 3: 
+        elif len(sel_categories) == 3: 
             num_category_select = 2
         else:
             num_category_select = 0
@@ -194,15 +193,13 @@ class recommender():
                 topic_selection = random.sample(topic_selection, num_category_select)
             for item in topic_selection:
                 category_selection.append(item)
-        for a_id in category_selection:
-            selection.append(a_id)
 
         #Mark the selected articles as recommended, select random articles from the non-recommended articles (and get more if not enough unseen articles available), put the two lists together, randomize the ordering and return them        
-        recommender_selection = [a for a in new_articles if a["_id"] in selection]
+        recommender_selection = [a for a in new_articles if a["_id"] in category_selection]
         for article in recommender_selection:
             article['recommended'] = 1
         num_random = self.num_select - len(recommender_selection)
-        random_list = [a for a in new_articles if a["_id"] not in selection]
+        random_list = [a for a in new_articles if a["_id"] not in category_selection]
         try:
             random_selection = random.sample(random_list, num_random)
             for article in random_selection:
