@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block app_content %}
+<div class="row">
+  <div class = "col-xs-2"></div>
+    <div class = "col-xs-8">
+<div class="progress">
+  <div class="progress-bar progress-bar-striped progress" role="progressbar" aria-valuenow={{ points }}
+  aria-valuemin="0" aria-valuemax="100" style={{ "width:number%"| replace("number", points) }}>
+    {{ points }}%
+  </div>
+</div>
+<p> points_logins: {{ points_logins }} </p>
+<p> points_stories: {{ points_stories }} </p>
+<p> points_invites: {{ points_invites }} </p>
+<p> points_ratings: {{ points_ratings }} </p>
+    </div>
+    </div>
+{% endblock %}

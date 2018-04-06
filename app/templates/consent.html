@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block app_content %}
-<div class="container-fluid">
     <div class="col-lg-12">
       <div class="col-lg-9">
 	<p>&nbsp;</p>
@@ -60,7 +59,7 @@
             <p>&nbsp;</p>
             <p>&nbsp;</p>
             <div class="button-group">
-                <a href = {{url_for('register')}} class="btn btn-primary btn-md">Ik doe mee!</a>
+                <a href = {{url_for('register', other_user = other_user)}} class="btn btn-primary btn-md">Ik doe mee!</a>
                 <a href = {{url_for('no_consent')}} class="btn btn-primary btn-md">Ik wil liever toch niet meedoen.</a>
                 <p>&nbsp;</p>
                 <p>&nbsp;</p>
@@ -69,7 +68,6 @@
             </div>
         </div>
     </div>
-</div>
 
 
 {% endblock %}

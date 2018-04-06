@@ -7,14 +7,14 @@
 {% set title_list = title_list[0].split('!') %}
 {% set title_list = title_list[0].split('?') %}
 {% set title_list = title_list[0].split(':') %}
-  <h5><b><a  href="{{url_for('show_detail', id = result.new_id)}}" class="articleLink">{{title_list[0]}}</a></b></h5>
+  <h5><b><a  href="{{url_for('save_selected', id = result.new_id)}}" class="articleLink">{{title_list[0]}}</a></b></h5>
 {% else %}
-  <h5><b><a  href="{{url_for('show_detail', id = result.new_id)}}" class="articleLink">{{ result._source.title }}</a></b></h5>
+  <h5><b><a  href="{{url_for('save_selected', id = result.new_id)}}" class="articleLink">{{ result._source.title }}</a></b></h5>
 {% endif %}
 {% if (result._source.teaser) and (result._source.teaser|length < 100) and (result._source.leaser|length > 0) %}
-  <p><a  href="{{url_for('show_detail', id = result.new_id)}}" class="articleLink"> {{ result._source.teaser }} </a><a href="{{url_for('show_detail', id = result.new_id)}}" >Hele artikel lezen</a></p><br>
+  <p><a  href="{{url_for('save_selected', id = result.new_id)}}" class="articleLink"> {{ result._source.teaser }} </a><a href="{{url_for('save_selected', id = result.new_id)}}" >Hele artikel lezen</a></p><br>
 {% elif (result._source.teaser) and (result._source.teaser|length > 100) %}
-  <p><a  href="{{url_for('show_detail', id = result.new_id)}}" class="articleLink">{{ result._source.teaser[:100]}}...</a><a href="{{url_for('show_detail', id = result.new_id)}}" >Hele artikel lezen</a></p><br>
+  <p><a  href="{{url_for('save_selected', id = result.new_id)}}" class="articleLink">{{ result._source.teaser[:100]}}...</a><a href="{{url_for('save_selected', id = result.new_id)}}" >Hele artikel lezen</a></p><br>
 {% else %}
-  <p><a  href="{{url_for('show_detail', id = result.new_id)}}" class="articleLink">{{ result._source.text_clean[:100]}}...</a><a href="{{url_for('show_detail', id = result.new_id)}}" >Hele artikel lezen</a></p><br>
+  <p><a  href="{{url_for('save_selected', id = result.new_id)}}" class="articleLink">{{ result._source.text_clean[:100]}}...</a><a href="{{url_for('save_selected', id = result.new_id)}}" >Hele artikel lezen</a></p><br>
 {% endif %}

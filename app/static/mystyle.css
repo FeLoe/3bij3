@@ -12,9 +12,19 @@
     color:#fff;
 }
 
-.container-fluid  {
-    padding: 1px;
-    padding-top: 40px;
+.container-fluid {
+    top: 0;
+    right: 0;
+    min-height: 100vh;
+    transition: all 0.3s;
+}
+
+.container-fluid.active {
+    width: 100%;
+}
+
+.wrapper {
+        display: flex;
 }
 
 .square {
@@ -26,6 +36,27 @@
     background-color:#e6f2ff;
     overflow:hidden;
 }
+
+.square-mobile {
+    float: left;
+    position: relative;
+    width: 90%;
+    padding-bottom: 60%;
+    margin: 0.5%;
+    background-color: #e6f2ff;
+    overflow: ellipsis;
+}
+
+.square-tablet {
+    float: left;
+    position: relative;
+    width: 32%;
+    padding-bottom: 30%;
+    margin: 0.5%;
+    background-color: #e6f2ff;
+    overflow: ellipsis;
+}
+
 
 .content {
     position:absolute;
@@ -67,8 +98,8 @@
 
 .content_decision {
   position: absolute;
-  top: 47%;
-  left:57%;
+  top: 50%;
+  left:50%;
   transform: translate(-50%,-50%);
 }
 
@@ -108,7 +139,7 @@ border-color:#80bdff;
 }
 
 #sidebar.active {
-    margin-left: -250px;
+    margin-left: -220px;
 }
 
 #sidebar .sidebar-header {
@@ -139,16 +170,32 @@ border-color:#80bdff;
     background: #cc0000;
 }
 
-
-.content-new {
-    padding-left: 230px;
-    padding-right: 10px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    min-height: 100vh;
-    transition: all 0.3s;
+a[data-toggle="collapse"] {
+    position: relative;
 }
 
+@media (max-width: 768px) {
+    #sidebar {
+        margin-left: -220px;
+    }
+    #sidebar.active {
+        margin-left: 0;
+    }
+}
+#content-new {
+    width: calc(100% - 220px);
+    padding: 20px;
+    min-height: 100vh;
+    transition: all 0.3s;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#content-new.active {
+    width: 100%;
+}
+	   
 .Binnenland {
     background-color:#C21460;
     position: relative;
@@ -197,7 +244,6 @@ border-color:#80bdff;
     font-weight: bold;
     text-align:center;
 }
-
 .Wetenschap {
     background-color: #347C98;
     position: relative;
@@ -274,6 +320,7 @@ border-color:#80bdff;
     text-align:center;
 }
 
+
 .control {
   display: block;
   position: relative;
@@ -325,3 +372,9 @@ border-color:#80bdff;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
+
+.progress {height: 30px;}
+
+.progress-bar { line-height: 30px; }
+
+

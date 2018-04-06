@@ -157,7 +157,82 @@ class recommender():
         final_list = recommender_selection + random_selection
         final_list = random.sample(final_list, len(final_list))
         return(final_list)
- 
+
+    def past_behavior_topic(self):
+        '''
+         Recommends articles based on the topics of the stories the user has selected in the past (topics indicated by classifier)
+        '''
+        #Get the topics of the stories the user selected in the past and randomly select up to three of them
+        selected_articles = self.get_selected()
+        topics = [item['_source']['topic'] for item in selected_articles]
+        if len(topics) >= 3:
+            topic_list = random.sample(topics, 3)
+        else:
+            topic_list = topics
+        if len(topic_list) == 1: 
+            num_category_select = 6
+        elif len(topic_list) == 2: 
+            num_category_select = 3
+        elif len(topic_list) == 3: 
+            num_category_select = 2
+        else:
+            num_category_select = 0
+            
+        #Retrieve new articles
+        new_articles = [self.doctype_last(s) for s in list_of_sources]
+        new_articles = [a for b in new_articles for a in b]
+        
+        category_selection = []
+        for category in topic_list:
+            topic_selection = []
+            for item in new_articles:
+                if item['_source']['topic'] == category:
+                    topic_selection.append(item["_id"])
+            if len(topic_selection) > num_category_select:
+                topic_selection = random.sample(topic_selection, num_category_select)
+            for item in topic_selection:
+                category_selection.append(item)
+        if len(category_selection) < self.num_recommender:
+            newtry = self.num_more
+            new_articles = [self.doctype_last(s, num = newtry) for s in list_of_sources]
+            new_articles = [a for b in new_articles for a in b]
+            category_selection = []
+            for category in topic_list:
+                topic_selection = []
+                for item in new_articles:
+                    if item['_source']['topic'] == category:
+                        topic_selection.append(item['_id'])
+                    if len(topic_selection) > num_category_select:
+                        topic_selection = random.sample(topic_selection, num_category_select)
+                    for item in topic_selection:
+                        category_selection.append(item)
+        
+      #Mark the selected articles as recommended, select random articles from the non-recommended articles (and get more if not enough unseen articles available), put the two lists together, randomize the ordering and return them        
+        recommender_selection = [a for a in new_articles if a["_id"] in category_selection]
+        for article in recommender_selection:
+            article['recommended'] = 1
+        num_random = self.num_select - len(recommender_selection)
+        random_list = [a for a in new_articles if a["_id"] not in category_selection]
+        try:
+            random_selection = random.sample(random_list, num_random)
+            for article in random_selection:
+                article['recommended'] = 0
+        except ValueError:
+            try:
+                newtry = self.num_more
+                articles = [self.doctype_last(s, num = newtry) for s in list_of_sources]
+                all_articles = [a for b in articles for a in b]
+                random_list = [a for a in all_articles if a["_id"] not in category_selection] 
+                random_selection = random.sample(random_list, self.num_select)
+            except:
+                random_selection = "not enough stories"
+                return(random_selection)
+        for article in random_selection:
+            article['recommended'] = 0
+        final_list = random_selection + recommender_selection
+        final_list = random.sample(final_list, len(final_list))
+        return(final_list)
+   
     def category_selection_classifier(self):
         '''
         Uses a classifier to determine the topic categories of each article
@@ -181,7 +256,6 @@ class recommender():
             num_category_select = 2
         else:
             num_category_select = 0
-
         #For each selected category retrieve the articles that fit this category (and randomly select if the list is longer than needed) and fill the rest with random articles (could also be more than normally as some topics might not appear in the article selection often enough)
         category_selection = []
         for category in sel_categories:

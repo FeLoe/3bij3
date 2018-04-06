@@ -9,7 +9,16 @@
 
 
 {% endblock %}
-<div class="container-fluid">
+{% if device == "mobile" %}
+<div class="content_decision text-center">
+<p style="font-size:12px"> Wat wilt u nu doen? </p>
+<a href={{ url_for('newspage', show_again = True ) }}><button name="goback" type="button" class="btn btn-info">Terug naar <br> selectie</button>&nbsp;&nbsp;&nbsp;
+	<a href={{ url_for('newspage', show_again = False) }}><button name="getnew" type="button" class="btn btn-info">Nieuwe artikelen <br> ophalen</button></a><br><br>
+<span class = "informatie">
+<a href = "#"> Wat betekent dat? </a>
+</span>
+</div>
+{% else %}
 <div class="content_decision text-center">
 <p style="font-size:28px"> Wat wilt u nu doen? </p>
 <a href={{ url_for('newspage', show_again = True ) }}><button name="goback" type="button" class="btn btn-xlarge_decision btn-info">Terug naar <br> selectie</button>&nbsp;&nbsp;&nbsp;
@@ -18,5 +27,5 @@
 <a href = "#"> Wat betekent dat? </a>
 </span>
 </div>
-</div>
+{% endif %}
 {% endblock %}

@@ -58,6 +58,22 @@
             );
         });
 </script>
+<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+<script>
+            $(document).ready(function () {
+                $("#sidebar").mCustomScrollbar({
+                    theme: "minimal"
+                });
+
+                $('#sidebarCollapse').on('click', function () {
+                    $('#sidebar, #content-new').toggleClass('active');
+                    $('.collapse.in').toggleClass('in');
+                    $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+                });
+            });
+	  </script>
 <script>
 jQuery(function(){
     var max = 3;
@@ -70,7 +86,8 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
 });
 </script>
 {% endblock %}
-
+{% block wrapper %}
+<div class = "wrapper" >
 {% block navbar %}
    <nav id="sidebar">
       <div class="sidebar-header">
@@ -144,8 +161,8 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
 	{% endif %}
 	 <li><a href="{{ url_for('contact') }}">Mail ons</a></li>
 	 <li><a href="{{ url_for('faq') }}" style="color:#ffffff;font-size:16px;">FAQ</a></li>
-            {% if (difference >= 7) and (selected_news > 30) %}
-         <li><a href="{{ url_for('final_form') }}">Studie afsluiten</a></li>
+            {% if (different_dates >= 10) and (points >= 100) %}
+         <li><a href="https://uvacommscience.eu.qualtrics.com/jfe/form/SV_cDanrLD2xY6uywJ?id={}".format(current_user.id)>Studie afsluiten</a></li>
          {% endif %} 
          {% if current_user.is_anonymous %}
          <li><a href="{{ url_for('login') }}">Login</a></li>
@@ -156,7 +173,11 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
    </nav>
    {% endblock %}
    {% block content %}
-   <div class = "content-new">
+   <div id = "content-new" >
+     <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+       <i class="glyphicon glyphicon-align-left"></i>
+             Menu
+      </button>
       <div class="container">
          {% with messages = get_flashed_messages() %}
          {% if messages %}
@@ -166,10 +187,11 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
          {% endif %}
          {% endwith %}
          {% block app_content %}{% endblock %}
+	 </div>
       </div>
-   </div>
 {% endblock %}
-
+</div>
+{% endblock %}
 
 
 

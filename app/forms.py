@@ -62,6 +62,7 @@ class SurveyForm(FlaskForm):
     education = RadioField('Wat is uw hoogst behaalde opleidingsniveau?',
         choices=[('1', 'Geen onderwijs / basisonderwijs / lagere school'),
             ('2', 'LBO / VBO / VMBO (kader- en beroepsgerichte leerweg)'), ('3', 'MAVO / eerste 3 jaar HAVO en VWO / VMBO (theoretische en gemengde leerweg)'),('4', 'MBO'), ('Grad', 'HAVO en VWO bovenbouw / WO-propedeuse'),('5', 'HBO / WO-bachelor of kandidaats '), ('6', 'WO-doctoraal of master')],validators=[DataRequired()])
+    pers2_q4 = RadioField('', choices=[(1,'helemaal<br/>mee oneens'),(2,'2    '),(3,'3    '),(4,'4    '),(5,'5    '), (6, '6    '), (7, 'helemaal<br/>mee eens')])
     submit = SubmitField('Afzenden')
 
 class rating(FlaskForm):
