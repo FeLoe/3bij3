@@ -3,7 +3,7 @@ from app import app, db, mail
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, News, News_sel, Category, Points_logins, Points_stories, Points_invites, Points_ratings, User_invite
 from werkzeug.urls import url_parse
-from app.forms import RegistrationForm, ChecklisteForm, LoginForm, SurveyForm,  ResetPasswordRequestForm, ResetPasswordForm, rating, ContactForm
+from app.forms import RegistrationForm, ChecklisteForm, LoginForm, ReportForm,  ResetPasswordRequestForm, ResetPasswordForm, rating, ContactForm
 from elasticsearch import Elasticsearch
 import string
 import random
@@ -415,9 +415,17 @@ def points_overview():
 @app.context_processor
 def points_all_users():
     points_stories_all = [item[0] for item in User.query.with_entities(User.sum_stories).all()]
+    if points_stories_all is None:
+        points_stories_all = [0]
     points_invites_all = [item[0] for item in User.query.with_entities(User.sum_invites).all()]
+    if all(v is None for v in points_invites_all) is True:
+        points_invites_all = [0] * len(points_invites_all)
     points_ratings_all = [item[0] for item in User.query.with_entities(User.sum_ratings).all()]
+    if points_ratings_all is None:
+        points_ratings_all = [0]
     points_logins_all = [item[0] for item in  User.query.with_entities(User.sum_logins).all()]
+    if points_logins_all is None:
+        points_logins_all = [0]
     return dict(points_stories_all = points_stories_all, points_invites_all = points_invites_all, points_ratings_all = points_ratings_all, points_logins_all = points_logins_all) 
     
 @app.context_processor
@@ -462,11 +470,11 @@ def contact():
     form = ContactForm()
     if request.method == 'POST':
         if form.validate() == False:
-            return 'Please fill in all fields <p><a href="/contact">Try Again!!! </a></p>'
+            return 'Vul alstublieft alle velden in <p><a href="/contact">Probeer het opnieuw!!! </a></p>'
         else:
             name =  current_user.username
             email =  current_user.email
-            msg = Message("Message from your visitor" + name,
+            msg = Message("Message from your visitor " + name,
                           sender= email,
                           recipients=app.config['ADMINS'])
             msg.body = """
@@ -474,7 +482,7 @@ def contact():
             %s
             """ % (name, email, form.message.data)
             mail.send(msg)
-            return "Successfully  sent message!"
+            return "Bericht is succesvol verzonden."
     elif request.method == 'GET':
         return render_template('contact.html', form=form)
 
@@ -484,10 +492,56 @@ def faq():
 
 @app.route('/points', methods = ['GET'])
 def get_points():
-    return render_template("display_points.html")
+    stories = points_all_users()['points_stories_all']
+    max_stories = max(stories)
+    min_stories = min(stories)
+    avg_stories  = sum(stories)/len(stories)
+    logins = points_all_users()['points_logins_all']
+    max_logins = max(logins)
+    min_logins = min(logins)
+    avg_logins  = sum(logins)/len(logins)
+    ratings = points_all_users()['points_ratings_all']
+    ratings = [float(i) for i in ratings]
+    max_ratings = max(ratings)
+    min_ratings = min(ratings)
+    avg_ratings  = sum(ratings)/len(ratings)
+    invites = points_all_users()['points_invites_all']
+    max_invites = max(invites)
+    min_invites = min(invites)
+    avg_invites  = sum(invites)/len(invites)
+    points_overall = [sum(item) for item in zip(stories, logins, ratings, invites)]
+    max_overall = max(points_overall)
+    min_overall = min(points_overall)
+    avg_overall  = sum(points_overall)/len(points_overall)
+    return render_template("display_points.html", max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall)
     
 
 @app.route('/invite', methods = ['GET', 'POST'])
 def invite():
     url = "www.3bij3.nl/consent?{}".format(current_user.id)
     return render_template("invite.html", url = url)
+
+@app.route('/report_article', methods = ['GET', 'POST'])
+def report_article():
+    url = request.args.to_dict()
+    form = ReportForm()
+    if request.method == 'POST':
+        if form.validate() == False:
+            return 'Vul alstublieft alle velden in <p><a href="/contact">Probeer het opnieuw!!! </a></p>'
+        else:
+            name =  current_user.username
+            email =  current_user.email
+            msg = Message("Message from your visitor " + name + "about article" + url,
+                          sender= email,
+                          recipients=app.config['ADMINS'])
+            msg.body = """
+            From: %s <%s>,
+            %s
+            """ % (name, email, form.message.data)
+            mail.send(msg)
+            return "Heel erg bedankt voor uw feedback!"
+    elif request.method == 'GET':
+        return render_template('contact.html', form=form)
+
+    
+    return render_template("report_article.html")

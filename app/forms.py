@@ -55,19 +55,13 @@ class ResetPasswordForm(FlaskForm):
     submit = SubmitField('Verzoek wachtwoord reset')
 
 
-class SurveyForm(FlaskForm):
-    gender = RadioField('Wat is uw geslacht?',
-        choices=[('M', 'Man'), ('V', 'Vrouw'), ('O', 'Ik geef liever geen antwoord')],validators=[DataRequired()], default=None)
-    age = IntegerField('In welk jaar bent u geboren?', validators=[DataRequired(), InputRequired(), Length(min = 4, max = 4, message = "Geef een geldig geboortejaar op"), NumberRange(min = 1918, max = 2002, message = "Geef een geldig geboortejaar op")])
-    education = RadioField('Wat is uw hoogst behaalde opleidingsniveau?',
-        choices=[('1', 'Geen onderwijs / basisonderwijs / lagere school'),
-            ('2', 'LBO / VBO / VMBO (kader- en beroepsgerichte leerweg)'), ('3', 'MAVO / eerste 3 jaar HAVO en VWO / VMBO (theoretische en gemengde leerweg)'),('4', 'MBO'), ('Grad', 'HAVO en VWO bovenbouw / WO-propedeuse'),('5', 'HBO / WO-bachelor of kandidaats '), ('6', 'WO-doctoraal of master')],validators=[DataRequired()])
-    pers2_q4 = RadioField('', choices=[(1,'helemaal<br/>mee oneens'),(2,'2    '),(3,'3    '),(4,'4    '),(5,'5    '), (6, '6    '), (7, 'helemaal<br/>mee eens')])
-    submit = SubmitField('Afzenden')
-
 class rating(FlaskForm):
     rating = TextAreaField()
 
 class ContactForm(FlaskForm):
     message = TextAreaField('Uw bericht:', validators = [DataRequired()])
+    submit = SubmitField('Afzenden')
+
+class ReportForm(FlaskForm):
+    message = TextAreaField('Wat voor soort problemen zijn er met het artikel?:', validators = [DataRequired()])
     submit = SubmitField('Afzenden')

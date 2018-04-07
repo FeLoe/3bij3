@@ -11,9 +11,6 @@
 
 {% block scripts %}
 {{super()}}
-<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 {% endblock %}
   <div class="row">
@@ -56,7 +53,8 @@
         <span class="fa fa-star-o fa-2x" data-rating="5"></span><br>
         <input type="hidden" id="rating" name="rating" class="rating-value" value="0">
 	<button type="submit" id="rating1" name="submitBtn" class="btn btn-info btn-xlarge center" onclick="submitFormOkay = true;">Submit</button>
-</form>
+</form><br><br>
+	<a href={{ url_for('report_article', article = url) }}><button name="report_article" type="button" class="btn btn-danger"><i class="fa fa-exclamation-circle"></i>   Artikel ziet er raar uit</button></a><br><br>
 </div>	
     </div>
 <p>&nbsp;</p>
@@ -95,19 +93,5 @@ window.onbeforeunload = function () {
   }
   }
   </script>
-
-<script>
-            $(document).ready(function () {
-                $("#sidebar").mCustomScrollbar({
-                    theme: "minimal"
-                });
-
-                $('#sidebarCollapse').on('click', function () {
-                    $('#sidebar, #content-new').toggleClass('active');
-                    $('.collapse.in').toggleClass('in');
-                    $('a[aria-expanded=true]').attr('aria-expanded', 'false');
-                });
-            });
-</script>
 {% endblock %}
 

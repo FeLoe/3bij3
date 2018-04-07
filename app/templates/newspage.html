@@ -8,6 +8,12 @@
 <link rel="stylesheet"
       href="{{url_for('.static', filename='mystyle.css')}}">
 {% endblock %}
+<div class="container">
+     <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+       <i class="glyphicon glyphicon-align-left"></i>
+             Menu
+     </button>
+     </div>
 {% if device == "mobile" %}
 {% include 'mobile_newspage.html' %}
 {% elif device == "tablet" %}
