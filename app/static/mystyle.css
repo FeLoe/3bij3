@@ -113,10 +113,13 @@
 
 
 .content_decision {
-  position: absolute;
-  top: 50%;
-  left:50%;
-  transform: translate(-50%,-50%);
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
 }
 
 .btn-xlarge_decision {
@@ -187,6 +190,7 @@ border-color:#80bdff;
 #sidebar .sidebar-header {
     padding: 20px;
     background: #990000;
+    padding-left: 20px;
 }
 
 #sidebar-mobile .sidebar-header-mobile {
@@ -197,13 +201,6 @@ border-color:#80bdff;
 }
 
 #sidebar.active .sidebar-header {
-    padding-left: 10px;
-    padding-top: 20px;
-    background: #990000;
-    display: block;
-}
-
-#sidebar-tablet .sidebar-header-tablet {
     padding-left: 10px;
     padding-top: 20px;
     background: #990000;
@@ -251,13 +248,6 @@ a[data-toggle="collapse"] {
     color: #fff;
 }
 
-#sidebar-tablet ul li a i {
-    margin-right:  0;
-    display: block;
-    font-size: 1.8em;
-    color: #fff;
-}
-
 
 #sidebar-mobile ul ul a {
     padding: 10px !important;
@@ -276,7 +266,7 @@ a[data-toggle="collapse"] {
     margin-bottom: 5px;
 }
 
-#sidebar.active ul li a ul li label span {
+#sidebar.active ul li ul li label span {
 	border: 0;
 	clip: rect(0 0 0 0);
 	height: 1px;
@@ -302,6 +292,8 @@ a[data-toggle="collapse"] {
 
 #sidebar-mobile a[aria-expanded="false"]::before, #sidebar-mobile a[aria-expanded="true"]::before {
 						      top: auto;
+						      bottom: 5px;
+						      right: 50%;
 						      -webkit-transform: translateX(50%);
 						      -ms-transform: translateX(50%);
 						      transform: translateX(50%);
@@ -328,6 +320,11 @@ a[data-toggle="collapse"] {
     right: 0;
 }
 
+#decision-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
 
 .wrapper {
     display: flex;
@@ -349,7 +346,7 @@ a[data-toggle="collapse"] {
     background-color:#C21460;
     position: relative;
     padding-top: 2px;
-    width: 40%;
+    width: 45%;
     height : 35%;
     overflow:hidden;
     color: white;
@@ -362,7 +359,7 @@ a[data-toggle="collapse"] {
     background-color: #B2D732;
     position: relative;
     padding-top: 2px;
-    width: 40%;
+    width: 45%;
     height : 35%;
     overflow:hidden;
     margin:auto;
@@ -374,7 +371,7 @@ a[data-toggle="collapse"] {
     background-color: #FCCC1A;
     position: relative;
     padding-top: 2px;
-    width: 40%;
+    width: 45%;
     height : 30%;
     overflow:hidden;
     margin:auto;
@@ -386,7 +383,7 @@ a[data-toggle="collapse"] {
     background-color: #FB9902;
     position: relative;
     padding-top: 0px;
-    width: 40%;
+    width: 45%;
     height : 35%;
     overflow:hidden;
     margin:auto;
@@ -397,7 +394,7 @@ a[data-toggle="collapse"] {
     background-color: #347C98;
     position: relative;
     padding-top: 2px;
-    width: 40%;
+    width: 45%;
     height : 35%;
     overflow:hidden;
     margin:auto;
@@ -410,7 +407,7 @@ a[data-toggle="collapse"] {
     background-color: #4424D6;
     position: relative;
     padding-top: 2px;
-    width: 40%;
+    width: 45%;
     height : 35%;
     overflow:hidden;
     font-weight: bold;
@@ -423,7 +420,7 @@ a[data-toggle="collapse"] {
     background-color:#55872b;
     position: relative;
     padding-top: 2px;
-    width: 40%;
+    width: 45%;
     height : 35%;
     overflow:hidden;
     margin:auto;
@@ -436,7 +433,7 @@ a[data-toggle="collapse"] {
     background-color: #800000;
     position: relative;
     padding-top: 2px;
-    width: 40%;
+    width: 45%;
     height : 35%;
     overflow:hidden;
     margin:auto;
@@ -449,7 +446,7 @@ a[data-toggle="collapse"] {
     background-color: #ff99dd;
     position: relative;
     padding-top: 2px;
-    width: 40%;
+    width: 45%;
     height : 35%;
     overflow:hidden;
     margin:auto;
@@ -461,7 +458,7 @@ a[data-toggle="collapse"] {
     background-color: #b0aac0;
     position: relative;
     padding-top: 2px;
-    width: 40%;
+    width: 45%;
     height : 35%;
     overflow:hidden;
     margin:auto;

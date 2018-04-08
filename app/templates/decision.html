@@ -10,22 +10,37 @@
 
 {% endblock %}
 {% if device == "mobile" %}
-<div class="content_decision text-center">
+<div id="decision-container">
+<div class="content_decision">
 <p style="font-size:12px"> Wat wilt u nu doen? </p>
-<a href={{ url_for('newspage', show_again = True ) }}><button name="goback" type="button" class="btn btn-info">Terug naar <br> selectie</button>&nbsp;&nbsp;&nbsp;
-	<a href={{ url_for('newspage', show_again = False) }}><button name="getnew" type="button" class="btn btn-info">Nieuwe artikelen <br> ophalen</button></a><br><br>
+<a href={{ url_for('newspage', show_again = True ) }}><button name="goback" type="button" class="btn btn-info" style="font-size:10;">Terug naar <br> selectie</button>&nbsp;&nbsp;&nbsp;
+	<a href={{ url_for('newspage', show_again = False) }}><button name="getnew" type="button" class="btn btn-info" style = "font-size:10;">Nieuwe artikelen <br> ophalen</button></a><br><br>
 <span class = "informatie">
 <a href = "#"> Wat betekent dat? </a>
 </span>
 </div>
+</div>
+{% elif device == "tablet" %}
+<div id="decision-container">
+  <div class="content_decision">
+<p style="font-size:16px"> Wat wilt u nu doen? </p>
+<a href={{ url_for('newspage', show_again = True ) }}><button name="goback" type="button" class="btn btn-lg btn-info">Terug naar <br> selectie</button>&nbsp;&nbsp;&nbsp;
+  <a href={{ url_for('newspage', show_again = False) }}><button name="getnew" type="button" class="btn btn-lg btn-info">Nieuwe artikelen <br> ophalen</button></a><br><br>
+  <span class = "informatie">
+    <a href = "#"> Wat betekent dat? </a>
+  </span>
+  </div>
+  </div>
 {% else %}
-<div class="content_decision text-center">
+<div id="decision-container">
+<div class="content_decision">
 <p style="font-size:28px"> Wat wilt u nu doen? </p>
 <a href={{ url_for('newspage', show_again = True ) }}><button name="goback" type="button" class="btn btn-xlarge_decision btn-info">Terug naar <br> selectie</button>&nbsp;&nbsp;&nbsp;
 	<a href={{ url_for('newspage', show_again = False) }}><button name="getnew" type="button" class="btn btn-xlarge_decision btn-info">Nieuwe artikelen <br> ophalen</button></a><br><br>
 <span class = "informatie">
 <a href = "#"> Wat betekent dat? </a>
 </span>
+</div>
 </div>
 {% endif %}
 {% endblock %}

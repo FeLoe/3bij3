@@ -20,92 +20,93 @@
     {% elif device == "tablet" %}
     <div class = "col-md-2"></div>
     <div class = "col-md-8">
-      
-  {% else %}
-    <div class="col-md-3"></div>
-    <div class="col-md-6">
-      {% endif %}
-<h3 class='text-center'>{{title}}</h3>
-      <p style="color: grey;" class = 'text-center'>{{moment(time).fromNow() }}</p>
-<p class='text-center'><b> {{teaser}}</b></p>
-{% if image != [] %}
-<img src = {{image}}  class="img-responsive" style="margin-bottom:25px">
-{% endif %}
-{% if text |length > 1 %}
-      {% for paragraph in text[:-1]%}
-<p class='text-justify'> {{paragraph}} </p>
-<br style="line-height: 9px" />
-{% endfor %}
-<p class='text-justify'>{{text[-1]}}</p>
-{%else%}
-      {% for paragraph in text%}
-<p class='text-justify'> {{paragraph}} </p>
-{% endfor %}
-{% endif %}
-</div>
-</div>
-</div>
 
-<form action="" method = "post">
-   {{ form.hidden_tag() }}
-<div class="container-fluid">
-  <div class="row">
-    {% if device == "mobile" %}
-    <div class = "col-md-12">
-      {% elif device == "tablet" %}
-      <div class = "col-md-2"></div>
-      <div class = "col-md-8">
-
-	{% else %}
-	<div class="col-md-3"></div>
-	<div class="col-md-6">
-	  {% endif %}
-	  
-      <div class="text-center">
-	<div class="star-rating">
-	  Hoe relevant was dit artikel voor u?<br>
-        <span id="allstars" class="far fa-star fa-2x" data-rating="1"></span>
-        <span id="allstars" class="far fa-star fa-2x" data-rating="2"></span>
-        <span id="allstars" class="far fa-star fa-2x" data-rating="3"></span>
-        <span id="allstars" class="far fa-star fa-2x" data-rating="4"></span>
-        <span id="allstars" class="far fa-star fa-2x" data-rating="5"></span><br>
-        <input type="hidden" id="rating" name="rating" class="rating-value" value="0">
-	<button type="submit" id="rating1" name="submitBtn" class="btn btn-info btn-xlarge center" onclick="submitFormOkay = true;">Submit</button>
-</form><br><br>
-	<a href={{ url_for('report_article', article = url) }}><button name="report_article" type="button" class="btn btn-danger"><i class="fa fa-exclamation-circle"></i>   Artikel ziet er raar uit</button></a><br><br>
-</div>	
+      {% else %}
+      <div class="col-md-3"></div>
+      <div class="col-md-6">
+	{% endif %}
+	<h3 class='text-center'>{{title}}</h3>
+	<p style="color: grey;" class = 'text-center'>{{moment(time).fromNow() }}</p>
+	<p class='text-center'><b> {{teaser}}</b></p>
+	{% if image != [] %}
+	<img src = {{image}}  class="img-responsive" style="margin-bottom:25px">
+	{% endif %}
+	{% if text |length > 1 %}
+	{% for paragraph in text%}
+	<p class='text-justify'> {{paragraph[:-1]}} </p>
+	<br style="line-height: 9px" />
+	{% endfor %}
+	<p class='text-justify'>{{text[-1]}}</p>
+	{%else%}
+	{% for paragraph in text%}
+	<p class='text-justify'> {{paragraph}} </p>
+	{% endfor %}
+	{% endif %}
+      </div>
     </div>
-<p>&nbsp;</p>
+  </div>
+
+  <form action="" method = "post">
+    {{ form.hidden_tag() }}
+    <div class="container-fluid">
+      <div class="row">
+	{% if device == "mobile" %}
+	<div class = "col-md-12">
+	  {% elif device == "tablet" %}
+	  <div class = "col-md-2"></div>
+	  <div class = "col-md-8">
+
+	    {% else %}
+	    <div class="col-md-3"></div>
+	    <div class="col-md-6">
+	      {% endif %}
+
+	      <div class="text-center">
+		<div class="star-rating">
+		  Hoe relevant was dit artikel voor u?<br>
+		  <span id="allstars" class="far fa-star fa-2x" data-rating="1"></span>
+		  <span id="allstars" class="far fa-star fa-2x" data-rating="2"></span>
+		  <span id="allstars" class="far fa-star fa-2x" data-rating="3"></span>
+		  <span id="allstars" class="far fa-star fa-2x" data-rating="4"></span>
+		  <span id="allstars" class="far fa-star fa-2x" data-rating="5"></span><br>
+		  <input type="hidden" id="rating" name="rating" class="rating-value" value="0">
+		  <button type="submit" id="rating1" name="submitBtn" class="btn btn-info btn-xlarge center" onclick="submitFormOkay = true;">Submit</button>
+  </form><br><br>
+  <a href={{ url_for('report_article', article = url) }}><button name="report_article" type="button" class="btn btn-danger" onclick="submitFormOkay = true;"><i class="fa fa-exclamation-circle"></i>   Artikel ziet er raar uit</button></a><br><br>
+  </div>
+  </div>
   <p>&nbsp;</p>
-<script>
-  var $star_rating = $('.star-rating #allstars');
+  <p>&nbsp;</p>
+  <script>
+    var $star_rating = $('.star-rating #allstars');
 
-var SetRatingStar = function() {
-  return $star_rating.each(function() {
+    var SetRatingStar = function() {
+    return $star_rating.each(function() {
     if (parseInt($star_rating.siblings('input.rating-value').val()) >= parseInt($(this).data('rating'))) {
-      return $(this).removeClass('far').addClass('fa');
+    return $(this).removeClass('far').addClass('fa');
     } else {
-      return $(this).removeClass('fa').addClass('far');
+    return $(this).removeClass('fa').addClass('far');
     }
-  });
-};
+    });
+    };
 
-$star_rating.on('click', function() {
-  $star_rating.siblings('input.rating-value').val($(this).data('rating'));
-  return SetRatingStar();
-});
+    $star_rating.on('click', function() {
+    $star_rating.siblings('input.rating-value').val($(this).data('rating'));
+    return SetRatingStar();
+    });
 
-SetRatingStar();
-</script>
-
-<script>
-  var submitFormOkay = false;
-  
-window.onbeforeunload = function () {
-    if (!submitFormOkay) {
-        return true;
-  }
-  }
+    SetRatingStar();
   </script>
-{% endblock %}
 
+  <script>
+    var submitFormOkay = false;
+
+    window.onbeforeunload = function () {
+    if (!submitFormOkay) {
+    return true;
+    }
+    }
+  </script>
+  {% endblock %}
+
+  

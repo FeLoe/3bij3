@@ -70,21 +70,7 @@
 	  });
 
 	  $('#sidebarCollapsemobile').on('click', function () {
-	  $('#sidebar-mobile, #content-new-mobile, #square-mobile').toggleClass('active');
-	  $('.collapse.in').toggleClass('in');
-	  $('a[aria-expanded=true]').attr('aria-expanded', 'false');
-	  });
-	  });
-	</script>
-	{% elif device == "tablet" %}
-	<script>
-	  $(document).ready(function () {
-	  $("#sidebar-tablet").mCustomScrollbar({
-	  theme: "minimal"
-	  });
-
-	  $('#sidebarCollapsetablet').on('click', function () {
-	  $('#sidebar-tablet, #content-new-tablet, #square-tablet').toggleClass('active');
+	  $('#sidebar-mobile, #content-new-mobile, .square-mobile').toggleClass('active');
 	  $('.collapse.in').toggleClass('in');
 	  $('a[aria-expanded=true]').attr('aria-expanded', 'false');
 	  });
@@ -123,12 +109,14 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
   {% block navbar %}
   {% if device == "mobile" %}
   {% include 'mobile_base.html' %}
-  {% elif device == "tablet" %}
-  {% include 'tablet_base.html' %}
   {% else %}
-   <nav id="sidebar">
+  {% if device == "tablet" %}
+  <nav id="sidebar" class = "active" >
+    {% else %}
+    <nav id="sidebar">
+      {% endif %}
       <div class="sidebar-header">
-         <a href="{{ url_for('newspage') }}"><img src="/static/logo_3bij3.png" style="width: 80%; height: 80%; padding-left: 20px;"></a>
+         <a href="{{ url_for('newspage') }}"><img src="/static/logo_3bij3.png" style="width: 80%; height: 80%"></a>
       </div>
       <ul class="list-unstyled components">
 	<li><a href="{{ url_for('newspage') }}"><i class = "fa fa-newspaper"></i>   Nieuws</a></li>
@@ -196,10 +184,10 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
             </form>
         </li>
 	{% endif %}
-	<li><a href="{{ url_for('invite') }}"><i class="fa fa-share-square"></i>   Uitnodiging</a></li>
 	<li><a href="{{ url_for('get_points') }}"><i class="fa fa-chart-bar"></i>   Punten</a></li>
 	 <li><a href="{{ url_for('contact') }}"><i class="fa fa-envelope"></i>   Mail ons</a></li>
-	 <li><a href="{{ url_for('faq') }}"><i class="fa fa-question-circle"></i>   FAQ</a></li>
+	<li><a href="{{ url_for('faq') }}"><i class="fa fa-question-circle"></i>   FAQ</a></li>
+	<li><a href="{{ url_for('invite') }}"><i class="fa fa-share-square"></i>   Uitnodiging</a></li>
             {% if (different_dates >= 10) and (points >= 100) %}
          <li><a href="https://uvacommscience.eu.qualtrics.com/jfe/form/SV_cDanrLD2xY6uywJ?id={}".format(current_user.id)>Studie afsluiten</a></li>
          {% endif %} 
@@ -216,10 +204,12 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
    {% block content %}
    {% if device == "mobile" %}
    <div id = "content-new-mobile" >
-     {% elif device == "tablet" %}
-     <div id = "content-new-tablet" >
-   {% else %}   
-   <div id = "content-new" >
+     {% else %}
+     {% if device == "tablet" %}
+     <div id= "content-new" class = "active">
+       {% else %}
+       <div id = "content-new" >
+	 {% endif %}
      {% endif %}
       <div class="container">
          {% with messages = get_flashed_messages() %}

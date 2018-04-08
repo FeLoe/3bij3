@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 {% block app_content %}
+<div class="container">
+  {% if device == "mobile" %}
+  <button type="button" id="sidebarCollapsemobile" class="btn btn-info navbar-btn">
+    <i class="glyphicon glyphicon-align-left"></i>
+  </button>
+
+  {% else %}
+  <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+    <i class="glyphicon glyphicon-align-left"></i>
+    Menu
+  </button>
+  {% endif %}
+</div>
 
 <div class="row">
   <div class="col-md-7 text-justify">

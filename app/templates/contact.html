@@ -2,15 +2,14 @@
 {% block app_content %}
 
 <div class="row" >
-  <div class = "col-md-2" ></div>
-  <div class = "col-md-8">
+  <div class = "col-xs-8">
 <h1>Contactformulier:</h1>
 
 <form action="/contact" method="post">
       {{ form.hidden_tag() }}
     <p>
       {{ form.message.label }}<br>
-      {{ form.message(rows='10',cols='100') }}
+      {{ form.message(rows='10',cols='50') }}
     </p>
     <button class = "btn btn-info" type="submit">
      Afzenden
