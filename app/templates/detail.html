@@ -5,7 +5,8 @@
 {{super()}}
 <link rel="stylesheet"
       href="{{url_for('.static', filename='mystyle.css')}}">
-<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">
+
 
 {% endblock %}
 
@@ -13,9 +14,17 @@
 {{super()}}
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 {% endblock %}
-  <div class="row">
+<div class="row">
+  {% if device == "mobile" %}
+  <div class = "col-md-12">
+    {% elif device == "tablet" %}
+    <div class = "col-md-2"></div>
+    <div class = "col-md-8">
+      
+  {% else %}
     <div class="col-md-3"></div>
-<div class="col-md-6">
+    <div class="col-md-6">
+      {% endif %}
 <h3 class='text-center'>{{title}}</h3>
       <p style="color: grey;" class = 'text-center'>{{moment(time).fromNow() }}</p>
 <p class='text-center'><b> {{teaser}}</b></p>
@@ -41,16 +50,25 @@
    {{ form.hidden_tag() }}
 <div class="container-fluid">
   <div class="row">
-      <div class="col-md-3"></div>
-<div class="col-md-6">
+    {% if device == "mobile" %}
+    <div class = "col-md-12">
+      {% elif device == "tablet" %}
+      <div class = "col-md-2"></div>
+      <div class = "col-md-8">
+
+	{% else %}
+	<div class="col-md-3"></div>
+	<div class="col-md-6">
+	  {% endif %}
+	  
       <div class="text-center">
 	<div class="star-rating">
 	  Hoe relevant was dit artikel voor u?<br>
-        <span class="fa fa-star-o fa-2x" data-rating="1"></span>
-        <span class="fa fa-star-o fa-2x" data-rating="2"></span>
-        <span class="fa fa-star-o fa-2x" data-rating="3"></span>
-        <span class="fa fa-star-o fa-2x" data-rating="4"></span>
-        <span class="fa fa-star-o fa-2x" data-rating="5"></span><br>
+        <span id="allstars" class="far fa-star fa-2x" data-rating="1"></span>
+        <span id="allstars" class="far fa-star fa-2x" data-rating="2"></span>
+        <span id="allstars" class="far fa-star fa-2x" data-rating="3"></span>
+        <span id="allstars" class="far fa-star fa-2x" data-rating="4"></span>
+        <span id="allstars" class="far fa-star fa-2x" data-rating="5"></span><br>
         <input type="hidden" id="rating" name="rating" class="rating-value" value="0">
 	<button type="submit" id="rating1" name="submitBtn" class="btn btn-info btn-xlarge center" onclick="submitFormOkay = true;">Submit</button>
 </form><br><br>
@@ -58,20 +76,16 @@
 </div>	
     </div>
 <p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
+  <p>&nbsp;</p>
 <script>
-  var $star_rating = $('.star-rating .fa');
+  var $star_rating = $('.star-rating #allstars');
 
 var SetRatingStar = function() {
   return $star_rating.each(function() {
     if (parseInt($star_rating.siblings('input.rating-value').val()) >= parseInt($(this).data('rating'))) {
-      return $(this).removeClass('fa-star-o').addClass('fa-star');
+      return $(this).removeClass('far').addClass('fa');
     } else {
-      return $(this).removeClass('fa-star').addClass('fa-star-o');
+      return $(this).removeClass('fa').addClass('far');
     }
   });
 };

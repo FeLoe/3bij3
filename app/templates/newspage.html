@@ -9,10 +9,17 @@
       href="{{url_for('.static', filename='mystyle.css')}}">
 {% endblock %}
 <div class="container">
+  {% if device == "mobile" %}
+  <button type="button" id="sidebarCollapsemobile" class="btn btn-info navbar-btn">
+    <i class="glyphicon glyphicon-align-left"></i>
+  </button>
+  
+  {% else %}
      <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
        <i class="glyphicon glyphicon-align-left"></i>
              Menu
      </button>
+     {% endif %}
      </div>
 {% if device == "mobile" %}
 {% include 'mobile_newspage.html' %}

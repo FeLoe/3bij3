@@ -8,7 +8,7 @@
 {{super()}}
 <link rel="stylesheet"
       href="{{url_for('.static', filename='mystyle.css')}}">
-<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">
 {% endblock %}
 
 {% block scripts %}
@@ -62,7 +62,36 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
-<script>
+{% if device == "mobile" %}
+	<script>
+	  $(document).ready(function () {
+	  $("#sidebar-mobile").mCustomScrollbar({
+	  theme: "minimal"
+	  });
+
+	  $('#sidebarCollapsemobile').on('click', function () {
+	  $('#sidebar-mobile, #content-new-mobile, #square-mobile').toggleClass('active');
+	  $('.collapse.in').toggleClass('in');
+	  $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+	  });
+	  });
+	</script>
+	{% elif device == "tablet" %}
+	<script>
+	  $(document).ready(function () {
+	  $("#sidebar-tablet").mCustomScrollbar({
+	  theme: "minimal"
+	  });
+
+	  $('#sidebarCollapsetablet').on('click', function () {
+	  $('#sidebar-tablet, #content-new-tablet, #square-tablet').toggleClass('active');
+	  $('.collapse.in').toggleClass('in');
+	  $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+	  });
+	  });
+	</script>
+{% else %}
+	<script>
             $(document).ready(function () {
                 $("#sidebar").mCustomScrollbar({
                     theme: "minimal"
@@ -74,7 +103,9 @@
                     $('a[aria-expanded=true]').attr('aria-expanded', 'false');
                 });
             });
-	  </script>
+</script>
+{% endif %}
+
 <script>
 jQuery(function(){
     var max = 3;
@@ -89,69 +120,74 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
 {% endblock %}
 {% block wrapper %}
 <div class = "wrapper" >
-{% block navbar %}
+  {% block navbar %}
+  {% if device == "mobile" %}
+  {% include 'mobile_base.html' %}
+  {% elif device == "tablet" %}
+  {% include 'tablet_base.html' %}
+  {% else %}
    <nav id="sidebar">
       <div class="sidebar-header">
          <a href="{{ url_for('newspage') }}"><img src="/static/logo_3bij3.png" style="width: 80%; height: 80%; padding-left: 20px;"></a>
       </div>
       <ul class="list-unstyled components">
-	<li><a href="{{ url_for('newspage') }}"><i class = "fa fa-home"></i>   News</a></li>
+	<li><a href="{{ url_for('newspage') }}"><i class = "fa fa-newspaper"></i>   Nieuws</a></li>
 	{% if current_user.group == 1 %}
         <li class="active"> 
-            <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"><i class = "fa fa-edit"></i>   Kies categorieën</a>
+            <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"><i class = "fa fa-edit"></i>   Categorieën</a>
             <form action="{{ url_for('get_categories') }}" method="post">
                <ul class="collapse list-unstyled" id="homeSubmenu">
                   <li>
-                     <label class="control control--checkbox checklist-format">
-                        Binnenland<input class="categories" type="checkbox" name="category" value="Binnenland"/>
+                     <label class="control control--checkbox checklist-format"><i class = "fa fa-home"></i><span>
+                        Binnenland</span><input class="categories" type="checkbox" name="category" value="Binnenland"/>
                         <div class="control__indicator"></div>
                      </label>
                   </li>
                   <li>
-                     <label class="control control--checkbox checklist-format">
-                        Buitenland<input  class="categories" type="checkbox" name="category" value="Buitenland"/>
+                    <label class="control control--checkbox checklist-format"><i class = "fa fa-globe"></i>
+                        <span>Buitenland</span><input  class="categories" type="checkbox" name="category" value="Buitenland"/>
                         <div class="control__indicator"></div>
                      </label>
                   </li>
                   <li>
-                     <label class="control control--checkbox checklist-format">
-                        Economie<input  class="categories" type="checkbox" name="category" value="Economie"/>
+                    <label class="control control--checkbox checklist-format"><i class = "fa fa-money-bill-alt"></i>
+                        <span>Economie</span><input  class="categories" type="checkbox" name="category" value="Economie"/>
                         <div class="control__indicator"></div>
                      </label>
                   </li>
                   <li>
-                     <label class="control control--checkbox checklist-format">
-                        Justitie<input class="categories"  type="checkbox" name="category" value="Justitie"/>
+                    <label class="control control--checkbox checklist-format"><i class = "fa fa-balance-scale"></i>
+                        <span>Justitie</span><input class="categories"  type="checkbox" name="category" value="Justitie"/>
                         <div class="control__indicator"></div>
                      </label>
                   </li>
                   <li>
-                     <label class="control control--checkbox checklist-format">
-                        Sport<input  class="categories" type="checkbox" name="category" value="Sport"/>
+                    <label class="control control--checkbox checklist-format"><i class = "fa fa-futbol"></i>
+                        <span>Sport</span><input  class="categories" type="checkbox" name="category" value="Sport"/>
                         <div class="control__indicator"></div>
                      </label>
                   </li>
                   <li>
-                     <label class="control control--checkbox checklist-format">
-                        Entertainment<input type="checkbox" name="category" value="Entertainment"/>
+                    <label class="control control--checkbox checklist-format"><i class = "fa fa-smile"></i>
+                        <span>Entertainment</span><input type="checkbox" name="category" value="Entertainment"/>
                         <div class="control__indicator"></div>
                      </label>
                   </li>
                   <li>
-                     <label class="control control--checkbox checklist-format">
-                        Immigratie<input type="checkbox" name="category" value="Immigratie"/>
+                    <label class="control control--checkbox checklist-format"><i class = "fa fa-suitcase"></i>
+                        <span>Immigratie</span><input type="checkbox" name="category" value="Immigratie"/>
                         <div class="control__indicator"></div>
                      </label>
                   </li>
                   <li>
-                     <label class="control control--checkbox checklist-format">
-                        Milieu<input type="checkbox" name="category" value="Milieu"/>
+                    <label class="control control--checkbox checklist-format"><i class = "fa fa-leaf"></i>
+                        <span>Milieu</span><input type="checkbox" name="category" value="Milieu"/>
                         <div class="control__indicator"></div>
                      </label>
                   </li>
                   <li>
-                     <label class="control control--checkbox checklist-format">
-                        Anders<input type="checkbox" name="category" value="Anders"/>
+                    <label class="control control--checkbox checklist-format"><i class = "fa fa-ellipsis-h"></i>
+                        <span>Anders</span><input type="checkbox" name="category" value="Anders"/>
                         <div class="control__indicator"></div>
                      </label>
                   </li>
@@ -161,22 +197,30 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
         </li>
 	{% endif %}
 	<li><a href="{{ url_for('invite') }}"><i class="fa fa-share-square"></i>   Uitnodiging</a></li>
-	<li><a href="{{ url_for('get_points') }}"><i class="fa fa-bar-chart-o"></i>   Punten</a></li>
+	<li><a href="{{ url_for('get_points') }}"><i class="fa fa-chart-bar"></i>   Punten</a></li>
 	 <li><a href="{{ url_for('contact') }}"><i class="fa fa-envelope"></i>   Mail ons</a></li>
 	 <li><a href="{{ url_for('faq') }}"><i class="fa fa-question-circle"></i>   FAQ</a></li>
             {% if (different_dates >= 10) and (points >= 100) %}
          <li><a href="https://uvacommscience.eu.qualtrics.com/jfe/form/SV_cDanrLD2xY6uywJ?id={}".format(current_user.id)>Studie afsluiten</a></li>
          {% endif %} 
          {% if current_user.is_anonymous %}
-         <li><a href="{{ url_for('login') }}"><i class="fa fa-sign-in"></i>   Login</a></li>
+         <li><a href="{{ url_for('login') }}"><i class="fa fa-sign-in-alt"></i>   Login</a></li>
          {% else %}
-         <li><a  href="{{url_for('logout') }}"><i class="fa fa-sign-out"></i>   Logout</a></li>
+         <li><a  href="{{url_for('logout') }}"><i class="fa fa-sign-out-alt"></i>   Logout</a></li>
          {% endif %}
       </ul>
    </nav>
+   {% endif %}
+   
    {% endblock %}
    {% block content %}
+   {% if device == "mobile" %}
+   <div id = "content-new-mobile" >
+     {% elif device == "tablet" %}
+     <div id = "content-new-tablet" >
+   {% else %}   
    <div id = "content-new" >
+     {% endif %}
       <div class="container">
          {% with messages = get_flashed_messages() %}
          {% if messages %}

@@ -72,7 +72,7 @@ def logout():
 
 @app.route('/consent', methods = ['GET', 'POST'])
 def consent():
-    other_user = request.args.to_dict()
+    other_user = request.args.to_dict()['user']
     if other_user is not None:
         other_user = other_user
     else:
@@ -215,6 +215,7 @@ def last_seen():
     return news_last_seen
 
 @app.route('/save/<id>', methods = ['GET', 'POST'])
+@login_required
 def save_selected(id):
     selected = News.query.filter_by(id = id).first()
     es_id = selected.elasticsearch
@@ -374,7 +375,7 @@ def points_overview():
         except:
             points_stories = 0
         try:
-            points_ratings = user.sum_ratings
+            points_ratings = float(user.sum_ratings)
             if points_ratings is None:
                 points_ratings = 0
         except:
@@ -388,7 +389,7 @@ def points_overview():
             for item in user_invite_host:
                 if item.stories_read >= 5 and item.times_logged_in >= 2:
                     number_invited.append(item.id)
-                    invites_points = Points_invites.query.filter_by(user_guest = item.user_guest).first()
+                    invites_points = User_invite.query.filter_by(user_guest = item.user_guest).first()
                     if invites_points is None:
                          points_invites = Points_invites(user_guest_new = item.user_guest, points_invites = 5, user_id = current_user.id)
                          db.session.add(points_invites)
@@ -417,15 +418,23 @@ def points_all_users():
     points_stories_all = [item[0] for item in User.query.with_entities(User.sum_stories).all()]
     if points_stories_all is None:
         points_stories_all = [0]
+    else:
+        points_stories_all = [0 if x==None else x for x in points_stories_all]
     points_invites_all = [item[0] for item in User.query.with_entities(User.sum_invites).all()]
-    if all(v is None for v in points_invites_all) is True:
-        points_invites_all = [0] * len(points_invites_all)
+    if points_invites_all is None:
+        points_invites_all = [0]
+    else:
+        points_invites_all = [0 if x==None else x for x in points_invites_all]
     points_ratings_all = [item[0] for item in User.query.with_entities(User.sum_ratings).all()]
     if points_ratings_all is None:
         points_ratings_all = [0]
+    else:
+        points_ratings_all = [0 if x==None else x for x in points_ratings_all]
     points_logins_all = [item[0] for item in  User.query.with_entities(User.sum_logins).all()]
     if points_logins_all is None:
         points_logins_all = [0]
+    else:
+        points_logins_all = [0 if x==None else x for x in points_logins_all]
     return dict(points_stories_all = points_stories_all, points_invites_all = points_invites_all, points_ratings_all = points_ratings_all, points_logins_all = points_logins_all) 
     
 @app.context_processor
@@ -482,7 +491,7 @@ def contact():
             %s
             """ % (name, email, form.message.data)
             mail.send(msg)
-            return "Bericht is succesvol verzonden."
+            return redirect(url_for('newspage'))
     elif request.method == 'GET':
         return render_template('contact.html', form=form)
 
@@ -491,39 +500,42 @@ def faq():
     return render_template("faq.html")
 
 @app.route('/points', methods = ['GET'])
+@login_required
 def get_points():
     stories = points_all_users()['points_stories_all']
     max_stories = max(stories)
     min_stories = min(stories)
-    avg_stories  = sum(stories)/len(stories)
+    avg_stories  = round((sum(stories)/len(stories)),1)
     logins = points_all_users()['points_logins_all']
     max_logins = max(logins)
     min_logins = min(logins)
-    avg_logins  = sum(logins)/len(logins)
+    avg_logins  = round((sum(logins)/len(logins)),1)
     ratings = points_all_users()['points_ratings_all']
     ratings = [float(i) for i in ratings]
     max_ratings = max(ratings)
     min_ratings = min(ratings)
-    avg_ratings  = sum(ratings)/len(ratings)
+    avg_ratings  = round((sum(ratings)/len(ratings)), 1)
     invites = points_all_users()['points_invites_all']
     max_invites = max(invites)
     min_invites = min(invites)
-    avg_invites  = sum(invites)/len(invites)
+    avg_invites  = round((sum(invites)/len(invites)), 1)
     points_overall = [sum(item) for item in zip(stories, logins, ratings, invites)]
     max_overall = max(points_overall)
     min_overall = min(points_overall)
-    avg_overall  = sum(points_overall)/len(points_overall)
+    avg_overall  = round((sum(points_overall)/len(points_overall)), 2)
     return render_template("display_points.html", max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall)
     
 
 @app.route('/invite', methods = ['GET', 'POST'])
+@login_required
 def invite():
-    url = "www.3bij3.nl/consent?{}".format(current_user.id)
+    url = "www.3bij3.nl/consent?user={}".format(current_user.id)
     return render_template("invite.html", url = url)
 
 @app.route('/report_article', methods = ['GET', 'POST'])
+@login_required
 def report_article():
-    url = request.args.to_dict()
+    url = request.args.to_dict()['article']
     form = ReportForm()
     if request.method == 'POST':
         if form.validate() == False:
@@ -531,17 +543,18 @@ def report_article():
         else:
             name =  current_user.username
             email =  current_user.email
-            msg = Message("Message from your visitor " + name + "about article" + url,
+            msg = Message("Message from your visitor " + name,
                           sender= email,
                           recipients=app.config['ADMINS'])
             msg.body = """
             From: %s <%s>,
-            %s
-            """ % (name, email, form.message.data)
+            %s,
+            url: %s
+            """ % (name, email, form.message.data, url)
             mail.send(msg)
-            return "Heel erg bedankt voor uw feedback!"
+            return redirect(url_for('newspage'))
     elif request.method == 'GET':
-        return render_template('contact.html', form=form)
+        return render_template('report_article.html', form=form)
 
     
     return render_template("report_article.html")

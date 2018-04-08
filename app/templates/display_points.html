@@ -8,8 +8,12 @@
 
 {% block app_content %}
 <div class="row">
+  {% if device == "mobile" %}
+  <div class = "col-xs-12" >
+  {% else %}
   <div class = "col-xs-1"></div>
   <div class = "col-xs-8">
+    {% endif %}
     <br>
     <br>
     <h4><b><u>Punten totaal: {{ points }}</u></b></h4><br>
@@ -25,14 +29,14 @@
     {% else %}
     <div class="barwrap" >
       <div class="progress">
-                <div class="bar-step" style={{ "left:number%" | replace("number", ((max_overall - avg_overall)/(max_overall - min_overall))*100) }}>
+                <div class="bar-step" style={{ "left:number%" | replace("number", (avg_overall/(max_overall - min_overall))*100) }}>
                     <div class="label-txt"><b>Gemiddelde: {{ avg_overall }}</b></div>
                     <div class="label-line"></div>
                 </div>
     {% if points == max_overall %}
     <div class="progress-bar progress-bar-striped " style="width: 100%"></div>
       {% else %}
-      <div class="progress-bar progress-bar-striped" aria-valuenow = {{points }} aria-valuemin={{min_overall}} aria-valuemax={{max_overall}}></div>
+    <div class="progress-bar progress-bar-striped" aria-valuenow = {{points }} aria-valuemin={{min_overall}} aria-valuemax={{max_overall}} style={{ "width:number%" | replace("number", (points/(max_overall - min_overall))*100) }}></div>
       {% endif %}
           </div>
     </div>
@@ -46,14 +50,14 @@
     {% else %}
     <div class="barwrap" >
       <div class="progress">
-                <div class="bar-step" style={{ "left:number%" | replace("number", ((max_logins - avg_logins)/(max_logins - min_logins))*100) }}>
+                <div class="bar-step" style={{ "left:number%" | replace("number", (avg_logins/(max_logins - min_logins))*100) }}>
                     <div class="label-txt"><b>Gemiddelde: {{ avg_logins }}</b></div>
                     <div class="label-line"></div>
                 </div>
     {% if points_logins == max_logins %}
     <div class="progress-bar progress-bar-striped progress-bar-danger" style="width: 100%"></div>
       {% else %}
-      <div class="progress-bar progress-bar-striped progress-bar-danger" aria-valuenow = {{points_logins }} aria-valuemin={{min_logins}} aria-valuemax={{max_logins}}></div>
+      <div class="progress-bar progress-bar-striped progress-bar-danger" aria-valuenow = {{points_logins }} aria-valuemin={{min_logins}} aria-valuemax={{max_logins}} style={{ "width:number%" | replace("number", (points_logins/(max_logins - min_logins))*100) }}></div>
       {% endif %}
           </div>
     </div>
@@ -67,14 +71,14 @@
     {% else %}
        <div class="barwrap" >
       <div class="progress">
-                <div class="bar-step" style={{ "left:number%" | replace("number", ((max_stories - avg_stories)/(max_stories - min_stories))*100) }}>
+                <div class="bar-step" style={{ "left:number%" | replace("number", (avg_stories/(max_stories - min_stories))*100) }}>
                     <div class="label-txt"><b>Gemiddelde: {{ avg_stories }}</b></div>
                     <div class="label-line"></div>
                 </div>
     {% if points_stories == max_stories %}
     <div class="progress-bar progress-bar-striped progress-bar-warning" style="width: 100%"></div>
       {% else %}
-      <div class="progress-bar progress-bar-striped progress-bar-warning" aria-valuenow = {{points_stories }} aria-valuemin={{min_stories}} aria-valuemax={{max_stories}}></div>
+    <div class="progress-bar progress-bar-striped progress-bar-warning" aria-valuenow = {{points_stories }} aria-valuemin={{min_stories}} aria-valuemax={{max_stories}} style={{ "width:number%" | replace("number", (points_stories/(max_stories - min_stories))*100) }}></div>
       {% endif %}
           </div>
     </div>
@@ -88,14 +92,14 @@
     {% else %}
 	       <div class="barwrap" >
       <div class="progress">
-                <div class="bar-step" style={{ "left:number%" | replace("number", ((max_ratings - avg_ratings)/(max_ratings - min_ratings))*100) }}>
+                <div class="bar-step" style={{ "left:number%" | replace("number", (avg_ratings/(max_ratings - min_ratings))*100) }}>
                     <div class="label-txt"><b>Gemiddelde: {{ avg_ratings }}</b></div>
                     <div class="label-line"></div>
                 </div>
     {% if points_ratings == max_ratings %}
 		<div class="progress-bar progress-bar-striped" style="width: 100%"></div>
       {% else %}
-      <div class="progress-bar progress-bar-striped" aria-valuenow = {{points_ratings }} aria-valuemin={{min_ratings}} aria-valuemax={{max_ratings}}></div>
+		<div class="progress-bar progress-bar-striped" aria-valuenow = {{points_ratings }} aria-valuemin={{min_ratings}} aria-valuemax={{max_ratings}} style={{ "width:number%" | replace("number", (points_ratings/(max_ratings - min_ratings))*100) }}></div>
       {% endif %}
           </div>
     </div>
@@ -108,14 +112,14 @@
     {% else %}
        <div class="barwrap" >
       <div class="progress">
-                <div class="bar-step" style={{ "left:number%" | replace("number", ((max_invites - avg_invites)/(max_invites - min_invites))*100) }}>
+                <div class="bar-step" style={{ "left:number%" | replace("number", (avg_invites/(max_invites - min_invites))*100) }}>
                     <div class="label-txt"><b>Gemiddelde: {{ avg_invites }}</b></div>
                     <div class="label-line"></div>
                 </div>
     {% if points_invites == max_invites %}
     <div class="progress-bar progress-bar-striped progress-bar-info" style="width: 100%"></div>
       {% else %}
-      <div class="progress-bar progress-bar-striped progress-bar-info" aria-valuenow = {{points_invites }} aria-valuemin={{min_invites}} aria-valuemax={{max_invites}}></div>
+    <div class="progress-bar progress-bar-striped progress-bar-info" aria-valuenow = {{points_invites }} aria-valuemin={{min_invites}} aria-valuemax={{max_invites}} style={{ "width:number%" | replace("number", (points_invites/(max_invites - min_invites))*100) }}></div>
       {% endif %}
           </div>
     </div>
