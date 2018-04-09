@@ -84,12 +84,13 @@
                 });
 
                 $('#sidebarCollapse').on('click', function () {
-                    $('#sidebar, #content-new').toggleClass('active');
+            $('#sidebar, #content-new').toggleClass('active');
                     $('.collapse.in').toggleClass('in');
-                    $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+            $('a[aria-expanded=true]').attr('aria-expanded', 'false');
                 });
             });
-</script>
+	</script>
+	
 {% endif %}
 
 <script>
@@ -179,7 +180,7 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
                         <div class="control__indicator"></div>
                      </label>
                   </li>
-                  <li style="padding-left: 20px;"><input class = "btn btn-info" type="submit" value="Wijzigen"></li>
+                  <li style="padding-left: 20px;"><span><input class = "btn btn-info" type="submit" value="Wijzigen"></span></li>
                </ul>
             </form>
         </li>

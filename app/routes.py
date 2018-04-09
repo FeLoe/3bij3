@@ -128,7 +128,7 @@ def newspage(show_again = 'False'):
         if documents == "not enough stories":
             return render_template('no_stories_error.html')
     for result in documents:
-        news_displayed = News(elasticsearch = result["_id"], user_id = current_user.id, recommended = result['recommended'])
+        news_displayed = News(elasticsearch = result["_id"], url = result["_source"]["url"], user_id = current_user.id, recommended = result['recommended'])
         db.session.add(news_displayed)
         db.session.commit()
         result["new_id"] = news_displayed.id
@@ -226,7 +226,7 @@ def last_seen():
 def save_selected(id):
     selected = News.query.filter_by(id = id).first()
     es_id = selected.elasticsearch
-    news_selected = News_sel(news_id = selected.elasticsearch, user_id =current_user.id)
+    news_selected = News_sel(news_id = selected.elasticsearch, user_id =current_user.id, )
     db.session.add(news_selected)
     db.session.commit()
     selected_id = News_sel.query.filter_by(user_id = current_user.id).order_by(desc(News_sel.id)).first().__dict__['id']
@@ -297,7 +297,7 @@ def show_detail(id):
 
      session['start_time'] = datetime.utcnow()
          
-     return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, time = publication_date, form = form)
+     return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, time = publication_date, form = form, id = id)
 
 
 @app.route('/decision', methods = ['GET', 'POST'])
@@ -470,14 +470,16 @@ def contact():
             return 'Vul alstublieft alle velden in <p><a href="/contact">Probeer het opnieuw!!! </a></p>'
         else:
             name =  current_user.username
+            id = str(current_user.id)
             email =  current_user.email
-            msg = Message("Message from your visitor " + name,
+            msg = Message("Message from your visitor " + name + "with ID: " + id,
                           sender= email,
                           recipients=app.config['ADMINS'])
             msg.body = """
             From: %s <%s>,
             %s
-            """ % (name, email, form.message.data)
+            %s
+            """ % (name, email, form.lead.data, form.message.data)
             mail.send(msg)
             return redirect(url_for('newspage'))
     elif request.method == 'GET':
@@ -540,24 +542,24 @@ def invite():
 @app.route('/report_article', methods = ['GET', 'POST'])
 @login_required
 def report_article():
-    url = request.args.to_dict()['article']
     form = ReportForm()
     if request.method == 'POST':
         if form.validate() == False:
             return 'Vul alstublieft alle velden in <p><a href="/contact">Probeer het opnieuw!!! </a></p>'
         else:
             name =  current_user.username
-            email =  current_user.email
-            msg = Message("Message from your visitor " + name,
+            email =  current_user.email   
+            msg = Message("Report Message from your visitor blabla",
                           sender= email,
                           recipients=app.config['ADMINS'])
             msg.body = """
             From: %s <%s>,
             %s,
             url: %s
-            """ % (name, email, form.message.data, url)
+            """ % (name, email, form.message.data)
             mail.send(msg)
             return redirect(url_for('newspage'))
     elif request.method == 'GET':
-        return render_template('report_article.html', form=form)
-
+        url = request.args.to_dict()['article']
+        form.lead.data = "Probleem met artikel " + url
+        return render_template('report_article.html', form=form, url = url)

@@ -10,6 +10,7 @@
 .btn-mobile {
     padding: 6px 6px;
     font-size: 8px;
+    text-align:center;
 }
 
 
@@ -167,6 +168,17 @@ border-color:#80bdff;
     text-align: center;
 }
 
+#collapsewhenmenu.active {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
 
 
 #sidebar {
@@ -214,11 +226,11 @@ border-color:#80bdff;
 }
 
 #sidebar ul li a {
-    padding: 15px;
+    padding: 10px;
     color:#ffffff;
-    font-size:20px;
+    font-size:18px;
     display: block;
-    height:55px;
+    height:40px;
 }
 
 
@@ -237,8 +249,8 @@ a[data-toggle="collapse"] {
     font-size: 0.85em;
     color: #fff;
     display: block;
-    margin-top:10px;
-    margin-bottom: 10px;
+    margin-top:4px;
+    margin-bottom: 4px;
 }
 
 #sidebar-mobile ul li a i {
@@ -262,7 +274,7 @@ a[data-toggle="collapse"] {
 #sidebar.active ul li a i {
     margin-right:  0;
     display: block;
-    font-size: 1.8em;
+    font-size: 1.5em;
     margin-bottom: 5px;
 }
 
@@ -277,6 +289,12 @@ a[data-toggle="collapse"] {
 	width: 1px;
 }
 
+#sidebar.active ul li ul li span input {
+    padding: 6px 6px;
+    font-size: 8px;
+}
+
+
 #sidebar.active ul ul a {
     padding: 10px !important;
 }
@@ -289,6 +307,23 @@ a[data-toggle="collapse"] {
     -ms-transform: translateX(50%);
     transform: translateX(50%);
 						  }
+
+#sidebar.active a[aria-expanded="true"] {
+    margin-bottom: 10px;
+}
+
+#sidebar a[aria-expanded="false"]::before, #sidebar a[aria-expanded="true"]::before {
+	content: '\e259';
+	display: block;
+	position: absolute;
+	right: 20px;
+	font-family: 'Glyphicons Halflings';
+	font-size: 0.6em;
+}
+
+#sidebar a[aria-expanded="true"]::before {
+    content: '\e260';
+}
 
 #sidebar-mobile a[aria-expanded="false"]::before, #sidebar-mobile a[aria-expanded="true"]::before {
 						      top: auto;

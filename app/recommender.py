@@ -84,7 +84,17 @@ class recommender():
                         final_docs.append(doc)
                 except KeyError:
                         pass
-        return final_docs
+        final_docs2 = []
+        for doc in final_docs:
+            try:
+                paywall = doc["_source"]["paywall_na"]
+                if paywall == False:
+                    final_docs2.append(doc)
+                else:
+                    pass
+            except KeyError:
+                final_docs2.append(doc)
+        return final_docs2
  
     def random_selection(self):
         '''Selects a random sample of the last articles'''

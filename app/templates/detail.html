@@ -32,8 +32,8 @@
 	<img src = {{image}}  class="img-responsive" style="margin-bottom:25px">
 	{% endif %}
 	{% if text |length > 1 %}
-	{% for paragraph in text%}
-	<p class='text-justify'> {{paragraph[:-1]}} </p>
+	{% for paragraph in text[:-1]%}
+	<p class='text-justify'> {{paragraph}} </p>
 	<br style="line-height: 9px" />
 	{% endfor %}
 	<p class='text-justify'>{{text[-1]}}</p>
@@ -70,9 +70,9 @@
 		  <span id="allstars" class="far fa-star fa-2x" data-rating="4"></span>
 		  <span id="allstars" class="far fa-star fa-2x" data-rating="5"></span><br>
 		  <input type="hidden" id="rating" name="rating" class="rating-value" value="0">
-		  <button type="submit" id="rating1" name="submitBtn" class="btn btn-info btn-xlarge center" onclick="submitFormOkay = true;">Submit</button>
+		  <button type="submit" id="rating1" name="submitBtn" class="btn btn-info btn-xlarge center" onclick="submitFormOkay = true;">Verzenden</button>
   </form><br><br>
-  <a href={{ url_for('report_article', article = url) }}><button name="report_article" type="button" class="btn btn-danger" onclick="submitFormOkay = true;"><i class="fa fa-exclamation-circle"></i>   Artikel ziet er raar uit</button></a><br><br>
+  <a href={{ url_for('report_article', article = id) }}><button name="report_article" type="button" class="btn btn-danger" onclick="submitFormOkay = true;"><i class="fa fa-exclamation-circle"></i>   Artikel ziet er raar uit</button></a><br><br>
   </div>
   </div>
   <p>&nbsp;</p>

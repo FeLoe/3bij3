@@ -59,9 +59,11 @@ class rating(FlaskForm):
     rating = TextAreaField()
 
 class ContactForm(FlaskForm):
+    lead = TextAreaField('Onderwerp:', validators = [DataRequired()])
     message = TextAreaField('Uw bericht:', validators = [DataRequired()])
     submit = SubmitField('Afzenden')
 
 class ReportForm(FlaskForm):
-    message = TextAreaField('Wat voor soort problemen zijn er met het artikel?:', validators = [DataRequired()])
+    lead = TextAreaField('Onderwerp:', validators = [DataRequired()])
+    message = TextAreaField('Wat voor soort problemen zijn er met het artikel?', validators = [DataRequired()])
     submit = SubmitField('Afzenden')

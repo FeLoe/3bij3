@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 {% block app_content %}
+{% if device == "mobile" %}
+<button type="button" id="sidebarCollapsemobile" class="btn btn-info navbar-btn">
+  <i class="glyphicon glyphicon-align-left"></i>
+</button>
+
+{% else %}
+<button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+  <i class="glyphicon glyphicon-align-left"></i>
+  Menu
+</button>
+{% endif %}
 
 <div class="row" >
   <div class = "col-xs-8">
@@ -7,7 +18,11 @@
 
 <form action="/contact" method="post">
       {{ form.hidden_tag() }}
-    <p>
+      <p>
+        {{ form.lead.label }}<br>
+        {{ form.lead(rows = '2', cols = '50' }}
+      </p>
+      <p>
       {{ form.message.label }}<br>
       {{ form.message(rows='10',cols='50') }}
     </p>
