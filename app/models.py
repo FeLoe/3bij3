@@ -125,6 +125,7 @@ class Points_logins(db.Model):
     points_logins = db.Column(db.Integer, default = 0)
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_agent = db.Column(db.String(500))
     
 @login.user_loader
 def load_user(id):

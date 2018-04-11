@@ -68,33 +68,18 @@ class recommender():
                           }
                       }}).get('hits',{}).get('hits',[""])
         final_docs = []
-        for doc in docs: 
-            try:
-                text = doc["_source"][self.textfield]
-                teaser = doc["_source"][self.teaserfield]
-                topic = doc["_source"]["topic"]
-                if doc["_id"] not in displayed_ids:
-                    final_docs.append(doc)
-            except KeyError:
-                try:
-                    text = doc["_source"][self.textfield] 
-                    teaser = doc["_source"][self.teaseralt]
-                    topic = doc["_source"]["topic"]
-                    if doc["_id"] not in displayed_ids:
-                        final_docs.append(doc)
-                except KeyError:
-                        pass
-        final_docs2 = []
-        for doc in final_docs:
-            try:
-                paywall = doc["_source"]["paywall_na"]
-                if paywall == False:
-                    final_docs2.append(doc)
-                else:
+        a = ["podcast", "live"]
+        for doc in docs:
+            if self.textfield not in doc["_source"].keys() or (self.teaserfield not in doc["_source"].keys() and self.teaseralt not in doc["_source"].keys()) or "topic" not in doc["_source"].keys():
+                pass
+            elif "paywall_na" in doc["_source"].keys():
+                if doc["_source"]["paywall_na"] == True:
                     pass
-            except KeyError:
-                final_docs2.append(doc)
-        return final_docs2
+            elif any(x in doc["_source"][self.textfield] for x in a)or any(x in doc["_source"][self.teaserfield] for x in a):
+                pass
+            else:
+                final_docs.append(doc)
+        return final_docs
  
     def random_selection(self):
         '''Selects a random sample of the last articles'''

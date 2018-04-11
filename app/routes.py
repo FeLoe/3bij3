@@ -34,6 +34,7 @@ def login():
             flash('Ongeldige gebruikersnaam of wachtwoord')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
+        user_string = request.headers.get('User-Agent')
         points_logins = Points_logins.query.filter_by(user_id = current_user.id).all()
         if points_logins is None:
             logins = Points_logins(points_logins = 2, user_id = current_user.id)
@@ -48,10 +49,10 @@ def login():
                 else:
                     pass
             if points_today >= 4:
-                logins = Points_logins(points_logins = 0, user_id = current_user.id)
+                logins = Points_logins(points_logins = 0, user_id = current_user.id, user_agent = user_string)
                 db.session.add(logins)
             else:
-                logins = Points_logins(points_logins = 2, user_id = current_user.id)
+                logins = Points_logins(points_logins = 2, user_id = current_user.id, user_agent = user_string)
                 db.session.add(logins)
         db.session.commit()
         user_guest = user.username
