@@ -55,4 +55,4 @@ if not app.debug:
     app.logger.setLevel(logging.INFO)
     app.logger.info('3bij3 startup')
 
-from app import routes, models, errors, recommender
+from app import routes, models, errors, recommender, processing

@@ -75,7 +75,7 @@ class recommender():
             elif "paywall_na" in doc["_source"].keys():
                 if doc["_source"]["paywall_na"] == True:
                     pass
-            elif any(x in doc["_source"][self.textfield] for x in a)or any(x in doc["_source"][self.teaserfield] for x in a):
+            elif any(x in doc["_source"][self.textfield] for x in a):
                 pass
             else:
                 final_docs.append(doc)

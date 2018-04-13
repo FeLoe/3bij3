@@ -23,6 +23,7 @@ class User(UserMixin, db.Model):
     categories = db.relationship('Category', backref = 'user', lazy = 'dynamic')
     displayed_news = db.relationship('News', backref = 'user', lazy = 'dynamic')
     selected_news = db.relationship('News_sel', backref = 'user', lazy = 'dynamic')
+    last_visit = db.Column(db.DateTime, default=datetime.utcnow)
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
