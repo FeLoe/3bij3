@@ -208,6 +208,8 @@ def count_logins():
                 pass  
         try:
             date = current_user.last_visit
+            if date is  None:
+                date = datetime.utcnow()
         except:
             date = datetime.utcnow()
         difference = now - date

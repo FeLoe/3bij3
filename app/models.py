@@ -87,7 +87,7 @@ class News(db.Model):
     
 class News_sel(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    news_id = db.Column(db.String(140))
+    news_id = db.Column(db.String(500))
     starttime = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     endtime = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     time_spent = db.Column(db.Interval)
