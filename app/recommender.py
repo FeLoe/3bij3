@@ -42,8 +42,12 @@ class recommender():
         user = User.query.get(current_user.id)
         selected_articles = user.selected_news.all()
         selected_ids = [a.news_id for a in selected_articles]
-        docs = es.search(index=indexName,
-            body={"query":{"terms":{"_id":selected_ids}}}).get('hits',{}).get('hits',[""])
+        docs = []
+        for item in selected_ids:
+            doc = es.search(index=indexName,
+                body={"query":{"terms":{"_id":[item]}}}).get('hits',{}).get('hits',[""])
+            for d in doc:
+                docs.append(d)
         return docs
     
     def doctype_last(self, doctype, by_field = "META.ADDED", num = None):
@@ -112,8 +116,8 @@ class recommender():
         query_ids = [a['_id'] for a in query_list]
         query_generator = [tfidf[dictionary.doc2bow(n['_source'][self.textfield].split())] for n in query_list]
         query_generator = (item for item in query_generator)
-        new_articles = es.search(index=indexName,
-            body={"query":{"terms":{"_id":article_ids}}}).get('hits',{}).get('hits',[""])                        
+        new_articles = [self.doctype_last(s) for s in list_of_sources]
+        new_articles = [a for b in new_articles for a in b]
         #Get the three most similar new articles for each past article and store their ids in a list                
         selection = []
         ids = []
@@ -138,9 +142,9 @@ class recommender():
         except ValueError:
             try:
                 newtry = self.num_more
-                articles = [self.doctype_last(s, num = newtry) for s in list_of_sources]
-                all_articles = [a for b in articles for a in b]
-                random_list = [a for a in all_articles if a["_id"] not in recommender_ids] 
+                new_articles = [self.doctype_last(s, num = newtry) for s in list_of_sources]
+                new_articles = [a for b in articles for a in b]
+                random_list = [a for a in new_articles if a["_id"] not in recommender_ids] 
                 random_selection = random.sample(random_list, self.num_select)
             except:
                 random_selection = "not enough stories"
