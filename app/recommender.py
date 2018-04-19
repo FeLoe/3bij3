@@ -116,8 +116,7 @@ class recommender():
         query_ids = [a['_id'] for a in query_list]
         query_generator = [tfidf[dictionary.doc2bow(n['_source'][self.textfield].split())] for n in query_list]
         query_generator = (item for item in query_generator)
-        new_articles = [self.doctype_last(s) for s in list_of_sources]
-        new_articles = [a for b in new_articles for a in b]
+        new_articles = es.search(index=indexName, body={"query":{"terms":{"_id":article_ids}}}).get('hits',{}).get('hits',[""])    
         #Get the three most similar new articles for each past article and store their ids in a list                
         selection = []
         ids = []

@@ -192,7 +192,10 @@ def count_logins():
         show_again = parameter['show_again']
     except KeyError:
         show_again = "False"
-    user_string = request.headers.get('User-Agent')
+    try:
+        user_string = request.headers.get('User-Agent')
+    except:
+        user_string = " "
     points_logins = Points_logins.query.filter_by(user_id = current_user.id).all()
     if points_logins is None or points_logins == []:
         logins = Points_logins(points_logins = 2, user_id = current_user.id)
@@ -457,12 +460,16 @@ def points_overview():
 @app.context_processor
 def user_agent():
     user_string = request.headers.get('User-Agent')
-    user_agent = parse(user_string)
-    if user_agent.is_mobile == True:
-        device = "mobile"
-    elif user_agent.is_tablet == True:
-        device = "tablet"
-    else:
+    try:
+        user_agent = parse(user_string)
+        if user_agent.is_mobile == True:
+            device = "mobile"
+        elif user_agent.is_tablet == True:
+            device = "tablet"
+        else:
+            device = "pc"
+    except:
+        user_agent = " "
         device = "pc"
     return dict(device = device)
     
