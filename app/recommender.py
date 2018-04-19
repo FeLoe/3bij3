@@ -116,7 +116,12 @@ class recommender():
         query_ids = [a['_id'] for a in query_list]
         query_generator = [tfidf[dictionary.doc2bow(n['_source'][self.textfield].split())] for n in query_list]
         query_generator = (item for item in query_generator)
-        new_articles = es.search(index=indexName, body={"query":{"terms":{"_id":article_ids}}}).get('hits',{}).get('hits',[""])    
+        new_articles = []
+        for item in article_ids:
+            doc = es.search(index=indexName,
+                body={"query":{"terms":{"_id":[item]}}}).get('hits',{}).get('hits',[""])
+            for d in doc:
+                new_articles.append(d)
         #Get the three most similar new articles for each past article and store their ids in a list                
         selection = []
         ids = []
@@ -129,9 +134,9 @@ class recommender():
             for i in range(3):
                 selection.append(sims_ids[i][1])
         #Use a counter to determine the most frequently named articles and take the first ones (specified by variable)
-        recommender_ids = [a for a, count in Counter(selection).most_common(self.num_recommender)]
-        recommender_selection = [a for a in new_articles if a["_id"] in recommender_ids]
-        #Mark the selected articles as recommended, select random articles from the non-recommended articles (and get more if not enough unseen articles available), put the two lists together, randomize the ordering and return them 
+        recommender_ids = [a[1] for a, count in Counter(selection).most_common(self.num_recommender)]
+        recommender_selection = [a for a in new_articles if a["_id"] in recommender_ids] 
+        #Mark the selected articles as recommended, select random articles from the non-recommended articles (and get more if not enough unseen articles available), put the two lists together, randomize the ordering and return them
         num_random = self.num_select - len(recommender_selection)
         random_list = [a for a in new_articles if a["_id"] not in recommender_ids and a["_id"] not in query_ids]             
         try:
