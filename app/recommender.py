@@ -144,7 +144,7 @@ class recommender():
                 new_articles = [self.doctype_last(s, num = newtry) for s in list_of_sources]
                 new_articles = [a for b in articles for a in b]
                 random_list = [a for a in new_articles if a["_id"] not in recommender_ids] 
-                random_selection = random.sample(random_list, self.num_select)
+                random_selection = random.sample(random_list, num_random)
             except:
                 random_selection = "not enough stories"
                 return(random_selection)
