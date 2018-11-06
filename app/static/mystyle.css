@@ -582,3 +582,27 @@ a[data-toggle="collapse"] {
     width:2px;
     margin-right:2px;
 }
+
+ #bookmark-this {
+  padding: 5px 10px;
+  background-color:  #80bdff;
+  border: 1px solid #80bdff;
+  font-size: 12px;
+  color: #fff;
+  text-decoration: none;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+}
+
+#bookmark-this:hover {
+  background-color: #9bc7f7;
+  border: 1px solid #9bc7f7;
+  text-decoration: none;
+}
+
+#bookmark-this:active {
+  background-color: #9bc7f7;
+  border: 1px solid #9bc7f7;
+}

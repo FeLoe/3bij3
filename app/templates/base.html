@@ -9,6 +9,8 @@
 <link rel="stylesheet"
       href="{{url_for('.static', filename='mystyle.css')}}">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{url_for('.static', filename='addtohomescreen.css')}}">
+       
 {% endblock %}
 
 {% block scripts %}
@@ -62,6 +64,7 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+	<script src="{{url_for('.static', filename='addtohomescreen.js')}}"></script>
 {% if device == "mobile" %}
 	<script>
 	  $(document).ready(function () {
@@ -103,6 +106,40 @@ jQuery(function(){
 checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
     });
 });
+</script>
+<script>
+       jQuery(function($) {
+  
+  $('#bookmark-this').click(function(e) {
+    var bookmarkURL = window.location.href;
+    var bookmarkTitle = document.title;
+
+    if ('addToHomescreen' in window && addToHomescreen.isCompatible) {
+      // Mobile browsers
+      addToHomescreen({ autostart: false, startDelay: 0 }).show(true);
+    } else if (window.sidebar && window.sidebar.addPanel) {
+      // Firefox <=22
+      window.sidebar.addPanel(bookmarkTitle, bookmarkURL, '');
+    } else if ((window.sidebar && /Firefox/i.test(navigator.userAgent)) || (window.opera && window.print)) {
+      // Firefox 23+ and Opera <=14
+      $(this).attr({
+        href: bookmarkURL,
+        title: bookmarkTitle,
+        rel: 'sidebar'
+      }).off(e);
+      return true;
+    } else if (window.external && ('AddFavorite' in window.external)) {
+      // IE Favorites
+      window.external.AddFavorite(bookmarkURL, bookmarkTitle);
+    } else {
+      // Other browsers (mainly WebKit & Blink - Safari, Chrome, Opera 15+)
+      alert('Press ' + (/Mac/i.test(navigator.platform) ? 'Cmd' : 'Ctrl') + '+D om deze pagina aan je bookmarks toe te voegen.');
+    }
+
+    return false;
+  });
+  
+				  });
 </script>
 {% endblock %}
 {% block wrapper %}
@@ -195,14 +232,15 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
          {% if current_user.is_anonymous %}
          <li><a href="{{ url_for('login') }}"><i class="fa fa-sign-in-alt"></i>   Login</a></li>
          {% else %}
-         <li><a  href="{{url_for('logout') }}"><i class="fa fa-sign-out-alt"></i>   Logout</a></li>
-         {% endif %}
+    <li><a  href="{{url_for('logout') }}"><i class="fa fa-sign-out-alt"></i>   Logout</a></li>
+    {% endif %}
+    	<li><a id="bookmark-this" href="#" title="Bookmark This Page"><i class="fa fa-bookmark"></i> Bookmark</a></li>
       </ul>
    </nav>
    {% endif %}
    
    {% endblock %}
-   {% block content %}
+    {% block content %}
    {% if device == "mobile" %}
    <div id = "content-new-mobile" >
      {% else %}
@@ -220,10 +258,11 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
          {% endfor %}
          {% endif %}
          {% endwith %}
-         {% block app_content %}{% endblock %}
+         {% block app_content %}
+	 {% endblock %}
 	 </div>
       </div>
-{% endblock %}
+       {% endblock %}
 </div>
 {% endblock %}
 
