@@ -190,7 +190,7 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
 	<li><a href="{{ url_for('faq') }}"><i class="fa fa-question-circle"></i>   FAQ</a></li>
 	<li><a href="{{ url_for('invite') }}"><i class="fa fa-share-square"></i>   Uitnodiging</a></li>
             {% if (different_dates >= 10) and (points >= 100) %}
-         <li><a href="https://uvacommscience.eu.qualtrics.com/jfe/form/SV_cDanrLD2xY6uywJ?id={}".format(current_user.id)><i class="fa fa-check-circle"></i>Afsluiten</a></li>
+        <li><a href=" {{'https://uvacommscience.eu.qualtrics.com/jfe/form/SV_cDanrLD2xY6uywJ?id=%s'%current_user.id}} ".format(current_user.id)><i class="fa fa-check-circle"></i>Afsluiten</a></li>
          {% endif %} 
          {% if current_user.is_anonymous %}
          <li><a href="{{ url_for('login') }}"><i class="fa fa-sign-in-alt"></i>   Login</a></li>
