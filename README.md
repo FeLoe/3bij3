@@ -37,4 +37,6 @@ flask db upgrade
 
 During development, you can start the app by typing "flask run", it then can be found in the browser under localhost:5000
 
+To customize the application for your own needs, you can find all parameters that you can change in the vars.py file. 
+
 More detailed instructions on how a flask app is built can be found in a [highly recommended tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) by Miguel Grinberg which was used to build this application. Here you can also find further information on how to put the application to production. 
