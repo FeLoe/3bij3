@@ -13,8 +13,19 @@ To use the app, you need all the packages listed in the requirements (you can in
 
 The way it is set up now you need an Elasticsearch database (infos on how to install this are [here](https://github.com/uvacw/inca/blob/development/doc/gettingstarted.md) under point 3) for storing the news content you want to show to the user and an MySQL or SQLite database for storing the results. 
 
-Before running the app: 
-export FLASK_APP=3bij3.py
+Before running the app (you can also add this to your profile to not run it every time): 
+
+`export FLASK_APP=3bij3.py`
+
+Furthermore, you should make an .env file to pass important information regarding passwords (for databases and email server) to the config.py file - or directly adapt the config.py file. Information on this as well as on how to connect to the MySQL database can be found [here](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvii-deployment-on-linux). 
+
+*Note: In the link given above, you might need to change the line* 
+
+`create user 'microblog'@'localhost' identified by '<db-password>';`
+
+  *into*
+  
+`create user 'microblog'@'localhost' identified with mysql_native_password by '<db-password>';`
 
 In addition, you also need to initialize, migrate and upgrade the database. This can be done by running:
 
