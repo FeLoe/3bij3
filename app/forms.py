@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, RadioField, SelectField,  SubmitField, SelectMultipleField, TextAreaField, widgets, IntegerField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, InputRequired, Length, NumberRange
 from app.models import User
+from werkzeug.security import generate_password_hash
 
 class LoginForm(FlaskForm):
     username = StringField('Gebruikersnaam', validators = [DataRequired()])
@@ -22,7 +23,8 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Dit gebruikersnaam is al in gebruik, gebruik alstublieft een ander gebruikersnaam.')
 
     def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
+        email_hash = generate_password_hash(email.data)
+        user = User.query.filter_by(email_hash=email_hash).first()
         if user is not None:
             raise ValidationError('Dit email adres is al in gebruik, gebruik alstublieft een ander email adres.')
 
@@ -36,14 +38,14 @@ class ChecklisteForm(FlaskForm):
     example = MultiCheckboxField('Label', choices=files)
     submit = SubmitField('Wijzigen')
 
-    def validate(self):                                                         
-        rv = FlaskForm.validate(self)                                           
-        if not rv:                                                              
-            return False                                                                                                       
-        if len(self.example.data) > 2:                                          
-            self.example.errors.append('Let op! U kunt maximaal drie opties kiezen.')    
-            return False                                                        
-        return True 
+    def validate(self):
+        rv = FlaskForm.validate(self)
+        if not rv:
+            return False
+        if len(self.example.data) > 2:
+            self.example.errors.append('Let op! U kunt maximaal drie opties kiezen.')
+            return False
+        return True
 
 class ResetPasswordRequestForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])

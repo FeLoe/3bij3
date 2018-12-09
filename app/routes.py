@@ -4,7 +4,6 @@ from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, News, News_sel, Category, Points_logins, Points_stories, Points_invites, Points_ratings, User_invite
 from werkzeug.urls import url_parse
 from app.forms import RegistrationForm, ChecklisteForm, LoginForm, ReportForm,  ResetPasswordRequestForm, ResetPasswordForm, rating, ContactForm
-from elasticsearch import Elasticsearch
 import string
 import random
 import re
@@ -15,16 +14,15 @@ from sqlalchemy import desc
 from flask_mail import Message
 from user_agents import parse
 from app.processing import paragraph_processing
+from werkzeug.security import generate_password_hash
+from app.vars import host, indexName, es, list_of_sources, topics
+from app.vars import num_less, num_more, num_select, num_recommender
+from app.vars import topicfield, textfield, teaserfield, teaseralt, doctypefield, classifier_dict
+from app.vars import group_number
+from app.vars import day_min, points_min
 
-host = "http://localhost:9200"
-indexName = "inca"
-es = Elasticsearch(host)
 rec = recommender()
 paragraph = paragraph_processing()
-day_min = 10
-points_min = 100
-classifier_dict = {'Binnenland':['13','14','20', '3', '4', '5', '6'], 'Buitenland':['16', '19', '2'], 'Economie':['1','15'], 'Milieu':['8', '7'],  'Wetenschap':['17'], 'Immigratie':['9'],  'Justitie':['12'], 'Sport':['29'], 'Entertainment':['23'], 'Anders':['10','99']}
-
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -33,7 +31,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username = form.username.data).first()
-        if user is None or not user.check_password(form.password.data): 
+        if user is None or not user.check_password(form.password.data):
             flash('Ongeldige gebruikersnaam of wachtwoord')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
@@ -76,9 +74,10 @@ def register():
         return redirect(url_for('count_logins'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        group = random.randint(1,4)
-        user = User(username=form.username.data, email=form.email.data, group = group)
+        group = random.randint(1,group_number)
+        user = User(username=form.username.data, group = group)
         user.set_password(form.password.data)
+        user.set_email(form.email.data)
         db.session.add(user)
         db.session.commit()
         try:
@@ -93,10 +92,10 @@ def register():
         flash('Gefeliciteerd, u bent nu een ingeschreven gebruiker!')
         return redirect(url_for('login'))
     return render_template('register.html', title = 'Registratie', form=form)
-                       
+
 @app.route('/', methods = ['GET', 'POST'])
 @app.route('/homepage', methods = ['GET', 'POST'])
-@login_required 
+@login_required
 def newspage(show_again = 'False'):
     results = []
     parameter = request.args.to_dict()
@@ -115,24 +114,27 @@ def newspage(show_again = 'False'):
         db.session.add(news_displayed)
         db.session.commit()
         result["new_id"] = news_displayed.id
-        text_clean = re.sub(r'\|','', result["_source"]["text"])
+        text_clean = re.sub(r'\|','', result["_source"][textfield])
         if text_clean.startswith(('artikel ', 'live ')):
             text_clean = text_clean.split(' ', 1)[1]
         elif re.match('[A-Z]*? - ', text_clean):
             text_clean = re.sub('[A-Z]*? - ', '', text_clean)
         try:
-            teaser = result["_source"]["teaser"]
+            teaser = result["_source"][teaserfield]
         except:
-            teaser = result["_source"]["teaser_rss"]
+            teaser = result["_source"][teaseralt]
         teaser = re.sub('[A-Z]*? - ', '', teaser)
-        result["_source"]["teaser"] = teaser    
+        result["_source"]["teaser"] = teaser
         result["_source"]["text_clean"] = text_clean
-        for key, value in classifier_dict.items():
-            if result["_source"]["topic"] in value:
-                result["_source"]["topic_string"] = key
-            else:
-                pass
-        results.append(result) 
+        if topics == True:
+            for key, value in classifier_dict.items():
+                if result["_source"][topicfield] in value:
+                    result["_source"]["topic_string"] = key
+                else:
+                    pass
+        else:
+            pass
+        results.append(result)
     session['start_time'] = datetime.utcnow()
 
     user_guest = current_user.username
@@ -143,7 +145,7 @@ def newspage(show_again = 'False'):
     different_days = days_logged_in()['different_dates']
     points = points_overview()['points']
     if different_days >= day_min and points >= points_min:
-        flash('U kunt deze studie nu afsluiten en een finale vragenlijst invullen (link links in de menu) - maar u kunt de webapp ook nog wel verder gebruiken.')   
+        flash('U kunt deze studie nu afsluiten en een finale vragenlijst invullen (link links in de menu) - maar u kunt de webapp ook nog wel verder gebruiken.')
     return render_template('newspage.html', results = results)
 
 def which_recommender():
@@ -169,7 +171,8 @@ def which_recommender():
     elif group == 4:
         method = rec.random_selection()
     return(method)
- 
+
+
 def last_seen():
     news = News.query.filter_by(user_id = current_user.id).order_by(desc(News.id)).limit(9)
     news_ids = [item.elasticsearch for item in news]
@@ -208,7 +211,7 @@ def count_logins():
             if date == now.date():
                 points_today += 2
             else:
-                pass  
+                pass
         try:
             date = current_user.last_visit
             if date is  None:
@@ -229,7 +232,7 @@ def count_logins():
         current_user.last_visit = datetime.utcnow()
     db.session.commit()
     return redirect(url_for('newspage', show_again = show_again))
-        
+
 @app.route('/save/<id>', methods = ['GET', 'POST'])
 @login_required
 def save_selected(id):
@@ -260,7 +263,7 @@ def save_selected(id):
             db.session.add(stories)
     db.session.commit()
     return redirect(url_for('show_detail', id = selected_id))
-    
+
 @app.route('/detail/<id>', methods = ['GET', 'POST'])
 @login_required
 def show_detail(id):
@@ -269,7 +272,7 @@ def show_detail(id):
      doc = es.search(index=indexName,
                   body={"query":{"term":{"_id":es_id}}}).get('hits',{}).get('hits',[""])
      for item in doc:
-         text = item['_source']['text']
+         text = item['_source'][rec.textfield]
          if "||" in text:
              text = re.split(r'\|\|\.\|\|', text)
              text = ''.join(text)
@@ -279,15 +282,15 @@ def show_detail(id):
          else:
              text = [text]
          text = paragraph.join_text(text)
-         try: 
-             teaser = item['_source']['teaser']
+         try:
+             teaser = item['_source'][rec.teaserfield]
          except KeyError:
-            teaser = item['_source']['teaser_rss']
+            teaser = item['_source'][rec.teaseralt]
             teaser = re.sub(r'<.*?>',' ', teaser)
          title = item['_source']['title']
          url = item['_source']['url']
          publication_date = item['_source']['publication_date']
-         publication_date = datetime.strptime(publication_date, '%Y-%m-%dT%H:%M:%S') 
+         publication_date = datetime.strptime(publication_date, '%Y-%m-%dT%H:%M:%S')
          try:
              for image in item['_source']['images']:
                  image_url = image['url']
@@ -326,7 +329,7 @@ def show_detail(id):
          return redirect(url_for('decision'))
 
      session['start_time'] = datetime.utcnow()
-         
+
      return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, time = publication_date, form = form, id = id)
 
 
@@ -342,9 +345,11 @@ def reset_password_request():
         return redirect(url_for('count_logins'))
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        email = form.email.data
+        email_hash = generate_password_hash(email)
+        user = User.query.filter_by(email_hash = email_hash).first()
         if user:
-            send_password_reset_email(user)
+            send_password_reset_email(user, email)
         flash('Controleer uw email, u hebt informatie ontvangen hoe u uw wachtwoord opnieuw kunt instellen.')
         return redirect(url_for('login'))
     return render_template('reset_password_request.html', title="Wachtwoord opnieuw instellen", form=form)
@@ -372,7 +377,7 @@ def time_logged_in():
             difference = difference_raw.days
         except:
             difference = 0
-    else: 
+    else:
         difference = 0
     return dict(difference = difference)
 
@@ -388,14 +393,14 @@ def days_logged_in():
     else:
         different_dates = 0
     return dict(different_dates = different_dates)
-    
+
 @app.context_processor
 def number_read():
     if current_user.is_authenticated:
         try:
             selected_news = News_sel.query.filter_by(user_id = current_user.id).all()
             selected_news = len(selected_news)
-        except: 
+        except:
             selected_news = 0
     else:
         selected_news = 0
@@ -422,7 +427,7 @@ def points_overview():
             if points_ratings is None:
                 points_ratings = 0
         except:
-            points_ratings = 0    
+            points_ratings = 0
         user_host = current_user.id
         user_invite_host = User_invite.query.filter_by(user_host = user_host).all()
         if user_invite_host is None:
@@ -439,7 +444,7 @@ def points_overview():
                          db.session.add(points_invites)
                          db.session.commit()
                     else:
-                        points_invites = 0        
+                        points_invites = 0
                 else:
                     points_invites = 0
         try:
@@ -456,7 +461,7 @@ def points_overview():
         points_logins = 0
         points = 0
     return dict(points = points, points_ratings = points_ratings, points_stories = points_stories, points_invites = points_invites, points_logins = points_logins)
-    
+
 @app.context_processor
 def user_agent():
     user_string = request.headers.get('User-Agent')
@@ -472,7 +477,7 @@ def user_agent():
         user_agent = " "
         device = "pc"
     return dict(device = device)
-    
+
 
 @app.route('/decision/popup_back')
 @login_required
@@ -484,18 +489,17 @@ def popup_back():
 @login_required
 def get_categories():
     sel_categories = request.form.getlist('category')
-    all_categories = ["Binnenland", "Buitenland", "Economie", "Milieu", "Wetenschap", "Immigratie", "Justitie", "Sport", "Entertainment", "Anders"]
     categories = []
-    for category in all_categories: 
-        if category in sel_categories: 
+    for category in all_categories.keys():
+        if category in sel_categories:
             categories.append(1)
         else:
             categories.append(0)
-    category = Category(Binnenland = categories[0], Buitenland = categories[1], Economie = categories[2], Milieu = categories[3], Wetenschap = categories[4], \
-Immigratie = categories[5], Justitie = categories[6], Sport = categories[7], Entertainment = categories[8], Anders = categories[9],  user_id = current_user.id)
+    category = Category(topic1 = categories[0], topic2 = categories[1], topic3 = categories[2], topic4 = categories[3], topic5= categories[4], \
+topic6 = categories[5], topic7 = categories[6], topic8 = categories[7], topic9 = categories[8], topic10 = categories[9],  user_id = current_user.id)
     db.session.add(category)
-    db.session.commit()  
-    return redirect(url_for('count_logins')) 
+    db.session.commit()
+    return redirect(url_for('count_logins'))
 
 @app.route('/contact', methods = ['GET', 'POST'])
 @login_required
@@ -539,14 +543,14 @@ def get_points():
         points_stories_all = [0 if x==None else x for x in points_stories_all]
     max_stories = max(points_stories_all)
     min_stories = min(points_stories_all)
-    avg_stories  = round((sum(points_stories_all)/len(points_stories_all)),1)            
+    avg_stories  = round((sum(points_stories_all)/len(points_stories_all)),1)
     if points_invites_all is None:
         points_invites_all = [0]
     else:
         points_invites_all = [0 if x==None else x for x in points_invites_all]
     max_invites = max(points_invites_all)
     min_invites = min(points_invites_all)
-    avg_invites  = round((sum(points_invites_all)/len(points_invites_all)), 1)        
+    avg_invites  = round((sum(points_invites_all)/len(points_invites_all)), 1)
     if points_ratings_all is None:
         points_ratings_all = [0]
     else:
@@ -554,22 +558,22 @@ def get_points():
     points_ratings_all = [float(i) for i in points_ratings_all]
     max_ratings = max(points_ratings_all)
     min_ratings = min(points_ratings_all)
-    avg_ratings  = round((sum(points_ratings_all)/len(points_ratings_all)), 1)            
+    avg_ratings  = round((sum(points_ratings_all)/len(points_ratings_all)), 1)
     if points_logins_all is None:
         points_logins_all = [0]
     else:
-        points_logins_all = [0 if x==None else x for x in points_logins_all]                                                                       
+        points_logins_all = [0 if x==None else x for x in points_logins_all]
     max_logins = max(points_logins_all)
     min_logins = min(points_logins_all)
     avg_logins  = round((sum(points_logins_all)/len(points_logins_all)),1)
-    
+
     points_overall = [sum(item) for item in zip(points_stories_all, points_logins_all, points_ratings_all, points_invites_all)]
     max_overall = max(points_overall)
     min_overall = min(points_overall)
     avg_overall  = round((sum(points_overall)/len(points_overall)), 2)
-    
+
     return render_template("display_points.html", max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall)
-    
+
 
 @app.route('/invite', methods = ['GET', 'POST'])
 @login_required

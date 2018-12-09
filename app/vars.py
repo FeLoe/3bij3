@@ -1,0 +1,73 @@
+'''
+In this file you can specify all the variables
+to customize the application.
+'''
+
+#What are the keys in your elasticsearch-database storing the texts?
+#You can specify where the topic variable, the text and the teaser (or alternative teaser)
+#are stored. The examples given here are from the INCA database
+#These variables are used in the recommender.py and routes.py file
+'''
+textfield is the elasticsearch field where the text can be found (should already be processed and tokenized)
+teaserfield is the elasticsearch field where the teaser can be found
+teaseralt is the elasticsearch field where an alternative teaser can be found (e.g. a rss teaser)
+doctypefield is the elasticsearch field where the document type is stored
+classifier_dict is the dictionary that has the results of a prediction with the topic classifier as key and the topic or topics (as list) as value
+'''
+topicfield = "topic"
+textfield = "text"
+teaserfield = "teaser"
+teaseralt = "teaser_rss"
+doctypefield = "doctype"
+
+#How do you connect to the elasticsearch database? Example from INCA database
+#These variables are used in the recommender.py and routes.py file
+from elasticsearch import Elasticsearch
+host = "http://localhost:9200"
+indexName = "inca"
+es = Elasticsearch(host, timeout = 60)
+
+#Which document types do you want to use? They should be in the doctypefield you supplied
+#These variables are used in the recommender.py and routes.py file
+#topics specifies whether a Topic variable will be used/displayed to the user
+list_of_sources = ["ad (www)", "bd (www)", "telegraaf (www)", "volkskrant (www)", "nu"]
+topics = False
+
+#How many articles should be retrieved and displayed?
+#These variables are used in the recommender.py and routes.py file
+'''
+num_less is the initial number of articles per source that will be scraped,
+num_more is the number that will be used when running out of stories(e.g. person has already seen all the stories retrieved)
+num_select is the number of stories that will be displayed to the user
+num_recommender is the number of stories that will be chosen by the recommender (if applicable)
+'''
+
+num_less = 20
+num_more = 100
+num_select = 9
+num_recommender = 6
+
+#How many different groups (i.e. different recommenders) do you have? Which group is which?
+#These variables are used in the routes.py file
+
+group_number = 4
+
+#How many days need participants to use the application and how many points do they need
+#to collect before they can finish the study?
+#These variables are used in the recommender.py and routes.py file
+day_min = 10
+points_min = 100
+
+#Topic_list: The different topic categories that can be displayed to the user
+#Classifier_dict: map numbers in elasticsearch database to strings (for the topic tag)
+#all_categories: map topic strings to topic numbers (that are stored in the SQL database)
+topic_list = ["Binnenland","Buitenland", "Economie", "Milieu", "Wetenschap", "Immigratie",\
+"Justitie","Sport","Entertainment","Anders"]
+
+classifier_dict = {topic_list[0]:['13','14','20', '3', '4', '5', '6'], topic_list[1]:['16', '19', '2'],\
+ topic_list[2]:['1','15'], topic_list[3]:['8', '7'],  topic_list[4]:['17'], topic_list[5]:['9'],  topic_list[6]:['12'],\
+  topic_list[7]:['29'], topic_list[8]:['23'], topic_list[9]:['10','99']}
+
+all_categories = {"topic1":topic_list[0], "topic2":topic_list[1], "topic3":topic_list[2], "topic4":topic_list[3],\
+ "topic5":topic_list[4], "topic6":topic_list[5], "topic7":topic_list[6], "topic8":topic_list[7], \
+ "topic9":topic_list[8], "topic10":topic_list[9]}

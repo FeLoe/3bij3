@@ -12,8 +12,8 @@ from sqlalchemy_utils import aggregated
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index = True, unique = True)
-    email = db.Column(db.String(120), index=True, unique = True)
     password_hash = db.Column(db.String(128))
+    email_hash = db.Column(db.String(128))
     group = db.Column(db.Integer)
     first_login = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     points_stories = db.relationship('Points_stories', backref = 'user', lazy = 'dynamic')
@@ -29,6 +29,9 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    def set_email(self, email):
+        self.email_hash = generate_password_hash(email)
+    
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(
             {'reset_password': self.id, 'exp':time() + expires_in},
@@ -64,16 +67,16 @@ class User(UserMixin, db.Model):
     
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key =True)
-    Binnenland = db.Column(db.Integer)
-    Buitenland = db.Column(db.Integer)
-    Economie = db.Column(db.Integer)
-    Milieu=db.Column(db.Integer)
-    Wetenschap=db.Column(db.Integer)
-    Immigratie=db.Column(db.Integer)
-    Justitie=db.Column(db.Integer)
-    Sport=db.Column(db.Integer)
-    Entertainment=db.Column(db.Integer)
-    Anders=db.Column(db.Integer)
+    topic1 = db.Column(db.Integer)
+    topic2= db.Column(db.Integer)
+    topic3 = db.Column(db.Integer)
+    topic4 =db.Column(db.Integer)
+    topic5 =db.Column(db.Integer)
+    topic6 =db.Column(db.Integer)
+    topic7 =db.Column(db.Integer)
+    topic8 =db.Column(db.Integer)
+    topic9 =db.Column(db.Integer)
+    topic10 =db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 

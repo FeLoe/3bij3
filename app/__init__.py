@@ -22,13 +22,32 @@ login = LoginManager(app)
 bootstrap = Bootstrap(app)
 mail = Mail(app)
 moment = Moment(app)
-#lda_model = gensim.models.LdaModel.load("/home/felicia/3bij3/app/testmodel")
-#lda_dict = gensim.corpora.Dictionary.load("/home/felicia/3bij3/app/testmodel.dict")
-dictionary = gensim.corpora.Dictionary.load("/home/felicia/index.dict")
-index = SoftCosineSimilarity.load('/home/felicia/SimIndex.index')
-article_ids = pickle.load(open('/home/felicia/sim_list.txt', 'rb'))
-classifier = joblib.load(open('/home/felicia/3bij3/app/topic_classifier.pkl', 'rb'))
-vectorizer = joblib.load(open('/home/felicia/3bij3/app/vectorizer.pkl', 'rb'))
+
+#Different parameters that can be specified depending on the recommenders that are used.
+#LDA_model and LDA_dict are for using the LDA recommender
+# dictionary, index and article_ids are used if past_behavior (SoftCosine) recommender is used
+
+try:
+    lda_model = gensim.models.LdaModel.load("put path to model here")
+except:
+    lda_model = None
+try:    
+    lda_dict = gensim.corpora.Dictionary.load("/put path to dict here")
+except:
+    lda_dict = None
+try:
+    dictionary = gensim.corpora.Dictionary.load("put path to dict here")
+except:
+    dictionary = None
+try:
+    index = SoftCosineSimilarity.load('put path to index here')
+except:
+    index = None
+try:
+    article_ids = pickle.load(open('put path to article ids here', 'rb'))
+except:
+    article_ids = None
+
 login.login_view = 'login'
 if not app.debug:
     if app.config['MAIL_SERVER']:

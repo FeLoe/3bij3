@@ -25,6 +25,8 @@
 <br>
 {% if max_overall == 0 %}
     <h5><b><u> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste!</u></b> </h5>
+{% elif max_overall == min_overall %}
+    <h5><b>Gemiddelde: {{ avg_overall }}</b> </h5>
     {% else %}
     <div class="barwrap" >
       <div class="progress">
@@ -46,6 +48,8 @@
 <h4><b><u>Punten voor logins: {{ points_logins }}</u></b></h4><br>
 	{% if max_logins == 0 %}
     <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste!</b> </h5>
+    {% elif max_logins == min_logins %}
+        <h5><b>Gemiddelde: {{ avg_logins }}</b> </h5>
     {% else %}
     <div class="barwrap" >
       <div class="progress">
@@ -64,9 +68,11 @@
 	<div class="end"><b>Maximum: {{max_logins}}</b></div><br>
 	{% endif %}
 <br>
-	<h4><b><u>Punten voor gelezen artikelen: {{ points_stories }}</u></b></h4><br>
+	<h4><b>Punten voor gelezen artikelen: {{ points_stories }}</b></h4><br>
 		{% if max_stories == 0 %}
     <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste!</b> </h5>
+    {% elif max_stories == min_stories %}
+        <h5><b><u>Gemiddelde: {{ avg_stories }}</u></b> </h5>
     {% else %}
        <div class="barwrap" >
       <div class="progress">
@@ -88,6 +94,8 @@
 	<h4><b><u>Punten voor beoordelingen:  {{ points_ratings }}</u></b></h4><br>
 		{% if max_ratings == 0 %}
     <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld</b> </h5>
+    {% elif max_ratings == min_ratings %}
+        <h5><b>Gemiddelde: {{ avg_ratings }}</b> </h5>
     {% else %}
 	       <div class="barwrap" >
       <div class="progress">
@@ -108,6 +116,8 @@
 		<h4><b><u>Punten voor uitnodigingen:  {{ points_invites }}</u></b></h4><br>
 	{% if max_invites == 0 %}
     <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste!</b></h5>
+    {% elif max_invites == min_invites %}
+        <h5><b>Gemiddelde: {{ avg_invites }}</b> </h5>
     {% else %}
        <div class="barwrap" >
       <div class="progress">
@@ -128,5 +138,3 @@
     </div>
     </div>
 {% endblock %}
-
-
