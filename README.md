@@ -39,4 +39,6 @@ During development, you can start the app by typing "flask run", it then can be 
 
 To customize the application for your own needs, you can find all parameters that you can change in the vars.py file. 
 
+In the folder 'extras' are some scripts that can be used to build a SoftCosine similarity matrix (required for one of the recommenders), and to scrape, process, and annotate data. More info on how to use those follows soon. For this particular code, it is necessary to also use [INCA](https://github.com/uvacw/inca). However, these files are only examples of how content can be retrieved and annotated for the application. You can also just have your own (annotated) data in an elasticsearch database without using these files. 
+
 More detailed instructions on how a flask app is built can be found in a [highly recommended tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) by Miguel Grinberg which was used to build this application. Here you can also find further information on how to put the application to production. 
