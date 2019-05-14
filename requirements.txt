@@ -6,7 +6,7 @@ click==6.7
 dominate==2.3.1
 elasticsearch>=6.0.0
 elasticsearch-dsl==2.0.0
-Flask==0.12.2
+Flask>=0.12.3
 Flask-Bootstrap==3.3.7.1
 Flask-Login==0.4.1
 Flask-Mail==0.9.1
