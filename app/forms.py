@@ -59,6 +59,7 @@ class ResetPasswordForm(FlaskForm):
 
 class rating(FlaskForm):
     rating = TextAreaField()
+    rating2 = TextAreaField()
 
 class ContactForm(FlaskForm):
     lead = TextAreaField('Onderwerp:', validators = [DataRequired()])

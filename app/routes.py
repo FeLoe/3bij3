@@ -15,7 +15,7 @@ from flask_mail import Message
 from user_agents import parse
 from app.processing import paragraph_processing
 from werkzeug.security import generate_password_hash
-from app.vars import host, indexName, es, list_of_sources, topics
+from app.vars import host, indexName, es, list_of_sources, topics, doctype_dict
 from app.vars import num_less, num_more, num_select, num_recommender
 from app.vars import topicfield, textfield, teaserfield, teaseralt, doctypefield, classifier_dict
 from app.vars import group_number
@@ -127,14 +127,13 @@ def newspage(show_again = 'False'):
         result["_source"]["teaser"] = teaser
         result["_source"]["text_clean"] = text_clean
         if topics == True:
-            for key, value in classifier_dict.items():
-                if result["_source"][topicfield] in value:
-                    result["_source"]["topic_string"] = key
-                else:
-                    pass
+            if topicfield in result['_source'].keys():
+                result["_source"]["topic_string"] = result['_source'][topicfield]
+                results.append(result)
+            else:
+                pass
         else:
             pass
-        results.append(result)
     session['start_time'] = datetime.utcnow()
 
     user_guest = current_user.username
@@ -297,12 +296,14 @@ def show_detail(id):
          except KeyError:
              image_url = []
              image_caption = []
+         source = doctype_dict[item['_source']['doctype']]
      form = rating()
      if request.method == 'POST' and form.validate():
          selected.starttime = session.pop('start_time', None)
          selected.endtime =  datetime.utcnow()
          selected.time_spent = selected.endtime - selected.starttime
          selected.rating = request.form['rating']
+         selected.rating2 = request.form['rating2']
          db.session.commit()
          points_ratings = Points_ratings.query.filter_by(user_id = current_user.id).all()
          if points_ratings is None:
@@ -330,7 +331,7 @@ def show_detail(id):
 
      session['start_time'] = datetime.utcnow()
 
-     return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, time = publication_date, form = form, id = id)
+     return render_template('detail.html', text = text, teaser = teaser, title = title, url = url, image = image_url, time = publication_date, source = source, form = form, id = id)
 
 
 @app.route('/decision', methods = ['GET', 'POST'])
@@ -511,7 +512,10 @@ def contact():
         else:
             name =  current_user.username
             id = str(current_user.id)
-            email =  current_user.email
+            email = [current_user.email_hash]
+            print(email)
+            print(app.config['ADMINS'])
+            print(name)
             msg = Message("Message from your visitor " + name + "with ID: " + id,
                           sender= email,
                           recipients=app.config['ADMINS'])
@@ -520,6 +524,7 @@ def contact():
             %s
             %s
             """ % (name, email, form.lead.data, form.message.data)
+            print(msg.body)
             mail.send(msg)
             return redirect(url_for('count_logins'))
     elif request.method == 'GET':
@@ -572,7 +577,7 @@ def get_points():
     min_overall = min(points_overall)
     avg_overall  = round((sum(points_overall)/len(points_overall)), 2)
 
-    return render_template("display_points.html", max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall)
+    return render_template("display_points.html",points_min = points_min,  max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall)
 
 
 @app.route('/invite', methods = ['GET', 'POST'])

@@ -1,3 +1,36 @@
+.c-rating {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.c-rating__item {
+    -webkit-box-flex: 0;
+     -webkit-flex: 0 0 24px;
+    -ms-flex: 0 0 24px; 
+    flex: 0 0 24px;
+    height: 48px;
+    background-position: -24px 0px;
+    background-image: url(http://svgshare.com/i/3KS.svg);
+    background-size: 96px;
+    cursor: pointer;
+}
+.c-rating__item.left {
+    background-position: 0px 0px;
+}
+.c-rating__item.is-active,
+.c-rating__item:hover {
+    background-position: -72px 0;
+}
+.c-rating__item.left.is-active,
+.c-rating__item.left:hover {
+    background-position: -48px 0;
+}
+
 .btn-xlarge {
     padding: 30px 35px;
     font-size: 22px; //change this to your desired size
@@ -100,6 +133,13 @@
 }
 
 .star-rating .fa-star{color: #0066cc;}
+
+.star-rating_2 {
+  line-height:32px;
+  font-size:1.25em;
+}
+
+.star-rating_2 .fa-star{color: #0066cc;}
 
 .btn-xlarge {
     padding: 10px 15px;
@@ -606,3 +646,250 @@ a[data-toggle="collapse"] {
   background-color: #9bc7f7;
   border: 1px solid #9bc7f7;
 }
+
+.conteneur
+{
+    width: 270px;
+margin: auto;
+float: left;
+margin-top: 25px;
+margin-left: 37px;
+}
+
+.sliderhome {
+margin-bottom: 50px !important;
+margin-top: 1px !important;}
+#p1,
+#p2,
+#p3
+{
+    width: 50px;
+    float: right;
+    margin-right: 40px;
+    padding-top: 4px;
+}
+.ui-slider
+{
+    float: left;
+    position: relative;
+    width: 250px;
+    height: 10px;
+    background: #6b6b6b;
+    margin: 20px;
+    border-radius: 1000px;
+    box-shadow:inset 0px 2px 10px black;
+}
+
+.slidertitles{
+    float: left;
+text-align: left;
+font-size:20px;
+    
+}
+
+.slidertitles ul{margin-left:0px}
+.slidertitles li{
+    list-style: none;
+    line-height: 60px;
+}
+.slidercontent {
+    text-align:center;
+    width:642px;
+    margin:auto;
+    height:210px;
+}
+
+.divedeeper{
+    float:left;
+    margin-top:18px;
+    margin-left:20px;
+}
+.divedeeper input{margin-bottom:0px; height:16px;width:25px}
+.divedeeper li {
+    list-style:none;
+    margin-bottom:45px;
+    text-align:left;
+    
+}
+
+.ui-slider .ui-slider-handle
+{
+    position: absolute;
+    top:-7px;
+    margin-left: -10px;
+    z-index: 2;
+    width: 24px;
+    height: 24px;
+    cursor: default;
+    background: url(http://oniiru.com/wp-content/themes/bootstrap-child-theme-2/img/metal-slider.png)
+    }
+.ui-slider a {outline:none;}
+.ui-slider .ui-slider-range
+{
+    position: absolute;
+    z-index: 1;
+    font-size: .7em;
+    display: block;
+    border: 0;
+    background-position: 0 0;
+}
+
+.ui-widget-header {background:white;}
+
+body {
+    padding: 70px 0px;
+}
+
+.range {
+    display: table;
+    position: relative;
+    height: 25px;
+    margin-top: 20px;
+    background-color: rgb(245, 245, 245);
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.range input[type="range"] {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    -ms-appearance: none !important;
+    -o-appearance: none !important;
+    appearance: none !important;
+
+    display: table-cell;
+    width: 100%;
+    background-color: transparent;
+    height: 25px;
+    cursor: pointer;
+}
+.range input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    -ms-appearance: none !important;
+    -o-appearance: none !important;
+    appearance: none !important;
+
+    width: 11px;
+    height: 25px;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0px;
+    background-color: rgb(153, 153, 153);
+}
+
+.range input[type="range"]::-moz-slider-thumb {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    -ms-appearance: none !important;
+    -o-appearance: none !important;
+    appearance: none !important;
+    
+    width: 11px;
+    height: 25px;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0px;
+    background-color: rgb(153, 153, 153);
+}
+
+.range output {
+    display: table-cell;
+    padding: 3px 5px 2px;
+    min-width: 40px;
+    color: rgb(255, 255, 255);
+    background-color: rgb(153, 153, 153);
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    width: 1%;
+    white-space: nowrap;
+    vertical-align: middle;
+
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: -moz-none;
+    -o-user-select: none;
+    user-select: none;
+}
+.range input[type="range"] {
+    outline: none;
+}
+
+.range.range-primary input[type="range"]::-webkit-slider-thumb {
+    background-color: rgb(66, 139, 202);
+}
+.range.range-primary input[type="range"]::-moz-slider-thumb {
+    background-color: rgb(66, 139, 202);
+}
+.range.range-primary output {
+    background-color: rgb(66, 139, 202);
+}
+.range.range-primary input[type="range"] {
+    outline-color: rgb(66, 139, 202);
+}
+
+.range.range-success input[type="range"]::-webkit-slider-thumb {
+    background-color: rgb(92, 184, 92);
+}
+.range.range-success input[type="range"]::-moz-slider-thumb {
+    background-color: rgb(92, 184, 92);
+}
+.range.range-success output {
+    background-color: rgb(92, 184, 92);
+}
+.range.range-success input[type="range"] {
+    outline-color: rgb(92, 184, 92);
+}
+
+.range.range-info input[type="range"]::-webkit-slider-thumb {
+    background-color: rgb(91, 192, 222);
+}
+.range.range-info input[type="range"]::-moz-slider-thumb {
+    background-color: rgb(91, 192, 222);
+}
+.range.range-info output {
+    background-color: rgb(91, 192, 222);
+}
+.range.range-info input[type="range"] {
+    outline-color: rgb(91, 192, 222);
+}
+
+.range.range-warning input[type="range"]::-webkit-slider-thumb {
+    background-color: rgb(240, 173, 78);
+}
+.range.range-warning input[type="range"]::-moz-slider-thumb {
+    background-color: rgb(240, 173, 78);
+}
+.range.range-warning output {
+    background-color: rgb(240, 173, 78);
+}
+.range.range-warning input[type="range"] {
+    outline-color: rgb(240, 173, 78);
+}
+
+.range.range-danger input[type="range"]::-webkit-slider-thumb {
+    background-color: rgb(217, 83, 79);
+}
+.range.range-danger input[type="range"]::-moz-slider-thumb {
+    background-color: rgb(217, 83, 79);
+}
+.range.range-danger output {
+    background-color: rgb(217, 83, 79);
+}
+.range.range-danger input[type="range"] {
+    outline-color: rgb(217, 83, 79);

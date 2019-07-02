@@ -77,3 +77,6 @@ target/
 *.bak
 
 *testmodel*
+
+# Extras file
+**/extras/make_matrix.py

@@ -6,8 +6,11 @@
 <link rel="stylesheet"
       href="{{url_for('.static', filename='mystyle.css')}}">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1" crossorigin="anonymous">
-
-
+<style>.list-inline {
+  display: flex;
+  justify-content: center;
+  }
+  </style>
 {% endblock %}
 
 {% block scripts %}
@@ -42,6 +45,7 @@
 	<p class='text-justify'> {{paragraph}} </p>
 	{% endfor %}
 	{% endif %}
+	<p align="right">Bron: <a href = {{url}} target="_blank">{{source}}</a></p>
       </div>
     </div>
   </div>
@@ -61,43 +65,84 @@
 	    <div class="col-md-6">
 	      {% endif %}
 
-	      <div class="text-center">
-		<div class="star-rating">
-		  Hoe relevant was dit artikel voor u?<br>
-		  <span id="allstars" class="far fa-star fa-2x" data-rating="1"></span>
-		  <span id="allstars" class="far fa-star fa-2x" data-rating="2"></span>
-		  <span id="allstars" class="far fa-star fa-2x" data-rating="3"></span>
-		  <span id="allstars" class="far fa-star fa-2x" data-rating="4"></span>
-		  <span id="allstars" class="far fa-star fa-2x" data-rating="5"></span><br>
-		  <input type="hidden" id="rating" name="rating" class="rating-value" value="0">
-		  <button type="submit" id="rating1" name="submitBtn" class="btn btn-info btn-xlarge center" onclick="submitFormOkay = true;">Verzenden</button>
+      	     <div class="text-center">
+	       Hoe relevant was dit artikel voor u?</br>
+	     <ul class="c-rating list-inline">
+    <li class="c-rating__item rating is-active left" data-index="0"></li>
+    <li class="c-rating__item" data-index="1"></li>
+    <li class="c-rating__item left" data-index="2"></li>
+    <li class="c-rating__item" data-index="3"></li>
+    <li class="c-rating__item left" data-index="4"></li>
+    <li class="c-rating__item" data-index="5"></li>
+    <li class="c-rating__item left" data-index="6"></li>
+    <li class="c-rating__item" data-index="7"></li>
+    <li class="c-rating__item left" data-index="8"></li>
+    <li class="c-rating__item" data-index="9"></li>
+</ul>
+	     <input type="hidden" class="rank" id="rating" name="rating" />
+	     Iedereen zal dat moeten weten</br>
+<ul class="c-rating list-inline">
+    <li class="c-rating__item rating is-active left" data-index="0"></li>
+    <li class="c-rating__item" data-index="1"></li>
+    <li class="c-rating__item left" data-index="2"></li>
+    <li class="c-rating__item" data-index="3"></li>
+    <li class="c-rating__item left" data-index="4"></li>
+    <li class="c-rating__item" data-index="5"></li>
+    <li class="c-rating__item left" data-index="6"></li>
+    <li class="c-rating__item" data-index="7"></li>
+    <li class="c-rating__item left" data-index="8"></li>
+    <li class="c-rating__item" data-index="9"></li>
+</ul>
+<input type="hidden" class="rank" id="rating2" name="rating2" />
+
+                  <button type="submit" id="rating1" name="submitBtn" class="btn btn-info btn-xlarge center" onclick="submitFormOkay = true;">Verzenden</button>
   </form><br><br>
+
+  
   <a href={{ url_for('report_article', article = id) }}><button name="report_article" type="button" class="btn btn-danger" onclick="submitFormOkay = true;"><i class="fa fa-exclamation-circle"></i>   Artikel ziet er raar uit</button></a><br><br>
   </div>
   </div>
+  </div>
   <p>&nbsp;</p>
   <p>&nbsp;</p>
+  
+
   <script>
-    var $star_rating = $('.star-rating #allstars');
-
-    var SetRatingStar = function() {
-    return $star_rating.each(function() {
-    if (parseInt($star_rating.siblings('input.rating-value').val()) >= parseInt($(this).data('rating'))) {
-    return $(this).removeClass('far').addClass('fa');
-    } else {
-    return $(this).removeClass('fa').addClass('far');
-    }
+    $.fn.customStarRatings = function(obj) {
+    var wrapper = this;
+    var stars = obj.childClass;
+    var input = obj.inputClass;
+    $(wrapper).hover(function() {
+        activeClassCount = $(this).find('.rating').index() + 1;
+    }, function() {
+        var $this = $(this);
+        $this.find(stars).slice(1, activeClassCount).addClass('is-active');
+        $this.find(stars).slice(activeClassCount, 10).not('.rating').removeClass('is-active');
+        // console.log($this.find(stars).slice(activeClassCount, 4).not('.rating'))
     });
-    };
-
-    $star_rating.on('click', function() {
-    $star_rating.siblings('input.rating-value').val($(this).data('rating'));
-    return SetRatingStar();
+    $(stars).hover(function() {
+        $(this).prevAll(stars).add($(this)).addClass('is-active');
+        $(this).nextAll(stars).removeClass('is-active');
     });
+    $(stars).click(function(event) {
+        $(".rating").removeClass("rating");
+        $(this).addClass('rating');
+        activeClassCount = $(this).index() + 1;
+        $(this).prevAll(stars).addClass('is-active');
+        console.log(this, obj.inputClass);
+        if (input) {
+            $(this).parent().next(input).val(($(this).index() + 1)/2);
+            console.log($(this).parent().next(input).val(), activeClassCount)
+        }
+    });
+}
 
-    SetRatingStar();
-  </script>
-
+$(".c-rating").customStarRatings({
+    childClass: ".c-rating__item",
+    inputClass: ".rank"
+    });
+    </script>
+  
   <script>
     var submitFormOkay = false;
 

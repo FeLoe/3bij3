@@ -17,7 +17,6 @@ textfield = "text"
 teaserfield = "teaser"
 teaseralt = "teaser_rss"
 doctypefield = "doctype"
-
 '''
 ELASTICSEARCH SETUP (examples given are from INCA database)
 '''
@@ -29,10 +28,12 @@ es = Elasticsearch(host, timeout = 60)
 '''
 DOCUMENT TYPES
 list_of sources: Which document types do you want to use? They should be in the doctypefield you supplied
+doctype_dict: How the sources will be displayed to the user
 topics: whether a topic variable will be used/displayed to the user
 '''
-list_of_sources = ["ad (www)", "bd (www)", "telegraaf (www)", "volkskrant (www)", "nu"]
-topics = False
+list_of_sources = ["nu", "ad (www)", "bd (www)", "telegraaf (www)", "volkskrant (www)"]
+doctype_dict = {'telegraaf (www)': 'telegraaf.nl', 'ad (www)': 'ad.nl', 'nu': 'nu.nl', 'bd (www)':'bd.nl', 'volkskrkant (www)': 'volkskrant.nl'}
+topics = True
 
 '''
 NUMBER OF ARTICLES AND GROUPS
@@ -43,7 +44,7 @@ num_recommender is the number of stories that will be chosen by the recommender 
 group_number is how many different groups (i.e. recommenders) do you have?
 '''
 num_less = 20
-num_more = 100
+num_more = 200
 num_select = 9
 num_recommender = 6
 group_number = 4

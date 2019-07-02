@@ -1,140 +1,228 @@
 {% extends "base.html" %}
-
+{% block styles %}
+{{super()}}
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link rel="stylesheet"
+      href="{{url_for('.static', filename='mystyle.css')}}">
+<link href="{{url_for('.static', filename='dashboard.css')}}", rel="stylesheet">
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+{% endblock %}
 {% block scripts %}
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type=text/javascript>
+Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+Chart.defaults.global.defaultFontColor = '#858796';
+
+var ctx = document.getElementById("myPieChart");
+var myPieChart = new Chart(ctx, {
+  type: 'doughnut',
+  data: {
+    labels: ["Inloggen", "Lezen", "Beoordelingen", "Uitnodigingen", "Nog te behalen"],
+    datasets: [{
+      data: [{{points_logins}}, {{points_stories}}, {{points_ratings}}, {{points_invites}}, {{points_min - (points_logins + points_stories + points_ratings + points_invites)}}],
+      backgroundColor: ['#e74a3b', '#f6c23e', '#4e73df', '#36b9cc', '#858796'],
+      hoverBackgroundColor: ['#d52a1a', '#f4b30d', '#2653d4', '#2a96a5', '#d3d3d3'],
+      hoverBorderColor: "rgba(234, 236, 244, 1)",
+    }],
+  },
+  options: {
+    maintainAspectRatio: false,
+    tooltips: {
+      backgroundColor: "rgb(255,255,255)",
+      bodyFontColor: "#858796",
+      borderColor: '#dddfeb',
+      borderWidth: 1,
+      xPadding: 15,
+      yPadding: 15,
+      displayColors: false,
+      caretPadding: 10,
+    },
+    legend: {
+      display: false
+    },
+    cutoutPercentage: 80,
+  },
+});
+</script>
 {% endblock %}
 {% block app_content %}
-<div class="row">
-  {% if device == "mobile" %}
-  <div class = "col-xs-12" >
-  {% else %}
-  <div class = "col-xs-1"></div>
-  <div class = "col-xs-8">
-    {% endif %}
-    <br>
-    <br>
-    <h4><b><u>Punten totaal: {{ points }}</u></b></h4><br>
-<div class="progress">
-  <div class="progress-bar progress-bar-striped progress-bar-success progress" role="progressbar" aria-valuenow={{ points }}
-  aria-valuemin="0" aria-valuemax="100" style={{ "width:number%; color:black;"| replace("number", points) }}>
-    {{ points }}%
-  </div>
-</div>
-<br>
-{% if max_overall == 0 %}
-    <h5><b><u> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste!</u></b> </h5>
-{% elif max_overall == min_overall %}
-    <h5><b>Gemiddelde: {{ avg_overall }}</b> </h5>
-    {% else %}
-    <div class="barwrap" >
-      <div class="progress">
-                <div class="bar-step" style={{ "left:number%" | replace("number", (avg_overall/(max_overall - min_overall))*100) }}>
-                    <div class="label-txt"><b>Gemiddelde: {{ avg_overall }}</b></div>
-                    <div class="label-line"></div>
+<!-- Content Row -->
+          <div class="row">
+
+            <!-- Content Column -->
+            <div class="col-lg-6 mb-4">
+
+              <!-- Project Card Example -->
+              <div class="card shadow mb-4">
+		<div class="card-header py-3">
+                  <h3 class="m-0 font-weight-bold text-primary">Progress</h3>
                 </div>
-    {% if points == max_overall %}
-    <div class="progress-bar progress-bar-striped " style="width: 100%"></div>
-      {% else %}
-    <div class="progress-bar progress-bar-striped" aria-valuenow = {{points }} aria-valuemin={{min_overall}} aria-valuemax={{max_overall}} style={{ "width:number%" | replace("number", (points/(max_overall - min_overall))*100) }}></div>
-      {% endif %}
-          </div>
-    </div>
-        <div class="start"><b>Minimum: {{min_overall}}</b></div>
-	<div class="end"><b>Maximum: {{max_overall}}</b></div><br>
-	{% endif %}
-	<br>
-<h4><b><u>Punten voor logins: {{ points_logins }}</u></b></h4><br>
-	{% if max_logins == 0 %}
-    <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste!</b> </h5>
-    {% elif max_logins == min_logins %}
-        <h5><b>Gemiddelde: {{ avg_logins }}</b> </h5>
-    {% else %}
-    <div class="barwrap" >
-      <div class="progress">
-                <div class="bar-step" style={{ "left:number%" | replace("number", (avg_logins/(max_logins - min_logins))*100) }}>
-                    <div class="label-txt"><b>Gemiddelde: {{ avg_logins }}</b></div>
-                    <div class="label-line"></div>
+		<div class="card-body">
+                  <h4 class="font-weight-bold">Logins<span class="float-right">Max:{{ max_logins }} </span></h4>
+		  {% if max_logins == 0 %}
+		   </br>
+		  <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
+		   </br>
+		  {% elif max_logins == min_logins %}
+		  <h5><b>Gemiddelde: {{avg_logins }}</b></h5>
+		  {% else %}
+		  {% if points_logins == max_logins %}
+		  <div class="progress mb-4">
+		    <div class="progress-bar bg-danger" role="progressbar" style = "width: 100%;"></div>
+		    </div>
+		    {% else %}
+                  <div class="progress mb-4">
+                    <div class="progress-bar bg-danger" role="progressbar" aria-valuenow= {{ points_logins }} aria-valuemin= {{ min_logins }} aria-valuemax= {{ max_logins }} style={{"width:number%; color:black;"| replace("number", (points_logins/(max_logins - min_logins))*100) }}></div>
+		  </div>
+		  {% endif %}
+		  {% endif %}
+                  <h4 class="font-weight-bold">Gelezen Artikelen<span class="float-right">Max:{{ max_stories }} </span></h4>
+		  {% if max_stories == 0 %}
+		   </br>
+		  <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
+</br>
+		  {% elif max_stories == min_stories %}
+                  <h5><b>Gemiddelde: {{avg_stories }}</b></h5>
+                  {% else %}
+                  {% if points_stories == max_stories %}
+                  <div class="progress mb-4">
+                    <div class="progress-bar bg-warning" role="progressbar" style = "width: 100%;"></div>
+		    </div>
+		    {% else %}
+		  <div class="progress mb-4">
+                    <div class="progress-bar bg-warning" role="progressbar" aria-valuenow= {{ points_stories }} aria-valuemin= {{ min_stories }} aria-valuemax= {{ max_stories }} style = {{"width:number%; color:black;" | replace("number", (points_stories/(max_stories - min_stories))*100) }}></div>
+		    
+                  </div>
+		  {% endif %}
+		  {% endif %}
+                  <h4 class="font-weight-bold">Beoordelingen<span class="float-right">Max: {{ max_ratings }} </span></h4>
+		  {% if max_ratings == 0 %}
+		   </br>
+		  <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
+		  </br>
+		  {% elif max_ratings == min_ratings %}
+                  <h5><b>Gemiddelde: {{avg_ratings }}</b></h5>
+                  {% else %}
+                  {% if points_ratings == max_ratings %}
+                  <div class="progress mb-4">
+                    <div class="progress-bar bg-danger" role="progressbar" style = "width: 100%"></div>
+		    </div>
+		    {% else %}
+		  <div class="progress mb-4">
+                    <div class="progress-bar" role="progressbar" aria-valuenow={{ points_ratings }} aria-valuemin= {{ min_ratings }} aria-valuemax= {{ max_ratings }} style = {{"width:number%; color:black;" | replace("number", (points_ratings/(max_ratings - min_ratings))*100) }}></div>
+                  </div>
+		  {% endif %}
+		  {% endif %}
+                  <h4 class="font-weight-bold">Uitnodigingen<span class="float-right">Max: {{ max_invites }} </span></h4>
+		  {% if max_invites == 0 %}
+		   </br>
+		  <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
+		  </br>
+		  {% elif max_invites == min_invites %}
+                  <h5><b>Gemiddelde: {{avg_invites }}</b></h5>
+                  {% else %}
+                  {% if points_invites == max_invites %}
+                  <div class="progress mb-4">
+                    <div class="progress-bar bg-info" role="progressbar" style = "width: 100%;"></div>
+		    </div>
+		    {% else %}
+		  <div class="progress mb-4">
+                    <div class="progress-bar bg-info" role="progressbar" aria-valuenow={{ points_invites }} aria-valuemin= {{ min_invites }} aria-valuemax= {{ max_invites }} style = {{"width:number%; color:black;" | replace("number", (points_invites/(max_invites - min_invites))*100) }}></div>
+		    </div>
+      		  {% endif %}
+		  {% endif %}
+                  <h4 class="font-weight-bold">Totaal<span class="float-right">Max: {{ max_overall }}</span></h4>
+		  {% if max_overall == 0 %}
+		  </br>
+                  <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
+		  </br>
+                  {% elif max_overall == min_overall %}
+                  <h5><b>Gemiddelde: {{avg_overall }}</b></h5>
+                  {% else %}
+                  {% if points == max_overall %}
+                  <div class="progress mb-4">
+                    <div class="progress-bar bg-success" role="progressbar" style = "width: 100%"></div>
+		    </div>
+		    {% else %}
+		  <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" aria-valuenow={{ points }} aria-valuemin= {{ min_overall }} aria-valuemax= {{max_overall }} style = {{"width:number%; color:black;" | replace("number", (points/(max_overall - min_overall))*100) }} ></div>
+                  </div>
+		  {% endif %}
+		  {% endif %}
                 </div>
-    {% if points_logins == max_logins %}
-    <div class="progress-bar progress-bar-striped progress-bar-danger" style="width: 100%"></div>
-      {% else %}
-      <div class="progress-bar progress-bar-striped progress-bar-danger" aria-valuenow = {{points_logins }} aria-valuemin={{min_logins}} aria-valuemax={{max_logins}} style={{ "width:number%" | replace("number", (points_logins/(max_logins - min_logins))*100) }}></div>
-      {% endif %}
-          </div>
-    </div>
-        <div class="start"><b>Minimum: {{min_logins}}</b></div>
-	<div class="end"><b>Maximum: {{max_logins}}</b></div><br>
-	{% endif %}
-<br>
-	<h4><b>Punten voor gelezen artikelen: {{ points_stories }}</b></h4><br>
-		{% if max_stories == 0 %}
-    <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste!</b> </h5>
-    {% elif max_stories == min_stories %}
-        <h5><b><u>Gemiddelde: {{ avg_stories }}</u></b> </h5>
-    {% else %}
-       <div class="barwrap" >
-      <div class="progress">
-                <div class="bar-step" style={{ "left:number%" | replace("number", (avg_stories/(max_stories - min_stories))*100) }}>
-                    <div class="label-txt"><b>Gemiddelde: {{ avg_stories }}</b></div>
-                    <div class="label-line"></div>
+	      </div>
+	    </div>
+
+	    <div class="col-xl-5 col-lg-6">
+              <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3">
+                  <h3 class="m-0 font-weight-bold text-primary">Points</h3>
+                <!-- Card Body -->
+                <div class="card-body">
+                  <div class="chart-pie pt-4 pb-2">
+                    <canvas id="myPieChart"></canvas>
+                  </div>
+                  <div class="mt-4 text-center small">
+                    <span class="mr-2">
+                      <i class="fas fa-circle text-danger"></i> Logins
+                    </span>
+                    <span class="mr-2">
+                      <i class="fas fa-circle text-warning"></i> Gelezen
+                    </span>
+		    <span class="mr-2">
+                      <i class="fas fa-circle text-primary"></i> Beoordeling
+                    </span>
+		                        <span class="mr-2">
+                      <i class="fas fa-circle text-success"></i> Uitnodiging
+					</span>
+						<span class="mr-2">
+                      <i class="fas fa-circle text-secondary"></i>Nog te besteden
+                                        </span>
+                    </span>
+                  </div>
                 </div>
-    {% if points_stories == max_stories %}
-    <div class="progress-bar progress-bar-striped progress-bar-warning" style="width: 100%"></div>
-      {% else %}
-    <div class="progress-bar progress-bar-striped progress-bar-warning" aria-valuenow = {{points_stories }} aria-valuemin={{min_stories}} aria-valuemax={{max_stories}} style={{ "width:number%" | replace("number", (points_stories/(max_stories - min_stories))*100) }}></div>
-      {% endif %}
+              </div>
+            </div>
           </div>
-    </div>
-        <div class="start"><b>Minimum: {{min_stories}}</b></div>
-	<div class="end"><b>Maximum: {{max_stories}}</b></div><br>
-	{% endif %}
-	<br>
-	<h4><b><u>Punten voor beoordelingen:  {{ points_ratings }}</u></b></h4><br>
-		{% if max_ratings == 0 %}
-    <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld</b> </h5>
-    {% elif max_ratings == min_ratings %}
-        <h5><b>Gemiddelde: {{ avg_ratings }}</b> </h5>
-    {% else %}
-	       <div class="barwrap" >
-      <div class="progress">
-                <div class="bar-step" style={{ "left:number%" | replace("number", (avg_ratings/(max_ratings - min_ratings))*100) }}>
-                    <div class="label-txt"><b>Gemiddelde: {{ avg_ratings }}</b></div>
-                    <div class="label-line"></div>
+
+<div class="col-lg-6 mb-4">
+
+              <!-- Illustrations -->
+              <div class="card shadow mb-4">
+<div class="card-header py-3">
+                  <h3 class="m-0 font-weight-bold text-primary">Personalization</h3>
                 </div>
-    {% if points_ratings == max_ratings %}
-		<div class="progress-bar progress-bar-striped" style="width: 100%"></div>
-      {% else %}
-		<div class="progress-bar progress-bar-striped" aria-valuenow = {{points_ratings }} aria-valuemin={{min_ratings}} aria-valuemax={{max_ratings}} style={{ "width:number%" | replace("number", (points_ratings/(max_ratings - min_ratings))*100) }}></div>
-      {% endif %}
+		<div class="card-body">
+	<h3 class="font-weight-bold">Number of recommended stories</h3>	  
+          <div class="range">
+            <input type="range" name="range" min="0" max="9" value="6" onchange="range.value=value">
+            <output id="range">6</output>
           </div>
-    </div>
-        <div class="start"><b>Minimum: {{min_ratings}}</b></div>
-	<div class="end"><b>Maximum: {{max_ratings}}</b></div><br>
-	{% endif %}
-		<h4><b><u>Punten voor uitnodigingen:  {{ points_invites }}</u></b></h4><br>
-	{% if max_invites == 0 %}
-    <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste!</b></h5>
-    {% elif max_invites == min_invites %}
-        <h5><b>Gemiddelde: {{ avg_invites }}</b> </h5>
-    {% else %}
-       <div class="barwrap" >
-      <div class="progress">
-                <div class="bar-step" style={{ "left:number%" | replace("number", (avg_invites/(max_invites - min_invites))*100) }}>
-                    <div class="label-txt"><b>Gemiddelde: {{ avg_invites }}</b></div>
-                    <div class="label-line"></div>
-                </div>
-    {% if points_invites == max_invites %}
-    <div class="progress-bar progress-bar-striped progress-bar-info" style="width: 100%"></div>
-      {% else %}
-    <div class="progress-bar progress-bar-striped progress-bar-info" aria-valuenow = {{points_invites }} aria-valuemin={{min_invites}} aria-valuemax={{max_invites}} style={{ "width:number%" | replace("number", (points_invites/(max_invites - min_invites))*100) }}></div>
-      {% endif %}
+	  <br />
+	  <h3 class="font-weight-bold">Diversity</h3>
+          <div class="range range-primary">
+            <input type="range" name="range" min="-50" max="50" value="0" onchange="rangePrimary.value=value">
+            <output id="rangePrimary">0</output>
           </div>
-    </div>
-        <div class="start"><b>Minimum: {{min_invites}}</b></div>
-	<div class="end"><b>Maximum: {{max_invites}}</b></div><br>
-	{% endif %}
-    </div>
-    </div>
-{% endblock %}
+        </div>
+      </div>
+          </div>
+	  </div>
+                                                                                                                                       
+
+	  <!-- Bootstrap core JavaScript-->
+  <script src="{{url_for('.static', filename = 'vendor/jquery/jquery.min.js')}}"></script>
+  <script src="{{url_for('.static', filename = 'vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="{{url_for('.static', filename = 'vendor/jquery-easing/jquery.easing.min.js')}}"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="{{url_for('.static', filename ='sb-admin-2.min.js')}}"></script>
+
+  <!-- Page level plugins -->
+  <script src="{{url_for('.static', filename='vendor/chart.js/Chart.min.js')}}"></script>
+	  {% endblock %}

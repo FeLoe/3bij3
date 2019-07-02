@@ -95,6 +95,7 @@ class News_sel(db.Model):
     endtime = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     time_spent = db.Column(db.Interval)
     rating = db.Column(db.Integer, default = 0)
+    rating2 = db.Column(db.Integer, default = 0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 class User_invite(db.Model):
@@ -130,6 +131,14 @@ class Points_logins(db.Model):
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user_agent = db.Column(db.String(500))
+
+class All_news(db.Model):
+    id = db.Column(db.String(500), primary_key = True)
+
+class Similarities(db.Model):
+    id_old = db.Column(db.String(500), primary_key = True)
+    id_new = db.Column(db.String(500))
+    similarity = db.Column(db.Integer)
     
 @login.user_loader
 def load_user(id):
