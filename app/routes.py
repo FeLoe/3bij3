@@ -512,10 +512,7 @@ def contact():
         else:
             name =  current_user.username
             id = str(current_user.id)
-            email = [current_user.email_hash]
-            print(email)
-            print(app.config['ADMINS'])
-            print(name)
+            email =  [current_user.email_hash]
             msg = Message("Message from your visitor " + name + "with ID: " + id,
                           sender= email,
                           recipients=app.config['ADMINS'])

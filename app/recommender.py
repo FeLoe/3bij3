@@ -63,7 +63,7 @@ class recommender():
         final_docs = []
         a = ["podcast", "live"]
         for doc in docs:
-            if self.textfield not in doc["_source"].keys() or (self.teaserfield not in doc["_source"].keys() and self.teaseralt not in doc["_source"].keys()) or doc['_id'] in displayed_ids or 'topic' not in doc['_source'].keys():
+            if self.textfield not in doc["_source"].keys() or (self.teaserfield not in doc["_source"].keys() and self.teaseralt not in doc["_source"].keys()) or doc['_id'] in displayed_ids or topicfield not in doc['_source'].keys():
                 pass
             elif "paywall_na" in doc["_source"].keys():
                 if doc["_source"]["paywall_na"] == True:
