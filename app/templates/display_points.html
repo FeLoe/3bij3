@@ -3,10 +3,10 @@
 {{super()}}
 <link rel="stylesheet"
       href="{{url_for('.static', filename='mystyle.css')}}">
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link href="//netdna.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <link href="{{url_for('.static', filename='dashboard.css')}}", rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/5.9.0/css/font-awesome.min.css">
 <style>
   input {
   display: none;
@@ -14,8 +14,10 @@
   </style>
 {% endblock %}
 {% block scripts %}
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
 <script type=text/javascript>
 Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = '#858796';
@@ -33,7 +35,7 @@ var myPieChart = new Chart(ctx, {
     }],
   },
   options: {
-    maintainAspectRatio: false,
+    maintainAspectRatio: true,
     tooltips: {
       backgroundColor: "rgb(255,255,255)",
       bodyFontColor: "#858796",
@@ -47,7 +49,7 @@ var myPieChart = new Chart(ctx, {
     legend: {
       display: false
     },
-    cutoutPercentage: 80,
+    cutoutPercentage: 50,
   },
 });
 </script>
@@ -81,7 +83,33 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
     <!-- Project Card Example -->
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-	<h3 class="m-0 font-weight-bold text-primary">Progress</h3>
+	<h2 class="m-0 font-weight-bold text-primary">Progress
+ <!-- Button trigger modal -->
+<button type="button" class="btn btn-link float-right" data-toggle="modal" data-target="#exampleModalCenter">
+<span class="glyphicon glyphicon-question-sign" style="font-size:20px;top:-1px;"></span>
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+        </h2>
       </div>
       <div class="card-body">
 	<h4 class="font-weight-bold">Logins<span class="float-right">Max:{{ max_logins }} </span></h4>
@@ -171,13 +199,39 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
   <div class="col my-4">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-	<h3 class="m-0 font-weight-bold text-primary">Points</h3>
+	<h2 class="m-0 font-weight-bold text-primary">Points
+ <!-- Button trigger modal -->
+<button type="button" class="btn btn-link float-right" data-toggle="modal" data-target="#exampleModalCenter">
+<span class="glyphicon glyphicon-question-sign" style="font-size:20px;top:-1px;"></span>
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+        </h2>
       </div>
       <div class="card-body">
 	<div class="chart-pie p-4">
 	  <canvas id="myPieChart"></canvas>
 	</div>
-	<div class="mt-4 pb-4 text-center small">
+	<div class="mt-4 pb-4 text-center small" style="font-size:12px;">
 	  <span class="mr-2">
 	    <i class="fas fa-circle text-danger"></i> Logins
 	  </span>
@@ -188,10 +242,10 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
 	    <i class="fas fa-circle text-primary"></i> Beoordeling
 	  </span>
 	  <span class="mr-2">
-	    <i class="fas fa-circle text-success"></i> Uitnodiging
+	   <i class="fas fa-circle text-success"></i> Uitnodiging
 	  </span>
 	  <span class="mr-2">
-	    <i class="fas fa-circle text-secondary"></i>Nog te besteden
+	    <i class="fas fa-circle text-secondary"></i> Nog te besteden
 	  </span>
 	</div>
       </div>
@@ -203,7 +257,33 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
   <div class="col my-4">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-	<h3 class="m-0 font-weight-bold text-primary">Personalization</h3>
+	<h2 class="m-0 font-weight-bold text-primary">Personalization
+	 <!-- Button trigger modal -->
+<button type="button" class="btn btn-link float-right" data-toggle="modal" data-target="#exampleModalCenter">
+<span class="glyphicon glyphicon-question-sign" style="font-size:20px;top:-1px;"></span>
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+        </h2>
       </div>
       <div class="card-body">
 	<h3 class="font-weight-bold">Number of recommended stories</h3>
@@ -224,9 +304,35 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
   <div class="col my-4">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-	<h3 class="m-0 font-weight-bold text-primary">Personalization: Topics</h3>
+	<h2 class="m-2 font-weight-bold text-primary align-middle">Personalization: Topics
+	 <!-- Button trigger modal -->
+<button type="button" class="btn btn-link float-right" data-toggle="modal" data-target="#exampleModalCenter">
+<span class="glyphicon glyphicon-question-sign" style="font-size:20px;top:-1px;"></span>
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-    <div class="card-body">
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+	</h2>
+</div>
+	<div class="card-body">
       <div class="card-columns">
 	<form action="{{ url_for('get_categories') }}" method="post">
 	<label>
@@ -290,7 +396,7 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
             <div class="card-body">
               <h2 class="card-title">Economie</h2>
               <div class="card-block">
-                <i class="fa fa-money card-icon" style="font-size:48px;"></i>
+                <i class="fa fa-money-bill-alt card-icon" style="font-size:48px;"></i>
               </div>
             </div>
           </div>
@@ -334,12 +440,12 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
     </form>
     </div>
   </div>
-  </div>
 </div>
 </div>
 </div>
 </div>
-
+</div>
+</div>
 	  <!-- Bootstrap core JavaScript-->
   <script src="{{url_for('.static', filename = 'vendor/jquery/jquery.min.js')}}"></script>
   <script src="{{url_for('.static', filename = 'vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>

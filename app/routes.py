@@ -129,6 +129,8 @@ def newspage(show_again = 'False'):
         if topics == True:
             if topicfield in result['_source'].keys():
                 result["_source"]["topic_string"] = result['_source'][topicfield]
+                if result["_source"]["topic_string"] == "Justitie":
+                    result["_source"]["topic_string"] = "Crime" 
                 results.append(result)
             else:
                 pass
