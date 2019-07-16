@@ -1,12 +1,17 @@
 {% extends "base.html" %}
 {% block styles %}
 {{super()}}
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <link rel="stylesheet"
       href="{{url_for('.static', filename='mystyle.css')}}">
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <link href="{{url_for('.static', filename='dashboard.css')}}", rel="stylesheet">
-  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+  input {
+  display: none;
+  }
+  </style>
 {% endblock %}
 {% block scripts %}
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
@@ -46,172 +51,294 @@ var myPieChart = new Chart(ctx, {
   },
 });
 </script>
+
+<script>
+    var submitFormOkay = false;
+    window.onbeforeunload = function () {
+    if (!submitFormOkay) {
+    return true;
+    }
+    }
+</script>
+
+<script>
+jQuery(function(){
+    var max = 3;
+    var checkboxes = $('input[type="checkbox"]');
+    checkboxes.change(function(){
+        var current = checkboxes.filter(':checked').length;
+checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
+    });
+});
+</script>
+
 {% endblock %}
 {% block app_content %}
 <!-- Content Row -->
-          <div class="row">
+<div class="row">
+  <!-- Content Column -->
+  <div class="col my-4">
+    <!-- Project Card Example -->
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+	<h3 class="m-0 font-weight-bold text-primary">Progress</h3>
+      </div>
+      <div class="card-body">
+	<h4 class="font-weight-bold">Logins<span class="float-right">Max:{{ max_logins }} </span></h4>
+	{% if max_logins == 0 %}
+      </br>
+      <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
+      </br>
+      {% else %}
+      {% if points_logins == max_logins %}
+      <div class="progress mb-4">
+	<div class="progress-bar bg-danger" role="progressbar" style = "width: 100%;"></div>
+      </div>
+      {% else %}
+      <div class="progress mb-4">
+	<div class="progress-bar bg-danger" role="progressbar" aria-valuenow= {{ points_logins }} aria-valuemin= {{ min_logins }} aria-valuemax= {{ max_logins }} style={{"width:number%; color:black;"| replace("number", (points_logins/(max_logins - min_logins))*100) }}></div>
+      </div>
+      {% endif %}
+      {% endif %}
+      <h4 class="font-weight-bold">Gelezen Artikelen<span class="float-right">Max:{{ max_stories }} </span></h4>
+      {% if max_stories == 0 %}
+      </br>
+      <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
+      </br>
+      {% else %}
+      {% if points_stories == max_stories %}
+      <div class="progress mb-4">
+	<div class="progress-bar bg-warning" role="progressbar" style = "width: 100%;"></div>
+      </div>
+      {% else %}
+      <div class="progress mb-4">
+	<div class="progress-bar bg-warning" role="progressbar" aria-valuenow= {{ points_stories }} aria-valuemin= {{ min_stories }} aria-valuemax= {{ max_stories }} style = {{"width:number%; color:black;" | replace("number", (points_stories/(max_stories - min_stories))*100) }}></div>
+      </div>
+      {% endif %}
+      {% endif %}
+      <h4 class="font-weight-bold">Beoordelingen<span class="float-right">Max: {{ max_ratings }} </span></h4>
+      {% if max_ratings == 0 %}
+      </br>
+      <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
+      </br>
+      {% else %}
+      {% if points_ratings == max_ratings %}
+      <div class="progress mb-4">
+	<div class="progress-bar" role="progressbar" style = "width: 100%"></div>
+      </div>
+      {% else %}
+      <div class="progress mb-4">
+	<div class="progress-bar" role="progressbar" aria-valuenow={{ points_ratings }} aria-valuemin= {{ min_ratings }} aria-valuemax= {{ max_ratings }} style = {{"width:number%; color:black;" | replace("number", (points_ratings/(max_ratings - min_ratings))*100) }}></div>
+      </div>
+      {% endif %}
+      {% endif %}
+      <h4 class="font-weight-bold">Uitnodigingen<span class="float-right">Max: {{ max_invites }} </span></h4>
+      {% if max_invites == 0 %}
+      </br>
+      <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
+      </br>
+      {% else %}
+      {% if points_invites == max_invites %}
+      <div class="progress mb-4">
+	<div class="progress-bar bg-info" role="progressbar" style = "width: 100%;"></div>
+      </div>
+      {% else %}
+      <div class="progress mb-4">
+	<div class="progress-bar bg-info" role="progressbar" aria-valuenow={{ points_invites }} aria-valuemin= {{ min_invites }} aria-valuemax= {{ max_invites }} style = {{"width:number%; color:black;" | replace("number", (points_invites/(max_invites - min_invites))*100) }}></div>
+      </div>
+      {% endif %}
+      {% endif %}
+      <h4 class="font-weight-bold">Totaal<span class="float-right">Max: {{ max_overall }}</span></h4>
+      {% if max_overall == 0 %}
+      </br>
+      <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
+      </br>
+      {% else %}
+      {% if points == max_overall %}
+      <div class="progress mb-4">
+	<div class="progress-bar bg-success" role="progressbar" style = "width: 100%"></div>
+      </div>
+      {% else %}
+      <div class="progress">
+	<div class="progress-bar bg-success" role="progressbar" aria-valuenow={{ points }} aria-valuemin= {{ min_overall }} aria-valuemax= {{max_overall }} style = {{"width:number%; color:black;" | replace("number", (points/(max_overall - min_overall))*100) }} ></div>
+      </div>
+      {% endif %}
+      {% endif %}
+      </div>
+    </div>
+    </div>
 
-            <!-- Content Column -->
-            <div class="col-lg-6 mb-4">
+  <div class="col my-4">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+	<h3 class="m-0 font-weight-bold text-primary">Points</h3>
+      </div>
+      <div class="card-body">
+	<div class="chart-pie p-4">
+	  <canvas id="myPieChart"></canvas>
+	</div>
+	<div class="mt-4 pb-4 text-center small">
+	  <span class="mr-2">
+	    <i class="fas fa-circle text-danger"></i> Logins
+	  </span>
+	  <span class="mr-2">
+	    <i class="fas fa-circle text-warning"></i> Gelezen
+	  </span>
+	  <span class="mr-2">
+	    <i class="fas fa-circle text-primary"></i> Beoordeling
+	  </span>
+	  <span class="mr-2">
+	    <i class="fas fa-circle text-success"></i> Uitnodiging
+	  </span>
+	  <span class="mr-2">
+	    <i class="fas fa-circle text-secondary"></i>Nog te besteden
+	  </span>
+	</div>
+      </div>
+    </div>
+  </div>
+</div>
 
-              <!-- Project Card Example -->
-              <div class="card shadow mb-4">
-		<div class="card-header py-3">
-                  <h3 class="m-0 font-weight-bold text-primary">Progress</h3>
-                </div>
-		<div class="card-body">
-                  <h4 class="font-weight-bold">Logins<span class="float-right">Max:{{ max_logins }} </span></h4>
-		  {% if max_logins == 0 %}
-		   </br>
-		  <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
-		   </br>
-		  {% elif max_logins == min_logins %}
-		  <h5><b>Gemiddelde: {{avg_logins }}</b></h5>
-		  {% else %}
-		  {% if points_logins == max_logins %}
-		  <div class="progress mb-4">
-		    <div class="progress-bar bg-danger" role="progressbar" style = "width: 100%;"></div>
-		    </div>
-		    {% else %}
-                  <div class="progress mb-4">
-                    <div class="progress-bar bg-danger" role="progressbar" aria-valuenow= {{ points_logins }} aria-valuemin= {{ min_logins }} aria-valuemax= {{ max_logins }} style={{"width:number%; color:black;"| replace("number", (points_logins/(max_logins - min_logins))*100) }}></div>
-		  </div>
-		  {% endif %}
-		  {% endif %}
-                  <h4 class="font-weight-bold">Gelezen Artikelen<span class="float-right">Max:{{ max_stories }} </span></h4>
-		  {% if max_stories == 0 %}
-		   </br>
-		  <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
-</br>
-		  {% elif max_stories == min_stories %}
-                  <h5><b>Gemiddelde: {{avg_stories }}</b></h5>
-                  {% else %}
-                  {% if points_stories == max_stories %}
-                  <div class="progress mb-4">
-                    <div class="progress-bar bg-warning" role="progressbar" style = "width: 100%;"></div>
-		    </div>
-		    {% else %}
-		  <div class="progress mb-4">
-                    <div class="progress-bar bg-warning" role="progressbar" aria-valuenow= {{ points_stories }} aria-valuemin= {{ min_stories }} aria-valuemax= {{ max_stories }} style = {{"width:number%; color:black;" | replace("number", (points_stories/(max_stories - min_stories))*100) }}></div>
-		    
-                  </div>
-		  {% endif %}
-		  {% endif %}
-                  <h4 class="font-weight-bold">Beoordelingen<span class="float-right">Max: {{ max_ratings }} </span></h4>
-		  {% if max_ratings == 0 %}
-		   </br>
-		  <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
-		  </br>
-		  {% elif max_ratings == min_ratings %}
-                  <h5><b>Gemiddelde: {{avg_ratings }}</b></h5>
-                  {% else %}
-                  {% if points_ratings == max_ratings %}
-                  <div class="progress mb-4">
-                    <div class="progress-bar bg-danger" role="progressbar" style = "width: 100%"></div>
-		    </div>
-		    {% else %}
-		  <div class="progress mb-4">
-                    <div class="progress-bar" role="progressbar" aria-valuenow={{ points_ratings }} aria-valuemin= {{ min_ratings }} aria-valuemax= {{ max_ratings }} style = {{"width:number%; color:black;" | replace("number", (points_ratings/(max_ratings - min_ratings))*100) }}></div>
-                  </div>
-		  {% endif %}
-		  {% endif %}
-                  <h4 class="font-weight-bold">Uitnodigingen<span class="float-right">Max: {{ max_invites }} </span></h4>
-		  {% if max_invites == 0 %}
-		   </br>
-		  <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
-		  </br>
-		  {% elif max_invites == min_invites %}
-                  <h5><b>Gemiddelde: {{avg_invites }}</b></h5>
-                  {% else %}
-                  {% if points_invites == max_invites %}
-                  <div class="progress mb-4">
-                    <div class="progress-bar bg-info" role="progressbar" style = "width: 100%;"></div>
-		    </div>
-		    {% else %}
-		  <div class="progress mb-4">
-                    <div class="progress-bar bg-info" role="progressbar" aria-valuenow={{ points_invites }} aria-valuemin= {{ min_invites }} aria-valuemax= {{ max_invites }} style = {{"width:number%; color:black;" | replace("number", (points_invites/(max_invites - min_invites))*100) }}></div>
-		    </div>
-      		  {% endif %}
-		  {% endif %}
-                  <h4 class="font-weight-bold">Totaal<span class="float-right">Max: {{ max_overall }}</span></h4>
-		  {% if max_overall == 0 %}
-		  </br>
-                  <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
-		  </br>
-                  {% elif max_overall == min_overall %}
-                  <h5><b>Gemiddelde: {{avg_overall }}</b></h5>
-                  {% else %}
-                  {% if points == max_overall %}
-                  <div class="progress mb-4">
-                    <div class="progress-bar bg-success" role="progressbar" style = "width: 100%"></div>
-		    </div>
-		    {% else %}
-		  <div class="progress">
-                    <div class="progress-bar bg-success" role="progressbar" aria-valuenow={{ points }} aria-valuemin= {{ min_overall }} aria-valuemax= {{max_overall }} style = {{"width:number%; color:black;" | replace("number", (points/(max_overall - min_overall))*100) }} ></div>
-                  </div>
-		  {% endif %}
-		  {% endif %}
-                </div>
+<div class="row">
+  <div class="col my-4">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+	<h3 class="m-0 font-weight-bold text-primary">Personalization</h3>
+      </div>
+      <div class="card-body">
+	<h3 class="font-weight-bold">Number of recommended stories</h3>
+	<div class="range">
+	  <input type="range" name="range" min="0" max="9" value="6" onchange="range.value=value">
+	  <output id="range">6</output>
+	</div>
+	<br />
+	<h3 class="font-weight-bold">Diversity</h3>
+	<div class="range range-primary">
+	  <input type="range" name="range" min="-50" max="50" value="0" onchange="rangePrimary.value=value">
+	  <output id="rangePrimary">0</output>
+	</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col my-4">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+	<h3 class="m-0 font-weight-bold text-primary">Personalization: Topics</h3>
+      </div>
+    <div class="card-body">
+      <div class="card-columns">
+	<form action="{{ url_for('get_categories') }}" method="post">
+	<label>
+	  <input type="checkbox" name="category" class="card-input-element d-none" value="Buitenland">
+	  <div class="card text-center topics">
+	    <div class="card-body">
+	      <h2 class="card-title">Buitenland</h2>
+	      <div class="card-block">
+		<i class="fa fa-globe card-icon" style="font-size:48px;"></i>
 	      </div>
 	    </div>
-
-	    <div class="col-xl-5 col-lg-6">
-              <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3">
-                  <h3 class="m-0 font-weight-bold text-primary">Points</h3>
-                <!-- Card Body -->
-                <div class="card-body">
-                  <div class="chart-pie pt-4 pb-2">
-                    <canvas id="myPieChart"></canvas>
-                  </div>
-                  <div class="mt-4 text-center small">
-                    <span class="mr-2">
-                      <i class="fas fa-circle text-danger"></i> Logins
-                    </span>
-                    <span class="mr-2">
-                      <i class="fas fa-circle text-warning"></i> Gelezen
-                    </span>
-		    <span class="mr-2">
-                      <i class="fas fa-circle text-primary"></i> Beoordeling
-                    </span>
-		                        <span class="mr-2">
-                      <i class="fas fa-circle text-success"></i> Uitnodiging
-					</span>
-						<span class="mr-2">
-                      <i class="fas fa-circle text-secondary"></i>Nog te besteden
-                                        </span>
-                    </span>
-                  </div>
-                </div>
+	  </div>
+	</label>
+        <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Binnenland">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Binnenland</h2>
+              <div class="card-block">
+                <i class="fa fa-home card-icon" style="font-size:48px;"></i>
               </div>
             </div>
           </div>
-
-<div class="col-lg-6 mb-4">
-
-              <!-- Illustrations -->
-              <div class="card shadow mb-4">
-<div class="card-header py-3">
-                  <h3 class="m-0 font-weight-bold text-primary">Personalization</h3>
-                </div>
-		<div class="card-body">
-	<h3 class="font-weight-bold">Number of recommended stories</h3>	  
-          <div class="range">
-            <input type="range" name="range" min="0" max="9" value="6" onchange="range.value=value">
-            <output id="range">6</output>
+	</label>
+        <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Milieu">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Milieu</h2>
+              <div class="card-block">
+                <i class="fa fa-leaf card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
           </div>
-	  <br />
-	  <h3 class="font-weight-bold">Diversity</h3>
-          <div class="range range-primary">
-            <input type="range" name="range" min="-50" max="50" value="0" onchange="rangePrimary.value=value">
-            <output id="rangePrimary">0</output>
+	</label>
+        <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Crime">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Crime</h2>
+              <div class="card-block">
+                <i class="fa fa-balance-scale card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
           </div>
-        </div>
+	</label>
+        <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Immigratie">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Immigratie</h2>
+              <div class="card-block">
+                <i class="fa fa-suitcase card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
+          </div>
+	</label>
+        <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Economie">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Economie</h2>
+              <div class="card-block">
+                <i class="fa fa-money card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
+          </div>
+	</label>
+        <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Sport">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Sport</h2>
+              <div class="card-block">
+                <i class="fa fa-futbol card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
+          </div>
+	</label>
+        <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Entertainment">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Entertainment</h2>
+              <div class="card-block">
+                <i class="fa fa-smile card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
+          </div>
+	</label>
+	<label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Anders">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Anders</h2>
+              <div class="card-block">
+                <i class="fa fa-ellipsis-h card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
+          </div>
+	</label>
       </div>
-          </div>
-	  </div>
-                                                                                                                                       
+    </div>
+    <button type="submit" id="topics" name="submitBtn" class="btn btn-primary btn-xlarge center" onclick="submitFormOkay = true;">Wijzigen</button>
+    </form>
+    </div>
+  </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
 
 	  <!-- Bootstrap core JavaScript-->
   <script src="{{url_for('.static', filename = 'vendor/jquery/jquery.min.js')}}"></script>

@@ -32,7 +32,7 @@ doctype_dict: How the sources will be displayed to the user
 topics: whether a topic variable will be used/displayed to the user
 '''
 list_of_sources = ["nu", "ad (www)", "bd (www)", "telegraaf (www)", "volkskrant (www)"]
-doctype_dict = {'telegraaf (www)': 'telegraaf.nl', 'ad (www)': 'ad.nl', 'nu': 'nu.nl', 'bd (www)':'bd.nl', 'volkskrkant (www)': 'volkskrant.nl'}
+doctype_dict = {'telegraaf (www)': 'telegraaf.nl', 'ad (www)': 'ad.nl', 'nu': 'nu.nl', 'bd (www)':'bd.nl', 'volkskrant (www)': 'volkskrant.nl'}
 topics = True
 
 '''

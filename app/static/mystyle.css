@@ -1,3 +1,59 @@
+.card.topics {
+    background-color:#b6d7f3;
+    color:#fff;
+}
+
+.card-body {
+    input[type="checkbox"] {
+    display: none !important;
+    &:checked {
+	+ .card-body {
+            background-color: #0275d8;
+	    color:#fff;
+          }
+        }
+    }
+}
+
+label {
+  width: 100%;
+  font-size: 1rem;
+}
+
+.card-input-element+.card-body {
+  height: calc(36px + 2*1rem);
+  color: var(--primary);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  border: 2px solid transparent;
+  border-radius: 4px;
+}
+
+.card-input-element+.card:hover {
+  cursor: pointer;
+}
+
+.card-input-element:checked+.card {
+  border: 2px solid var(--primary);
+  -webkit-transition: border .3s;
+  -o-transition: border .3s;
+  transition: border .3s;
+}
+
+.card-title {
+    color:var(--primary)
+}
+
+.card-icon {
+    color:var(--primary)
+}
+
+.card.topics-inactive:hover {
+    background-color:#8abfec
+}
+
+.c-card{ position: absolute; top:0; left:0; opacity:0; visibility:hidden;}
+
 .c-rating {
     display: -webkit-box;
     display: -webkit-flex;

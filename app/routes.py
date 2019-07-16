@@ -15,7 +15,7 @@ from flask_mail import Message
 from user_agents import parse
 from app.processing import paragraph_processing
 from werkzeug.security import generate_password_hash
-from app.vars import host, indexName, es, list_of_sources, topics, doctype_dict
+from app.vars import host, indexName, es, list_of_sources, topics, doctype_dict, topic_list
 from app.vars import num_less, num_more, num_select, num_recommender
 from app.vars import topicfield, textfield, teaserfield, teaseralt, doctypefield, classifier_dict
 from app.vars import group_number
@@ -491,7 +491,7 @@ def popup_back():
 def get_categories():
     sel_categories = request.form.getlist('category')
     categories = []
-    for category in all_categories.keys():
+    for category in topic_list:
         if category in sel_categories:
             categories.append(1)
         else:

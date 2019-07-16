@@ -158,72 +158,8 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
       </div>
       <ul class="list-unstyled components">
 	<li><a href="{{ url_for('count_logins') }}"><i class = "fa fa-newspaper"></i>   Nieuws</a></li>
-	{% if current_user.group == 1 %}
-        <li class="active"> 
-            <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"><i class = "fa fa-edit"></i>   Categorieën</a>
-            <form action="{{ url_for('get_categories') }}" method="post">
-               <ul class="collapse list-unstyled" id="homeSubmenu">
-                  <li>
-                     <label class="control control--checkbox checklist-format"><i class = "fa fa-home"></i><span>
-                        Binnenland</span><input class="categories" type="checkbox" name="category" value="Binnenland"/>
-                        <div class="control__indicator"></div>
-                     </label>
-                  </li>
-                  <li>
-                    <label class="control control--checkbox checklist-format"><i class = "fa fa-globe"></i>
-                        <span>Buitenland</span><input  class="categories" type="checkbox" name="category" value="Buitenland"/>
-                        <div class="control__indicator"></div>
-                     </label>
-                  </li>
-                  <li>
-                    <label class="control control--checkbox checklist-format"><i class = "fa fa-money-bill-alt"></i>
-                        <span>Economie</span><input  class="categories" type="checkbox" name="category" value="Economie"/>
-                        <div class="control__indicator"></div>
-                     </label>
-                  </li>
-                  <li>
-                    <label class="control control--checkbox checklist-format"><i class = "fa fa-balance-scale"></i>
-                        <span>Justitie</span><input class="categories"  type="checkbox" name="category" value="Justitie"/>
-                        <div class="control__indicator"></div>
-                     </label>
-                  </li>
-                  <li>
-                    <label class="control control--checkbox checklist-format"><i class = "fa fa-futbol"></i>
-                        <span>Sport</span><input  class="categories" type="checkbox" name="category" value="Sport"/>
-                        <div class="control__indicator"></div>
-                     </label>
-                  </li>
-                  <li>
-                    <label class="control control--checkbox checklist-format"><i class = "fa fa-smile"></i>
-                        <span>Entertainment</span><input type="checkbox" name="category" value="Entertainment"/>
-                        <div class="control__indicator"></div>
-                     </label>
-                  </li>
-                  <li>
-                    <label class="control control--checkbox checklist-format"><i class = "fa fa-suitcase"></i>
-                        <span>Immigratie</span><input type="checkbox" name="category" value="Immigratie"/>
-                        <div class="control__indicator"></div>
-                     </label>
-                  </li>
-                  <li>
-                    <label class="control control--checkbox checklist-format"><i class = "fa fa-leaf"></i>
-                        <span>Milieu</span><input type="checkbox" name="category" value="Milieu"/>
-                        <div class="control__indicator"></div>
-                     </label>
-                  </li>
-                  <li>
-                    <label class="control control--checkbox checklist-format"><i class = "fa fa-ellipsis-h"></i>
-                        <span>Anders</span><input type="checkbox" name="category" value="Anders"/>
-                        <div class="control__indicator"></div>
-                     </label>
-                  </li>
-                  <li style="padding-left: 20px;"><span><input class = "btn btn-info" type="submit" value="Wijzigen"></span></li>
-               </ul>
-            </form>
-        </li>
-	{% endif %}
 	<li><a href="{{ url_for('get_points') }}"><i class="fa fa-chart-bar"></i>   Punten</a></li>
-	 <li><a href="{{ url_for('contact') }}"><i class="fa fa-envelope"></i>   Mail ons</a></li>
+	<li><a href="{{ url_for('contact') }}"><i class="fa fa-envelope"></i>   Mail ons</a></li>
 	<li><a href="{{ url_for('faq') }}"><i class="fa fa-question-circle"></i>   FAQ</a></li>
 	<li><a href="{{ url_for('invite') }}"><i class="fa fa-share-square"></i>   Uitnodiging</a></li>
             {% if (different_dates >= 10) and (points >= 100) %}
