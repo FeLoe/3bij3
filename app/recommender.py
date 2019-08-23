@@ -102,35 +102,14 @@ class recommender():
     def past_behavior(self):
         '''
         Recommends articles based on the stories the user has selected in the past, using SoftCosineSimilarity
-        This only works if a dictionary, index and article_ids have been supplied - if one of them is missing, a random selection is returned.
+        The similarity coefficients should already be in the SQL database (by running the 'get_similarities' file on a regular basis) and only need to be retrieved (no calculation at this point)
         '''
         #make a query generator out of the past selected articles (using tfidf model from dictionary); retrieve the articles that are part of the index (based on article_ids)
         if None in (dictionary, index, article_ids):
             final_list = self.random_selection()
             return(final_list)
-        tfidf = TfidfModel(dictionary=dictionary)
-        docs = self.get_selected()
-        query_list = [a for a in docs]
-        query_ids = [a['_id'] for a in query_list]
-        query_generator = [tfidf[dictionary.doc2bow(n['_source'][self.textfield].split())] for n in query_list]
-        query_generator = (item for item in query_generator)
-        new_articles = []
-        for item in article_ids:
-            doc = es.search(index=indexName,
-                body={"query":{"terms":{"_id":[item]}}}).get('hits',{}).get('hits',[""])
-            for d in doc:
-                new_articles.append(d)
-        #Get the three most similar new articles for each past article and store their ids in a list
-        selection = []
-        ids = []
-        for text in query_generator:
-            sims = index[text]
-            sims_ids = list(zip(sims, article_ids))
-            sims_ids = [n for n in sims_ids if n[1] not in query_ids]
-            new_sims_ids = [n[1] for n in sims_ids]
-            sims_ids = sorted(enumerate(sims_ids), key=lambda item: -item[0])
-            for i in range(3):
-                selection.append(sims_ids[i][1])
+        #Get all selected docs in the SQL database, get the three most similar ones for each past article
+        #Possibly: Weigh in the ratings for the past articles to determine which ones get "preference"
         #Use a counter to determine the most frequently named articles and take the first ones (specified by variable)
         recommender_ids = [a[1] for a, count in Counter(selection).most_common(self.num_recommender)]
         recommender_selection = [a for a in new_articles if a["_id"] in recommender_ids]

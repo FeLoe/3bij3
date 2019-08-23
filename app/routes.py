@@ -600,3 +600,7 @@ def report_article():
         url = request.args.to_dict()['article']
         form.lead.data = "Probleem met artikel " + url
         return render_template('report_article.html', form=form, url = url)
+
+@app.route('/.well-known/acme-challenge', methods = ['GET', 'POST'])
+def challenge():
+    return render_template('challenge.html')
