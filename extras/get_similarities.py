@@ -15,12 +15,7 @@ print("loaded model")
 host = "http://localhost:9200"
 indexName = "inca"
 es = Elasticsearch(host, timeout = 60)
-connection = mysql.connector.connect(
-    host = 'localhost',
-    user = 'root',
-    passwd= 'meinpasswortfuerroot95.',
-    database = '3bij3'
-    )
+connection = mysql.connector.connect()
 cursor = connection.cursor(prepared = True)
 
 cursor.execute('SELECT distinct news_id, id from news_sel')
