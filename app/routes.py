@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, make_response, session
+from flask import render_template, flash, redirect, url_for, request, make_response, session, Markup
 from app import app, db, mail
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, News, News_sel, Category, Points_logins, Points_stories, Points_invites, Points_ratings, User_invite
@@ -19,7 +19,7 @@ from app.vars import host, indexName, es, list_of_sources, topics, doctype_dict,
 from app.vars import num_less, num_more, num_select, num_recommender
 from app.vars import topicfield, textfield, teaserfield, teaseralt, doctypefield, classifier_dict
 from app.vars import group_number
-from app.vars import day_min, points_min
+from app.vars import p1_day_min, p1_points_min, p2_day_min, p2_points_min
 
 rec = recommender()
 paragraph = paragraph_processing()
@@ -145,8 +145,10 @@ def newspage(show_again = 'False'):
         db.session.commit()
     different_days = days_logged_in()['different_dates']
     points = points_overview()['points']
-    if different_days >= day_min and points >= points_min:
-        flash('U kunt deze studie nu afsluiten en een finale vragenlijst invullen (link links in de menu) - maar u kunt de webapp ook nog wel verder gebruiken.')
+    if different_days >= p2_day_min and points >= p2_points_min:
+        flash(Markup('Je kunt deze studie nu afsluiten en een finale vragenlijst invullen (link links in de menu) - maar je kunt de webapp ook nog wel verder gebruiken.'))
+    elif p1_day_min <= different_days <= p2_day_min and p1_points_min <= points <= p2_points_min:
+        flash(Markup('Er zijn nu nieuwe functies om 3bij3 naar jouw wensen te personaliseren. Klik <a href="/points" class="alert-link">hier</a> of ga naar "Mijn 3bij3" en probeer ze uit!'))
     return render_template('newspage.html', results = results)
 
 def which_recommender():
@@ -514,16 +516,17 @@ def contact():
         else:
             name =  current_user.username
             id = str(current_user.id)
-            email =  [current_user.email_hash]
+            email =  form.email.data
+            if not email or email == []:
+                email = 'no_address_given'
             msg = Message("Message from your visitor " + name + "with ID: " + id,
                           sender= email,
-                          recipients=app.config['ADMINS'])
+                          recipients= [''])
             msg.body = """
             From: %s <%s>,
             %s
             %s
             """ % (name, email, form.lead.data, form.message.data)
-            print(msg.body)
             mail.send(msg)
             return redirect(url_for('count_logins'))
     elif request.method == 'GET':
@@ -575,8 +578,14 @@ def get_points():
     max_overall = max(points_overall)
     min_overall = min(points_overall)
     avg_overall  = round((sum(points_overall)/len(points_overall)), 2)
-
-    return render_template("display_points.html",points_min = points_min,  max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall)
+    
+    different_days = days_logged_in()['different_dates']
+    points = points_overview()['points']
+    if (different_days <= p1_day_min and points <= p1_points_min):
+        phase = 1
+    else:
+        phase = 2
+    return render_template("display_points_group1.html",points_min = p2_points_min,  max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall, phase = phase)
 
 
 @app.route('/invite', methods = ['GET', 'POST'])
@@ -601,6 +610,21 @@ def report_article():
         form.lead.data = "Probleem met artikel " + url
         return render_template('report_article.html', form=form, url = url)
 
-@app.route('/.well-known/acme-challenge', methods = ['GET', 'POST'])
-def challenge():
+
+@app.route('/phase_completed', methods = ['GET', 'POST'])
+@login_required
+def completed_phase():
+    parameter = request.args.to_dict()
+    try:
+        wave_completed = parameter['completed']
+    except:
+        wave_completed = "false"
+    try:
+        user_id = parameter['user']
+    except:
+        user_id = " "    
     return render_template('challenge.html')
+
+@app.route('/privacy_policy', methods = ['GET', 'POST'])
+def privacy_policy():
+    return render_template('privacy_policy.html')

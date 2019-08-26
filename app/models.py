@@ -97,7 +97,6 @@ class News_sel(db.Model):
     rating = db.Column(db.Numeric(2,1), default = 0)
     rating2 = db.Column(db.Numeric(2,1), default = 0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
 class User_invite(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)

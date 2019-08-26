@@ -170,8 +170,9 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
          {% else %}
     <li><a  href="{{url_for('logout') }}"><i class="fa fa-sign-out-alt"></i>   Logout</a></li>
     {% endif %}
-    	<li><a id="bookmark-this" href="#" title="Bookmark This Page"><i class="fa fa-bookmark"></i> Bookmark</a></li>
-      </ul>
+    <li><a id="bookmark-this" href="#" title="Bookmark This Page"><i class="fa fa-bookmark"></i> Bookmark</a></li>
+    <li><a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
+</ul>
    </nav>
    {% endif %}
    

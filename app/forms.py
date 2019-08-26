@@ -62,6 +62,7 @@ class rating(FlaskForm):
     rating2 = TextAreaField()
 
 class ContactForm(FlaskForm):
+    email = TextAreaField('Email')
     lead = TextAreaField('Onderwerp:', validators = [DataRequired()])
     message = TextAreaField('Uw bericht:', validators = [DataRequired()])
     submit = SubmitField('Afzenden')

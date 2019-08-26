@@ -1,4 +1,4 @@
-from app import dictionary, index, article_ids
+from app import dictionary, index, article_ids, db
 from flask_login import current_user
 from app.models import User, News, News_sel, Category
 import random
@@ -10,6 +10,10 @@ from app.vars import host, indexName, es, list_of_sources
 from app.vars import num_less, num_more, num_select, num_recommender
 from app.vars import topicfield, textfield, teaserfield, teaseralt
 from app.vars import doctypefield, classifier_dict, all_categories
+import mysql.connector
+
+connection = mysql.connector.connect()
+cursor = connection.cursor(prepared = True)
 
 class recommender():
 
@@ -108,11 +112,26 @@ class recommender():
         if None in (dictionary, index, article_ids):
             final_list = self.random_selection()
             return(final_list)
-        #Get all selected docs in the SQL database, get the three most similar ones for each past article
+
+        #Get all ids of read articles of the user from the database and retrieve their similarities
+        user = User.query.get(current_user.id)
+        selected_articles = user.selected_news.all()
+        selected_ids = [a.id for a in selected_articles]
+        list_tuples = []
+        cursor.execute("select * from similarities where similarities.id_old in ('%s')" % "','".join(selected_ids))
+        for item in cursor:
+            list_tuples.append(item)
+
+        #make datatframe to get the three most similar articles to every read article, then select the ones that are most often in thet top 3 and retrieve those as selection
+        data = pd.DataFrame(list_tuples, columns=['id', 'id2', 'url', 'similarity'])
+        data['url'] = data['url'].str.decode('utf-8')
+        data['similarity'] = data['similarity'].str.decode('utf-8')
+        a = data.sort_values(by=['similarity'], ascending = True).groupby('id2').head(3).groupby('url').size().sort_values(ascending = False)
+        recommender_ids = a.index[0, self.num_recommender]
+        recommender_selection = es.search(index=indexName,
+            body={"query":{"terms":{"_id":recommender_ids}}}).get('hits',{}).get('hits',[""])
         #Possibly: Weigh in the ratings for the past articles to determine which ones get "preference"
-        #Use a counter to determine the most frequently named articles and take the first ones (specified by variable)
-        recommender_ids = [a[1] for a, count in Counter(selection).most_common(self.num_recommender)]
-        recommender_selection = [a for a in new_articles if a["_id"] in recommender_ids]
+        
         #Mark the selected articles as recommended, select random articles from the non-recommended articles
         #(and get more if not enough unseen articles available), put the two lists together, randomize the ordering and return them
         num_random = self.num_select - len(recommender_selection)

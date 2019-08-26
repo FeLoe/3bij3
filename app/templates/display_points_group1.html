@@ -54,14 +54,14 @@ var myPieChart = new Chart(ctx, {
 });
 </script>
 
-<script>
+<!---<script>
     var submitFormOkay = false;
     window.onbeforeunload = function () {
     if (!submitFormOkay) {
     return true;
     }
     }
-</script>
+</script>--->
 
 <script>
 jQuery(function(){
@@ -76,9 +76,15 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
 
 {% endblock %}
 {% block app_content %}
+{% if (group == 4) %}
 <!-- Content Row -->
-<div class="row">
-  <div class="col my-4">
+<div class="row justify-content-center align-items-center">
+  <div class="col-6 my-4">
+    {% else %}
+    <div class="row">
+      <div class = "col my-4">
+	{% endif %}
+{% if ((group == 4) or ((group == 3) and (phase == 2)))  %}
     <div class="card shadow mb-4">
       <div class="card-header py-3">
   <h2 class="m-2 font-weight-bold text-primary align-middle">Personalization: Topics
@@ -216,18 +222,18 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
     <button type="submit" id="topics" name="submitBtn" class="btn btn-primary btn-xlarge center" onclick="submitFormOkay = true;">Wijzigen</button>
     </form>
     </div>
-  </div>
-
+      </div>
+    </div>
+    {% endif %}
+    {% if (((group == 2) or (group == 3)) and (phase == 2)) %}
   <div class="col my-4">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
   <h2 class="m-0 font-weight-bold text-primary">Personalization
-   <!-- Button trigger modal -->
   <button type="button" class="btn btn-link float-right" data-toggle="modal" data-target="#exampleModalCenter">
   <span class="glyphicon glyphicon-question-sign" style="font-size:20px;top:-1px;"></span>
   </button>
 
-  <!-- Modal -->
   <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -250,11 +256,12 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
         </h2>
       </div>
       <div class="card-body">
-  <h3 class="font-weight-bold">Number of recommended stories</h3>
+<h3 class="font-weight-bold">Number of recommended stories</h3>
   <div class="range">
     <input type="range" name="range" min="0" max="9" value="6" onchange="range.value=value">
     <output id="range">6</output>
   </div>
+{% if ((group == 2) and (phase == 2)) %}
   <br />
   <h3 class="font-weight-bold">Diversity</h3>
   <div class="range range-primary">
@@ -264,9 +271,9 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
       </div>
     </div>
   </div>
-</div>
-</div>
-</div>
+  {% endif %}
+  </div>
+  {% endif %}
   <!-- Content Column -->
   <div class="row">
   <div class="col my-4">
@@ -442,9 +449,6 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
     </div>
   </div>
 </div>
-
-<div class="row">
-
 </div>
 </div>
 </div>

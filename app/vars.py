@@ -51,12 +51,15 @@ group_number = 4
 
 '''
 REQUIREMENTS FOR FINISHING STUDY
-day_min: How many days need participants to use the application 
-points_min: how many points do they need to collect
+p1_day_min: How many days need participants to use the application in phase 1 
+p1_points_min: How many points do they need to collect in phase 1
+p2_day_min: How many days need participants to use the application in phase 1 and 2
+p2_points_min: How many points do they need to collect in phase 1 and 2
 '''
-day_min = 10
-points_min = 100
-
+p1_day_min = 7
+p1_points_min = 80
+p2_day_min = 10
+p2_points_min = 100
 '''
 TOPICS
 topic_list: The different topic categories that can be displayed to the user

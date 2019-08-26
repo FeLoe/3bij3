@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block app_content %}
+<div class="container">
+  {% if device == "mobile" %}
+  <button type="button" id="sidebarCollapsemobile" class="btn btn-info navbar-btn">
+    <i class="glyphicon glyphicon-align-left"></i>
+  </button>
+
+  {% else %}
+  <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+    <i class="glyphicon glyphicon-align-left"></i>
+    Menu
+  </button>
+  {% endif %}
+</div>
+
+<div class="row">
+  <div class="col-md-7 text-justify">
+
+    <h1>Privacy Policy</h1>
+<p>3bij3 is onderdeel van het onderzoeksproject “Inside the filter bubble” aan de Unversiteit van Amsterdam en de Vrije Universiteit. Zodra u bent ingelogd, houden we bij welke artikelen op 3bij3 u heeft gelezen. Deze data zijn nodig om u een optimale gepersonaliseerde ervaring te bieden, en om ons onderzoek naar het gebruik van 3bij3 door te kunnen voeren.</p>
+<p>Deze data hebben alleen betrekking op uw keuzes binnen 3bij3 en worden niet gebruikt om advertenties te tonen of en producten aan te bevelen. Derden kunnen uw internetgedrag niet volgen. De data wordt geanonimiseerd opgeslagen en na afloop van 5 jaar verwijdert.</p> 
+<p>3bij3.nl deelt de informatie die zij verkrijgt alleen bij uitzondering met aan universiteiten verbonden onderzoekers, maar onder geen omstandigheden persoonsgegevens.</p>
+
+{% endblock %}
