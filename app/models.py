@@ -8,6 +8,7 @@ from time import time
 import jwt
 from app import app
 from sqlalchemy_utils import aggregated
+from vars import num_recommender
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -23,6 +24,8 @@ class User(UserMixin, db.Model):
     categories = db.relationship('Category', backref = 'user', lazy = 'dynamic')
     displayed_news = db.relationship('News', backref = 'user', lazy = 'dynamic')
     selected_news = db.relationship('News_sel', backref = 'user', lazy = 'dynamic')
+    recommended_num = db.relationship('Num_recommended', backref = 'user', lazy = 'dynamic')
+    divers = db.relationship('Diversity', backref = 'user', lazy = 'dynamic')
     last_visit = db.Column(db.DateTime, default=datetime.utcnow)
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -141,7 +144,18 @@ Similarities = db.Table('similarities',
                         db.Column('id_new', db.String(500), db.ForeignKey('all_news.id')),
                         db.Column('similarity', db.Numeric(10,9))
     )
-    
+
+class Num_recommended(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    num_recommended = db.Column(db.Integer, default=num_recommender)
+    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+class Diversity(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    diversity = db.Column(db.Integer, default=0)
+    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))

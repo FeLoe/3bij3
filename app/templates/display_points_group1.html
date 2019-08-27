@@ -87,7 +87,7 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
 {% if ((group == 4) or ((group == 3) and (phase == 2)))  %}
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-  <h2 class="m-2 font-weight-bold text-primary align-middle">Personalization: Topics
+  <h2 class="m-2 font-weight-bold text-primary align-middle">Personalisering: Onderwerpen
    <!-- Button trigger modal -->
 <button type="button" class="btn btn-link float-right" data-toggle="modal" data-target="#exampleModalCenter">
 <span class="glyphicon glyphicon-question-sign" style="font-size:20px;top:-1px;"></span>
@@ -98,7 +98,7 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Hoe werkt het?</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -107,8 +107,7 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
         Hier kun je je voorkeuren aangeven - welke onderwerpen vind je interessant, waar wil je meer over lezen?
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Sluit</button>
       </div>
     </div>
   </div>
@@ -229,7 +228,7 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
   <div class="col my-4">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-  <h2 class="m-0 font-weight-bold text-primary">Personalization
+  <h2 class="m-0 font-weight-bold text-primary">Personalisering
   <button type="button" class="btn btn-link float-right" data-toggle="modal" data-target="#exampleModalCenter">
   <span class="glyphicon glyphicon-question-sign" style="font-size:20px;top:-1px;"></span>
   </button>
@@ -238,17 +237,21 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Hoe werkt het?</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-
+	<h5>Aantal gepersonaliseerde artikelen</h5>
+	Hier kan je bepalen hoeveel van de negen artikelen die je op de hoofdpagina ziet, specifiek voor je geselecteerd zijn op basis van wat je tot nu toe heeft gelezen.Hoe lager het aantal is, hoe minder gepersonaliseerd de website zal zijn.
+	{% if ((group == 2) and (phase == 2)) %}
+	<h5>Diversiteit</h5>
+	Hier kan je beslissen of je meer artikelen wilt krijgen die dicht in de buurt komen van wat je tot nu toe hebt gelezen of dat je inhoud wilt die meer afwijkt van jouw interesses op basis van wat je hebt gelezen. Als je kiest voor meer diversiteit, zullen de artikelen sterker afwijken van de artikelen die je tot nu toe hebt gelezen.
+	{% endif %}
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Sluit</button>
       </div>
     </div>
   </div>
@@ -256,17 +259,22 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
         </h2>
       </div>
       <div class="card-body">
-<h3 class="font-weight-bold">Number of recommended stories</h3>
-  <div class="range">
-    <input type="range" name="range" min="0" max="9" value="6" onchange="range.value=value">
+<h3 class="font-weight-bold">Aantal gepersonaliseerde artikelen</h3>
+<form action="{{ url_for('get_num_recommended') }}" method="post">
+<div class="range">
+    <input type="range" name="num_recommended" min="0" max="9" value="6" onchange="range.value=value">
     <output id="range">6</output>
-  </div>
+    <button type="submit" id="num_recommended" name="submitBtn" class="btn btn-primary btn-xlarge center" onclick="submitFormOkay = true;">Wijzigen</button>
+</form>
+</div>
 {% if ((group == 2) and (phase == 2)) %}
   <br />
-  <h3 class="font-weight-bold">Diversity</h3>
+  <h3 class="font-weight-bold">Diversiteit</h3>
+  <form action="{{ url_for('get_diversity') }}" method="post">
   <div class="range range-primary">
-    <input type="range" name="range" min="-50" max="50" value="0" onchange="rangePrimary.value=value">
-    <output id="rangePrimary">0</output>
+    <input type="range" name="diversity" min="-50" max="50" value="0" onchange="rangePrimary.value=value">
+    <button type="submit" id="diversity" name="submitBtn" class="btn btn-primary btn-xlarge center" onclick="submitFormOkay = true;">Wijzigen</button>
+</form>
   </div>
       </div>
     </div>
@@ -280,7 +288,7 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
     <!-- Project Card Example -->
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-	<h2 class="m-0 font-weight-bold text-primary">Progress
+	<h2 class="m-0 font-weight-bold text-primary">Voortgang
  <!-- Button trigger modal -->
 <button type="button" class="btn btn-link float-right" data-toggle="modal" data-target="#exampleModalCenter">
 <span class="glyphicon glyphicon-question-sign" style="font-size:20px;top:-1px;"></span>
@@ -291,7 +299,7 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Hoe werkt het?</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -300,8 +308,7 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
        Hier kun je zien hoeveel punten je hebt verzameld in de verschillende categorieën - en hoe goed je presteert in vergelijking met andere gebruikers van de website.
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Sluit</button>
       </div>
     </div>
   </div>
@@ -396,7 +403,7 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
   <div class="col my-4">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-	<h2 class="m-0 font-weight-bold text-primary">Points
+	<h2 class="m-0 font-weight-bold text-primary">Punten
  <!-- Button trigger modal -->
 <button type="button" class="btn btn-link float-right" data-toggle="modal" data-target="#exampleModalCenter">
 <span class="glyphicon glyphicon-question-sign" style="font-size:20px;top:-1px;"></span>
@@ -416,8 +423,7 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
        Hier kun je zien hoe ver je bent met het onderzoek - als de hele cirkel is ingevuld, kun je de finale vragenlijst invullen.
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Sluit</button>
       </div>
     </div>
   </div>

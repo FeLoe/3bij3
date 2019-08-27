@@ -1,4 +1,4 @@
-from app import dictionary, index, article_ids, db
+from app import dictionary, index, article_ids, db, mysql_user, mysql_password, mysql_database
 from flask_login import current_user
 from app.models import User, News, News_sel, Category
 import random
@@ -12,7 +12,12 @@ from app.vars import topicfield, textfield, teaserfield, teaseralt
 from app.vars import doctypefield, classifier_dict, all_categories
 import mysql.connector
 
-connection = mysql.connector.connect()
+connection = mysql.connector.connect(
+    host = 'localhost',
+    user = mysql_user,
+    passwd= mysql_password,
+    database = mysql_database
+    )
 cursor = connection.cursor(prepared = True)
 
 class recommender():
@@ -21,7 +26,7 @@ class recommender():
         self.num_less = num_less
         self.num_more = num_more
         self.num_select = num_select
-        self.num_recommender = num_recommender
+        self.num_recommender = User.query.get(current_user.num_recommended)
         self.topicfield = topicfield
         self.textfield = textfield
         self.teaserfield = teaserfield

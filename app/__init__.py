@@ -73,5 +73,13 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
     app.logger.info('3bij3 startup')
-
+try:
+    mysql_database = app.config['MYSQL_DATABASE']
+    mysql_user = app.config['MYSQL_USER']
+    mysql_password = app.config['MYSQL_PASSWORD']
+except:
+    mysql_database = None
+    mysql_user = None
+    mysql_password = None
+    
 from app import routes, models, errors, recommender, processing

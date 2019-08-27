@@ -80,6 +80,9 @@ def register():
         user.set_email(form.email.data)
         db.session.add(user)
         db.session.commit()
+        number_rec = Num_recommended(num_recommended = num_recommender, user_id = current_user.id)
+        db.session.add(number_rec)
+        db.session.commit()
         try:
             other_user = request.args.to_dict()['other_user']
         except:
@@ -146,7 +149,7 @@ def newspage(show_again = 'False'):
     different_days = days_logged_in()['different_dates']
     points = points_overview()['points']
     if different_days >= p2_day_min and points >= p2_points_min:
-        flash(Markup('Je kunt deze studie nu afsluiten en een finale vragenlijst invullen (link links in de menu) - maar je kunt de webapp ook nog wel verder gebruiken.'))
+        flash(Markup('Je kunt deze studie nu afsluiten en een finale vragenlijst invullen - klik <a href="qualtrics_link" class="alert-link">hier</a> of links in de menu op de link - maar je kunt de webapp ook nog wel verder gebruiken.'))
     elif p1_day_min <= different_days <= p2_day_min and p1_points_min <= points <= p2_points_min:
         flash(Markup('Er zijn nu nieuwe functies om 3bij3 naar jouw wensen te personaliseren. Klik <a href="/points" class="alert-link">hier</a> of ga naar "Mijn 3bij3" en probeer ze uit!'))
     return render_template('newspage.html', results = results)
@@ -521,7 +524,7 @@ def contact():
                 email = 'no_address_given'
             msg = Message("Message from your visitor " + name + "with ID: " + id,
                           sender= email,
-                          recipients= [''])
+                          recipients= ['felicia.loecherbach@gmail.com'])
             msg.body = """
             From: %s <%s>,
             %s
@@ -624,6 +627,24 @@ def completed_phase():
     except:
         user_id = " "    
     return render_template('challenge.html')
+
+@app.route('/homepage/diversity', methods = ['POST'])
+@login_required
+def get_diversity():
+    div = request.form['diversity']
+    div_final  = Diversity(diversity = div,  user_id = current_user.id)
+    db.session.add(div_final)
+    db.session.commit()
+    return redirect(url_for('count_logins'))
+
+@app.route('/homepage/num_recommended', methods = ['POST'])
+@login_required
+def get_num_recommended():
+    number = request.form['num_recommended']
+    number_rec = Num_recommended(num_recommended = number, user_id = current_user.id)
+    db.session.add(number_rec)
+    db.session.commit()
+    return redirect(url_for('count_logins'))
 
 @app.route('/privacy_policy', methods = ['GET', 'POST'])
 def privacy_policy():
