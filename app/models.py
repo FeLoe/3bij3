@@ -27,6 +27,7 @@ class User(UserMixin, db.Model):
     recommended_num = db.relationship('Num_recommended', backref = 'user', lazy = 'dynamic')
     divers = db.relationship('Diversity', backref = 'user', lazy = 'dynamic')
     last_visit = db.Column(db.DateTime, default=datetime.utcnow)
+    phase_completed = db.Column(db.Integer, default = 0)
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 

@@ -148,10 +148,15 @@ def newspage(show_again = 'False'):
         db.session.commit()
     different_days = days_logged_in()['different_dates']
     points = points_overview()['points']
-    if different_days >= p2_day_min and points >= p2_points_min:
-        flash(Markup('Je kunt deze studie nu afsluiten en een finale vragenlijst invullen - klik <a href="qualtrics_link" class="alert-link">hier</a> of links in de menu op de link - maar je kunt de webapp ook nog wel verder gebruiken.'))
-    elif p1_day_min <= different_days <= p2_day_min and p1_points_min <= points <= p2_points_min:
+    if different_days >= p2_day_min and points >= p2_points_min and (group == 1 or group == 2 or group == 3):
+        flash(Markup('Je kunt deze studie nu afsluiten en een finale vragenlijst invullen - klik <a href="qualtrics_link_2" class="alert-link">hier</a> of links in de menu op de link - maar je kunt de webapp ook nog wel verder gebruiken.'))
+    elif p1_day_min <= different_days and p1_points_min <= points and current_user.phase_completed == 0 and (group == 1 or group == 2 or group == 3):
+        flash(Markup('Je kunt nu de eerste deel van deze studie afsluiten door een aantal vragen te beantwoorden. Klik <a href="qualtrics_link_1" class="alert-link">hier</a> om naar de vragenlijst te gaan. aan het einde van de vragenlijst vindt je een link die je terugbrengt naar de website voor het tweede deel. Om de studie succesvol af te ronden, moet je aan beide delen deelnemen.'))
+    elif different_days < p2_day_min and points < p2_points_min and current_user.phase_completed == 1 and (group == 1 or group == 2 or group == 3):          
         flash(Markup('Er zijn nu nieuwe functies om 3bij3 naar jouw wensen te personaliseren. Klik <a href="/points" class="alert-link">hier</a> of ga naar "Mijn 3bij3" en probeer ze uit!'))
+    elif different_days >= p1_day_min and points >= p1_points_min and group == 4:
+        flash(Markup('Je kunt deze studie nu afsluiten en een finale vragenlijst invullen - klik <a href="qualtrics_link_1" class="alert-link">hier</a> of links in de menu op de link - maar je kunt de webapp ook nog wel verder gebruiken.'))
+              
     return render_template('newspage.html', results = results)
 
 def which_recommender():
@@ -625,8 +630,12 @@ def completed_phase():
     try:
         user_id = parameter['user']
     except:
-        user_id = " "    
-    return render_template('challenge.html')
+        user_id = " "
+    if user_id == current_user.id and wave_completed == 'true':
+        user = User.query.filter_by(id = current_user.id).first()
+        user.phase_completed = 1
+        db.session.commit()
+    return redirect(url_for('count_logins'))
 
 @app.route('/homepage/diversity', methods = ['POST'])
 @login_required

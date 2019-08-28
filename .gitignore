@@ -80,3 +80,4 @@ target/
 
 # Extras file
 **/extras/make_matrix.py
+**/extras/get_similarities.py
