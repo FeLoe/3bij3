@@ -54,14 +54,14 @@ var myPieChart = new Chart(ctx, {
 });
 </script>
 
-<script>
+<!---<script>
     var submitFormOkay = false;
     window.onbeforeunload = function () {
     if (!submitFormOkay) {
     return true;
     }
     }
-</script>
+</script>--->
 
 <script>
 jQuery(function(){
@@ -74,37 +74,274 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
 });
 </script>
 
+<script>
+  jQuery(function(){
+  var btn = document.querySelectorAll("span.modal-span");
+  var modals = document.querySelectorAll('.modal');
+  var spans = document.getElementsByClassName("close");
+  for (var i = 0; i < btn.length; i++) {
+		      btn[i].onclick = function(e) {
+		      e.preventDefault();
+		      modal = document.querySelector(e.target.getAttribute("href"));
+		      modal.style.display = "block";
+		      }
+		      }
+		      for (var i = 0; i < spans.length; i++) {
+ spans[i].onclick = function() {
+    for (var index in modals) {
+      if (typeof modals[index].style !== 'undefined') modals[index].style.display = "none";    
+    }
+ }
+}
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+     for (var index in modals) {
+      if (typeof modals[index].style !== 'undefined') modals[index].style.display = "none";    
+     }
+    }
+}
+
+		    });
+		    </script>
+
 {% endblock %}
 {% block app_content %}
+{% if (group == 4) %}
 <!-- Content Row -->
-<div class="row">
+<div class="row justify-content-center align-items-center">
+  <div class="col-6 my-4">
+    {% else %}
+    <div class="row">
+	{% endif %}
+{% if (((group == 3) or (group==4)) and (phase == 2))  %}
+<div class = "col my-4">
+	<div class="card shadow mb-4">
+      <div class="card-header py-3">
+  <h2 class="m-2 font-weight-bold text-primary align-middle">Mijn Onderwerpen
+   <!-- Button trigger modal -->
+<button type="button" class="btn btn-link float-right modal-button" href="#myModal1">
+<span class="glyphicon glyphicon-question-sign modal-span" style="font-size:20px;top:-1px;" href="#myModal1"></span>
+</button>
+
+<!-- Modal -->
+<div class="modal" id="myModal1">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLongTitle">Hoe werkt het?</h3>
+          <span aria-hidden="true" class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+      <p style="font-size:14px;font-weight:normal;">Hier kun je je voorkeuren aangeven - welke onderwerpen vind je interessant, waar wil je meer over lezen? Je kunt kizen tussen één en drie onderwerpen die voor je van belang zijn (niet meer). Klik op 'wijzigen' om je voorkeuren op te slaan. Je kunt dit zo vaak doen als je wilt.</p>
+      </div>
+    </div>
+    </div>
+  </div>
+  </h2>
+</div>
+  <div class="card-body">
+      <div class="card-columns" style="margin:10px;">
+  <form action="{{ url_for('get_categories') }}" method="post">
+  <label>
+    <input type="checkbox" name="category" class="card-input-element d-none" value="Buitenland">
+    <div class="card text-center topics">
+      <div class="card-body">
+        <h2 class="card-title">Buitenland</h2>
+        <div class="card-block">
+    <i class="fa fa-globe card-icon" style="font-size:48px;"></i>
+        </div>
+      </div>
+    </div>
+  </label>
+        <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Binnenland">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Binnenland</h2>
+              <div class="card-block">
+                <i class="fa fa-home card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
+          </div>
+  </label>
+        <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Milieu">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Milieu</h2>
+              <div class="card-block">
+                <i class="fa fa-leaf card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
+          </div>
+  </label>
+        <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Crime">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Crime</h2>
+              <div class="card-block">
+                <i class="fa fa-balance-scale card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
+          </div>
+  </label>
+        <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Immigratie">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Immigratie</h2>
+              <div class="card-block">
+                <i class="fa fa-suitcase card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
+          </div>
+  </label>
+        <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Economie">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Economie</h2>
+              <div class="card-block">
+                <i class="fa fa-money-bill-alt card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
+          </div>
+  </label>
+        <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Sport">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Sport</h2>
+              <div class="card-block">
+                <i class="fa fa-futbol card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
+          </div>
+  </label>
+        <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Entertainment">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Entertainment</h2>
+              <div class="card-block">
+                <i class="fa fa-smile card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
+          </div>
+  </label>
+  <label>
+          <input type="checkbox" name="category" class="card-input-element d-none" value="Anders">
+          <div class="card text-center topics">
+            <div class="card-body">
+              <h2 class="card-title">Anders</h2>
+              <div class="card-block">
+                <i class="fa fa-ellipsis-h card-icon" style="font-size:48px;"></i>
+              </div>
+            </div>
+          </div>
+  </label>
+      </div>
+  </div>
+  <div style="text-align:center;">
+    <button type="submit" id="topics" name="submitBtn" class="btn btn-primary btn-xlarge center" onclick="submitFormOkay = true;" style="top:-10px;margin-bottom:10px;margin-top:-15px;height:30px;width:65px;font-size:12px;">Wijzigen</button>
+</div>
+  </form>
+	</div>
+	</div>
+{% endif %}
+{% if ((group == 2) and (phase == 2)) %}
+<div class = "col my-4">
+</div>
+{% endif %}
+    {% if (((group == 2) or (group == 3)) and (phase == 2)) %}
+    <div class="col-6 my-4">
+    <div class="card shadow mb-4">
+      <div class="card-header py-3">
+  <h2 class="m-0 font-weight-bold text-primary">Personalisering
+  <button type="button btn-link" class="modal-button btn-link float-right" href="#myModal2">
+  <span class="glyphicon glyphicon-question-sign modal-span" style="font-size:20px;top:-1px;" href="#myModal2"></span>
+  </button>
+
+  <div class="modal" id="myModal2">
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLongTitle">Hoe werkt het?</h3>
+<span aria-hidden="true" class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+	<h3><u>Aantal gepersonaliseerde artikelen</u></h3>
+	<p style="font-size:14px;font-weight:normal;">Hier kan je bepalen hoeveel van de negen artikelen die je op de hoofdpagina ziet, specifiek voor je geselecteerd zijn op basis van wat je tot nu toe heeft gelezen.Hoe lager het aantal is, hoe minder gepersonaliseerd de website zal zijn.</p>
+	{% if ((group == 2) and (phase == 2)) %}
+	<h3><u>Diversiteit</u></h3>
+	<p style="font-size:14px;font-weight:normal;">Hier kan je beslissen of je meer artikelen wilt krijgen die dicht in de buurt komen van wat je tot nu toe hebt gelezen of dat je inhoud wilt die meer afwijkt van jouw interesses op basis van wat je hebt gelezen. Als je kiest voor meer diversiteit, zullen de artikelen sterker afwijken van de artikelen die je tot nu toe hebt gelezen.</p>
+	{% endif %}
+      </div>
+    </div>
+</div>
+</div>
+        </h2>
+      </div>
+      <div class="card-body">
+<h3 class="font-weight-bold">Aantal gepersonaliseerde artikelen</h3>
+<form action="{{ url_for('get_num_recommended') }}" method="post">
+<div class="range range-primary">
+    <input type="range" name="num_recommended" min="0" max="9" value="6" onchange="range.value=value"></input>
+    <output id="range">6</output>
+</div>
+<br />
+    <button type="submit" id="num_recommended" name="submitBtn" class="btn btn-primary btn-xlarge center" onclick="submitFormOkay = true;" style="margin:10px;height:30px;width:65px;font-size:12px;">Wijzigen</button>
+</form>
+</div>
+{% if ((group == 2) and (phase == 2)) %}
+      <br />
+      <div class="card-body">
+  <h3 class="font-weight-bold">Diversiteit</h3>
+  <form action="{{ url_for('get_diversity') }}" method="post">
+  <div class="range range-primary">
+    <input type="range" name="diversity" min="1" max="5" value="1" onchange="range.value=value"></input>
+    <output id="range">1</output>
+  </div>
+  <br />
+    <button type="submit" id="diversity" name="submitBtn" class="btn btn-primary btn-xlarge center" onclick="submitFormOkay = true;" style="margin:10px;height:30px;width:65px;font-size:12px;">Wijzigen</button>
+</form>
+  </div>
+      </div>
+    </div>
+<div class="col my-4">
+</div>
+{% endif %}
+    </div>
+    {% if ((group == 3) and (phase == 2)) %}
+  </div>
+</div>
+{% endif %}
+  {% endif %}
   <!-- Content Column -->
+  <div class="row">
   <div class="col my-4">
     <!-- Project Card Example -->
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-	<h2 class="m-0 font-weight-bold text-primary">Progress
+	<h2 class="m-0 font-weight-bold text-primary">Voortgang
  <!-- Button trigger modal -->
-<button type="button" class="btn btn-link float-right" data-toggle="modal" data-target="#exampleModalCenter">
-<span class="glyphicon glyphicon-question-sign" style="font-size:20px;top:-1px;"></span>
+<button type="button" class="btn btn-link float-right modal-button" href="#myModal3">
+<span class="glyphicon glyphicon-question-sign modal-span" style="font-size:20px;top:-1px;" href="#myModal3"></span>
 </button>
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal" id="myModal3">
+<div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <h3 class="modal-title" id="exampleModalLongTitle">Hoe werkt het?</h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span aria-hidden="true" class="close">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-       Hier kun je zien hoeveel punten je hebt verzameld in de verschillende categorieën - en hoe goed je presteert in vergelijking met andere gebruikers van de website.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+      <p style="font-size:14px;font-weight:normal;"> Hier kun je zien hoeveel punten je hebt verzameld in de verschillende categorieën - en hoe goed je presteert in vergelijking met andere gebruikers van de website.</p>
       </div>
     </div>
   </div>
@@ -199,28 +436,24 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
   <div class="col my-4">
     <div class="card shadow mb-4">
       <div class="card-header py-3">
-	<h2 class="m-0 font-weight-bold text-primary">Points
+	<h2 class="m-0 font-weight-bold text-primary">Punten
  <!-- Button trigger modal -->
-<button type="button" class="btn btn-link float-right" data-toggle="modal" data-target="#exampleModalCenter">
-<span class="glyphicon glyphicon-question-sign" style="font-size:20px;top:-1px;"></span>
+<button type="button" class="btn btn-link float-right modal-button" href="#myModal4">
+<span class="glyphicon glyphicon-question-sign modal-span" style="font-size:20px;top:-1px;" href="#myModal4"></span>
 </button>
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal" id="myModal4" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <h3 class="modal-title" id="exampleModalLongTitle">Hoe werkt het?</h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          <span aria-hidden="true" class="close">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-       Hier kun je zien hoe ver je bent met het onderzoek - als de hele cirkel is ingevuld, kun je de finale vragenlijst invullen. 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+       <p style="font-size:14px;font-weight:normal;">Hier kun je zien hoe ver je bent met het onderzoek - als de hele cirkel is ingevuld, kun je de finale vragenlijst invullen.</p>
       </div>
     </div>
   </div>
@@ -251,197 +484,6 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
       </div>
     </div>
   </div>
-</div>
-
-<div class="row">
-  <div class="col my-4">
-    <div class="card shadow mb-4">
-      <div class="card-header py-3">
-	<h2 class="m-0 font-weight-bold text-primary">Personalization
-	 <!-- Button trigger modal -->
-<button type="button" class="btn btn-link float-right" data-toggle="modal" data-target="#exampleModalCenter">
-<span class="glyphicon glyphicon-question-sign" style="font-size:20px;top:-1px;"></span>
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-        </h2>
-      </div>
-      <div class="card-body">
-	<h3 class="font-weight-bold">Number of recommended stories</h3>
-	<div class="range">
-	  <input type="range" name="range" min="0" max="9" value="6" onchange="range.value=value">
-	  <output id="range">6</output>
-	</div>
-	<br />
-	<h3 class="font-weight-bold">Diversity</h3>
-	<div class="range range-primary">
-	  <input type="range" name="range" min="-50" max="50" value="0" onchange="rangePrimary.value=value">
-	  <output id="rangePrimary">0</output>
-	</div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="col my-4">
-    <div class="card shadow mb-4">
-      <div class="card-header py-3">
-	<h2 class="m-2 font-weight-bold text-primary align-middle">Personalization: Topics
-	 <!-- Button trigger modal -->
-<button type="button" class="btn btn-link float-right" data-toggle="modal" data-target="#exampleModalCenter">
-<span class="glyphicon glyphicon-question-sign" style="font-size:20px;top:-1px;"></span>
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Hier kun je je voorkeuren aangeven - welke onderwerpen vind je interessant, waar wil je meer over lezen? 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-	</h2>
-</div>
-	<div class="card-body">
-      <div class="card-columns">
-	<form action="{{ url_for('get_categories') }}" method="post">
-	<label>
-	  <input type="checkbox" name="category" class="card-input-element d-none" value="Buitenland">
-	  <div class="card text-center topics">
-	    <div class="card-body">
-	      <h2 class="card-title">Buitenland</h2>
-	      <div class="card-block">
-		<i class="fa fa-globe card-icon" style="font-size:48px;"></i>
-	      </div>
-	    </div>
-	  </div>
-	</label>
-        <label>
-          <input type="checkbox" name="category" class="card-input-element d-none" value="Binnenland">
-          <div class="card text-center topics">
-            <div class="card-body">
-              <h2 class="card-title">Binnenland</h2>
-              <div class="card-block">
-                <i class="fa fa-home card-icon" style="font-size:48px;"></i>
-              </div>
-            </div>
-          </div>
-	</label>
-        <label>
-          <input type="checkbox" name="category" class="card-input-element d-none" value="Milieu">
-          <div class="card text-center topics">
-            <div class="card-body">
-              <h2 class="card-title">Milieu</h2>
-              <div class="card-block">
-                <i class="fa fa-leaf card-icon" style="font-size:48px;"></i>
-              </div>
-            </div>
-          </div>
-	</label>
-        <label>
-          <input type="checkbox" name="category" class="card-input-element d-none" value="Crime">
-          <div class="card text-center topics">
-            <div class="card-body">
-              <h2 class="card-title">Crime</h2>
-              <div class="card-block">
-                <i class="fa fa-balance-scale card-icon" style="font-size:48px;"></i>
-              </div>
-            </div>
-          </div>
-	</label>
-        <label>
-          <input type="checkbox" name="category" class="card-input-element d-none" value="Immigratie">
-          <div class="card text-center topics">
-            <div class="card-body">
-              <h2 class="card-title">Immigratie</h2>
-              <div class="card-block">
-                <i class="fa fa-suitcase card-icon" style="font-size:48px;"></i>
-              </div>
-            </div>
-          </div>
-	</label>
-        <label>
-          <input type="checkbox" name="category" class="card-input-element d-none" value="Economie">
-          <div class="card text-center topics">
-            <div class="card-body">
-              <h2 class="card-title">Economie</h2>
-              <div class="card-block">
-                <i class="fa fa-money-bill-alt card-icon" style="font-size:48px;"></i>
-              </div>
-            </div>
-          </div>
-	</label>
-        <label>
-          <input type="checkbox" name="category" class="card-input-element d-none" value="Sport">
-          <div class="card text-center topics">
-            <div class="card-body">
-              <h2 class="card-title">Sport</h2>
-              <div class="card-block">
-                <i class="fa fa-futbol card-icon" style="font-size:48px;"></i>
-              </div>
-            </div>
-          </div>
-	</label>
-        <label>
-          <input type="checkbox" name="category" class="card-input-element d-none" value="Entertainment">
-          <div class="card text-center topics">
-            <div class="card-body">
-              <h2 class="card-title">Entertainment</h2>
-              <div class="card-block">
-                <i class="fa fa-smile card-icon" style="font-size:48px;"></i>
-              </div>
-            </div>
-          </div>
-	</label>
-	<label>
-          <input type="checkbox" name="category" class="card-input-element d-none" value="Anders">
-          <div class="card text-center topics">
-            <div class="card-body">
-              <h2 class="card-title">Anders</h2>
-              <div class="card-block">
-                <i class="fa fa-ellipsis-h card-icon" style="font-size:48px;"></i>
-              </div>
-            </div>
-          </div>
-	</label>
-      </div>
-    </div>
-    <button type="submit" id="topics" name="submitBtn" class="btn btn-primary btn-xlarge center" onclick="submitFormOkay = true;">Wijzigen</button>
-    </form>
-    </div>
-  </div>
-</div>
-</div>
 </div>
 </div>
 </div>

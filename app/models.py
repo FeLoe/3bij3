@@ -8,7 +8,7 @@ from time import time
 import jwt
 from app import app
 from sqlalchemy_utils import aggregated
-from vars import num_recommender
+from app.vars import num_recommender
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,8 +26,11 @@ class User(UserMixin, db.Model):
     selected_news = db.relationship('News_sel', backref = 'user', lazy = 'dynamic')
     recommended_num = db.relationship('Num_recommended', backref = 'user', lazy = 'dynamic')
     divers = db.relationship('Diversity', backref = 'user', lazy = 'dynamic')
+    again_showed = db.relationship('Show_again', backref = 'user', lazy = 'dynamic')
     last_visit = db.Column(db.DateTime, default=datetime.utcnow)
-    phase_completed = db.Column(db.Integer, default = 0)
+    phase_completed = db.Column(db.Integer, default = 1)
+    fake = db.Column(db.Integer, default = 0)
+    panel_id = db.Column(db.String(128), default = "noIDyet")
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
@@ -91,6 +94,7 @@ class News(db.Model):
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     url = db.Column(db.String(500))
+    position = db.Column(db.Integer)
     
 class News_sel(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -138,6 +142,11 @@ class Points_logins(db.Model):
 class All_news(db.Model):
     id = db.Column(db.String(500), primary_key = True)
 
+class Show_again(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    show_again = db.Column(db.Integer, default = 99)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
 Similarities = db.Table('similarities',
                         db.Column('sim_id', db.Integer, primary_key = True),
@@ -154,7 +163,7 @@ class Num_recommended(db.Model):
 
 class Diversity(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    diversity = db.Column(db.Integer, default=0)
+    diversity = db.Column(db.Integer, default=1)
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 @login.user_loader

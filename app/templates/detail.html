@@ -79,8 +79,32 @@
     <li class="c-rating__item left" data-index="8"></li>
     <li class="c-rating__item" data-index="9"></li>
 </ul>
-	     <input type="hidden" class="rank" id="rating" name="rating" />
-	     Iedereen zal dit moeten weten</br>
+
+<input type="hidden" class="rank" id="rating" name="rating" />Iedereen zal dit moeten weten &nbsp;&nbsp;&nbsp;
+<button type="button" class="btn btn-link float-right" data-toggle="modal" data-target="#exampleModalCenter">
+<span class="glyphicon glyphicon-question-sign" style="font-size:20px;top:-1px;"></span>
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Wat betekent dat?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Deze beoordeling gaat niet over de vraag of je het artikel persoonlijk goed vond of dat het interessant voor je was, maar eerder over de vraag of je het belangrijk vindt dat andere mensen in Nederland van dit artikel/lezen ervan op de hoogte zijn. Die twee beoordelingen kunnen hetzelfde zijn, maar ze kunnen ook verschillend zijn. 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Sluit</button>
+      </div>
+    </div>
+  </div>
+</div>
+ </br>
 <ul class="c-rating list-inline">
     <li class="c-rating__item rating is-active left" data-index="0"></li>
     <li class="c-rating__item" data-index="1"></li>
@@ -152,6 +176,18 @@ $(".c-rating").customStarRatings({
     }
     }
   </script>
-  {% endblock %}
 
   
+          <!-- Bootstrap core JavaScript-->
+  <script src="{{url_for('.static', filename = 'vendor/jquery/jquery.min.js')}}"></script>
+  <script src="{{url_for('.static', filename = 'vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="{{url_for('.static', filename = 'vendor/jquery-easing/jquery.easing.min.js')}}"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="{{url_for('.static', filename ='sb-admin-2.min.js')}}"></script>
+
+  <!-- Page level plugins -->
+  <script src="{{url_for('.static', filename='vendor/chart.js/Chart.min.js')}}"></script>
+          {% endblock %}

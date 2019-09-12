@@ -8,7 +8,7 @@ from sqlalchemy import desc
 from gensim.models import TfidfModel
 from app.vars import host, indexName, es, list_of_sources
 from app.vars import num_less, num_more, num_select, num_recommender
-from app.vars import topicfield, textfield, teaserfield, teaseralt
+from app.vars import topicfield, textfield, teaserfield, teaseralt, titlefield
 from app.vars import doctypefield, classifier_dict, all_categories
 import mysql.connector
 
@@ -26,7 +26,6 @@ class recommender():
         self.num_less = num_less
         self.num_more = num_more
         self.num_select = num_select
-        self.num_recommender = User.query.get(current_user.num_recommended)
         self.topicfield = topicfield
         self.textfield = textfield
         self.teaserfield = teaserfield
@@ -34,7 +33,7 @@ class recommender():
         self.doctypefield = doctypefield
         self.classifier_dict = classifier_dict
         self.all_categories = all_categories
-
+        self.titlefield = titlefield
 
     def get_selected(self):
         user = User.query.get(current_user.id)
@@ -72,7 +71,7 @@ class recommender():
         final_docs = []
         a = ["podcast", "live"]
         for doc in docs:
-            if self.textfield not in doc["_source"].keys() or (self.teaserfield not in doc["_source"].keys() and self.teaseralt not in doc["_source"].keys()) or doc['_id'] in displayed_ids or topicfield not in doc['_source'].keys():
+            if self.textfield not in doc["_source"].keys() or self.titlefield not in doc["_source"].keys() or (self.teaserfield not in doc["_source"].keys() and self.teaseralt not in doc["_source"].keys()) or doc['_id'] in displayed_ids or topicfield not in doc['_source'].keys():
                 pass
             elif "paywall_na" in doc["_source"].keys():
                 if doc["_source"]["paywall_na"] == True:
@@ -131,8 +130,23 @@ class recommender():
         data = pd.DataFrame(list_tuples, columns=['id', 'id2', 'url', 'similarity'])
         data['url'] = data['url'].str.decode('utf-8')
         data['similarity'] = data['similarity'].str.decode('utf-8')
-        a = data.sort_values(by=['similarity'], ascending = True).groupby('id2').head(3).groupby('url').size().sort_values(ascending = False)
-        recommender_ids = a.index[0, self.num_recommender]
+        data = data[data['similarity'] < 0.9]
+        diversity = User.query.get(current_user.divers)
+        if diversity == 1:
+            a = data.sort_values(by=['similarity'], ascending = False).groupby('id2').groupby('id2').apply(lambda x: x.head(int(len(x) * 0.2))).reset_index(drop=True).groupby('url').size().sort_values(ascending = False)
+        elif diversity == 2:
+            a = data.sort_values(by=['similarity'], ascending = False).groupby('id2').apply(lambda x: x.head(int(len(x) * 0.4))).reset_index(drop=True).groupby('id2').apply(lambda x: x.tail(int(len(x) * 0.5))).reset_index(drop=True).groupby('url').size().sort_values(ascending = False)
+        elif diversity == 3:
+            a = data.sort_values(by=['similarity'], ascending = False).groupby('id2').apply(lambda x: x.head(int(len(x) * 0.6))).reset_index(drop=True).groupby('id2').apply(lambda x: x.tail(int(len(x) * 0.33))).reset_index(drop=True).groupby('url').size().sort_values(ascending = False)
+        elif diversity == 4:
+            a = data.sort_values(by=['similarity'], ascending = False).groupby('id2').apply(lambda x: x.head(int(len(x) * 0.8))).reset_index(drop=True).groupby('id2').apply(lambda x: x.tail(int(len(x) * 0.25))).reset_index(drop=True).groupby('url').size().sort_values(ascending = False)
+        elif diversity == 5:
+            a = data.sort_values(by=['similarity'], ascending = False).groupby('id2').groupby('id2').apply(lambda x: x.tail(int(len(x) * 0.2))).reset_index(drop=True).groupby('url').size().sort_values(ascending = False)
+        try:
+            num_recommender = User.query.get(current_user.num_recommended)
+        except:
+            num_recommender = num_recommender
+        recommender_ids = a.index[0, num_recommender]
         recommender_selection = es.search(index=indexName,
             body={"query":{"terms":{"_id":recommender_ids}}}).get('hits',{}).get('hits',[""])
         #Possibly: Weigh in the ratings for the past articles to determine which ones get "preference"
@@ -191,6 +205,10 @@ class recommender():
         #Retrieve new articles
         new_articles = [self.doctype_last(s) for s in list_of_sources]
         new_articles = [a for b in new_articles for a in b]
+        try:
+            recommended = User.query.get(current_user.num_recommended)
+        except:
+            recommended  = num_recommender
 
         category_selection = []
         for category in topic_list:
@@ -205,7 +223,7 @@ class recommender():
                 topic_selection = random.sample(topic_selection, num_category_select)
             for item in topic_selection:
                 category_selection.append(item)
-        if len(category_selection) < self.num_recommender:
+        if len(category_selection) < recommended:
             newtry = self.num_more
             new_articles = [self.doctype_last(s, num = newtry) for s in list_of_sources]
             new_articles = [a for b in new_articles for a in b]
@@ -274,6 +292,10 @@ class recommender():
         else:
             num_category_select = 0
         #For each selected category retrieve the articles that fit this category (and randomly select if the list is longer than needed) and fill the rest with random articles (could also be more than normally as some topics might not appear in the article selection often enough)
+        try:
+            recommended = User.query.get(current_user.num_recommended)
+        except:
+            recommended = num_recommender
         category_selection = []
         for category in sel_categories:
             topic_selection = []
@@ -287,7 +309,7 @@ class recommender():
                 topic_selection = random.sample(topic_selection, num_category_select)
             for item in topic_selection:
                 category_selection.append(item)
-        if len(category_selection) < self.num_recommender:
+        if len(category_selection) < recommended:
             newtry = self.num_more
             new_articles = [self.doctype_last(s, num = newtry) for s in list_of_sources]
             new_articles = [a for b in new_articles for a in b]

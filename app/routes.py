@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request, make_response, session, Markup
 from app import app, db, mail
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, News, News_sel, Category, Points_logins, Points_stories, Points_invites, Points_ratings, User_invite
+from app.models import User, News, News_sel, Category, Points_logins, Points_stories, Points_invites, Points_ratings, User_invite, Num_recommended, Show_again
 from werkzeug.urls import url_parse
 from app.forms import RegistrationForm, ChecklisteForm, LoginForm, ReportForm,  ResetPasswordRequestForm, ResetPasswordForm, rating, ContactForm
 import string
@@ -35,6 +35,10 @@ def login():
             flash('Ongeldige gebruikersnaam of wachtwoord')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
+        try:
+            user.panel_id(panel_id)
+        except:
+            pass
         user_guest = user.username
         user_invite_guest = User_invite.query.filter_by(user_guest = user_guest).first()
         if user_invite_guest is not None:
@@ -62,7 +66,11 @@ def consent():
         other_user = other_user
     else:
         other_user = None
-    return render_template('consent.html', other_user = other_user)
+    try:
+        panel_id = parameter['id']
+    except:
+        panel_id = "noIDyet"
+    return render_template('consent.html', other_user = other_user, panel_id = panel_id)
 
 @app.route('/no_consent')
 def no_consent():
@@ -72,6 +80,11 @@ def no_consent():
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('count_logins'))
+    parameter = request.args.to_dict()
+    try: 
+        panel_id = parameter['id']
+    except:
+        panel_id = "noIDyet"
     form = RegistrationForm()
     if form.validate_on_submit():
         group = random.randint(1,group_number)
@@ -79,9 +92,6 @@ def register():
         user.set_password(form.password.data)
         user.set_email(form.email.data)
         db.session.add(user)
-        db.session.commit()
-        number_rec = Num_recommended(num_recommended = num_recommender, user_id = current_user.id)
-        db.session.add(number_rec)
         db.session.commit()
         try:
             other_user = request.args.to_dict()['other_user']
@@ -93,13 +103,14 @@ def register():
             db.session.add(user_invite)
             db.session.commit()
         flash('Gefeliciteerd, u bent nu een ingeschreven gebruiker!')
-        return redirect(url_for('login'))
+        return redirect(url_for('login', panel_id = panel_id))
     return render_template('register.html', title = 'Registratie', form=form)
 
 @app.route('/', methods = ['GET', 'POST'])
 @app.route('/homepage', methods = ['GET', 'POST'])
 @login_required
 def newspage(show_again = 'False'):
+    number_rec = Num_recommended(num_recommended = num_recommender, user_id = current_user.id)
     results = []
     parameter = request.args.to_dict()
     try:
@@ -108,12 +119,16 @@ def newspage(show_again = 'False'):
         show_again = "False"
     if show_again == 'True':
         documents = last_seen()
+        decision = Show_again(show_again = 1, user_id = current_user.id)
+        db.session.add(decision)
     elif show_again == 'False':
         documents = which_recommender()
+        decision = Show_again(show_again = 0, user_id = current_user.id)
+        db.session.add(decision)
         if documents == "not enough stories":
             return render_template('no_stories_error.html')
-    for result in documents:
-        news_displayed = News(elasticsearch = result["_id"], url = result["_source"]["url"], user_id = current_user.id, recommended = result['recommended'])
+    for idx, result in enumerate(documents):
+        news_displayed = News(elasticsearch = result["_id"], url = result["_source"]["url"], user_id = current_user.id, recommended = result['recommended'], position = idx)
         db.session.add(news_displayed)
         db.session.commit()
         result["new_id"] = news_displayed.id
@@ -148,25 +163,28 @@ def newspage(show_again = 'False'):
         db.session.commit()
     different_days = days_logged_in()['different_dates']
     points = points_overview()['points']
+    group = current_user.group
+    href_final = "https://vuamsterdam.eu.qualtrics.com/jfe/form/SV_38UP20nB0r7wv3f?id={}&group={}&fake={}".format(current_user.panel_id, current_user.group, current_user.fake)
+    message_final = 'Je kunt deze studie nu afsluiten en een finale vragenlijst invullen - klik <a href={} class="alert-link">hier</a> - maar je kunt de webapp ook nog wel verder gebruiken.'.format(href_final)
+    href_first = "https://vuamsterdam.eu.qualtrics.com/jfe/form/SV_b7XIK4EZPElGJN3?id={}&group={}".format(current_user.id, current_user.group)
+    message_first = 'Je kunt nu de eerste deel van deze studie afsluiten door een aantal vragen te beantwoorden. Klik <a href={} class="alert-link">hier</a> om naar de vragenlijst te gaan. aan het einde van de vragenlijst vindt je een link die je terugbrengt naar de website voor het tweede deel. Om de studie succesvol af te ronden, moet je aan beide delen deelnemen.'.format(href_first)
+    message_final_b = 'Je kunt deze studie nu afsluiten en een finale vragenlijst invullen - klik <a href={} class="alert-link">hier</a> - maar je kunt de webapp ook nog wel verder gebruiken.'.format(href_first)
+    
     if different_days >= p2_day_min and points >= p2_points_min and (group == 1 or group == 2 or group == 3):
-        flash(Markup('Je kunt deze studie nu afsluiten en een finale vragenlijst invullen - klik <a href="qualtrics_link_2" class="alert-link">hier</a> of links in de menu op de link - maar je kunt de webapp ook nog wel verder gebruiken.'))
-    elif p1_day_min <= different_days and p1_points_min <= points and current_user.phase_completed == 0 and (group == 1 or group == 2 or group == 3):
-        flash(Markup('Je kunt nu de eerste deel van deze studie afsluiten door een aantal vragen te beantwoorden. Klik <a href="qualtrics_link_1" class="alert-link">hier</a> om naar de vragenlijst te gaan. aan het einde van de vragenlijst vindt je een link die je terugbrengt naar de website voor het tweede deel. Om de studie succesvol af te ronden, moet je aan beide delen deelnemen.'))
-    elif different_days < p2_day_min and points < p2_points_min and current_user.phase_completed == 1 and (group == 1 or group == 2 or group == 3):          
+        flash(Markup(message_final))
+    elif p1_day_min <= different_days and p1_points_min <= points and current_user.phase_completed == 1 and (group == 1 or group == 2 or group == 3):
+        flash(Markup(message_first))
+    elif different_days <= p2_day_min and points < p2_points_min and current_user.phase_completed == 2 and (group == 1 or group == 2 or group == 3):          
         flash(Markup('Er zijn nu nieuwe functies om 3bij3 naar jouw wensen te personaliseren. Klik <a href="/points" class="alert-link">hier</a> of ga naar "Mijn 3bij3" en probeer ze uit!'))
     elif different_days >= p1_day_min and points >= p1_points_min and group == 4:
-        flash(Markup('Je kunt deze studie nu afsluiten en een finale vragenlijst invullen - klik <a href="qualtrics_link_1" class="alert-link">hier</a> of links in de menu op de link - maar je kunt de webapp ook nog wel verder gebruiken.'))
+        flash(Markup(message_final_b))
               
     return render_template('newspage.html', results = results)
 
 def which_recommender():
     group = current_user.group
     if group == 1:
-        categories = Category.query.filter_by(user_id = current_user.id).order_by(desc(Category.id)).first()
-        if categories == None:
-            method  = rec.random_selection()
-        else:
-            method = rec.category_selection_classifier()
+        method = rec.random_selection()
     elif group == 2:
         selected_news = number_read()['selected_news']
         if selected_news < 3:
@@ -180,7 +198,11 @@ def which_recommender():
         else:
             method = rec.past_behavior_topic()
     elif group == 4:
-        method = rec.random_selection()
+        categories = Category.query.filter_by(user_id = current_user.id).order_by(desc(Category.id)).first()
+        if categories == None:
+            method  = rec.random_selection()
+        else:
+            method = rec.category_selection_classifier()
     return(method)
 
 
@@ -314,8 +336,14 @@ def show_detail(id):
          selected.starttime = session.pop('start_time', None)
          selected.endtime =  datetime.utcnow()
          selected.time_spent = selected.endtime - selected.starttime
-         selected.rating = request.form['rating']
-         selected.rating2 = request.form['rating2']
+         if request.form['rating'] == '':
+             pass
+         else:
+             selected.rating = request.form['rating']
+         if request.form['rating2'] == '':
+             pass
+         else:
+             selected.rating2 = request.form['rating2']
          db.session.commit()
          points_ratings = Points_ratings.query.filter_by(user_id = current_user.id).all()
          if points_ratings is None:
@@ -423,6 +451,8 @@ def number_read():
 def points_overview():
     if current_user.is_authenticated:
         user = User.query.filter_by(id = current_user.id).first()
+        group = current_user.group
+        phase_completed = current_user.phase_completed
         try:
             points_logins = user.sum_logins
             if points_logins is None:
@@ -473,7 +503,10 @@ def points_overview():
         points_ratings = 0
         points_logins = 0
         points = 0
-    return dict(points = points, points_ratings = points_ratings, points_stories = points_stories, points_invites = points_invites, points_logins = points_logins)
+        group = 1
+        phase_completed = 0
+    
+    return dict(points = points, points_ratings = points_ratings, points_stories = points_stories, points_invites = points_invites, points_logins = points_logins, group = group, phase = phase_completed)
 
 @app.context_processor
 def user_agent():
@@ -593,7 +626,7 @@ def get_points():
         phase = 1
     else:
         phase = 2
-    return render_template("display_points_group1.html",points_min = p2_points_min,  max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall, phase = phase)
+    return render_template("display_points.html",points_min = p2_points_min,  max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall, phase = phase)
 
 
 @app.route('/invite', methods = ['GET', 'POST'])
@@ -624,20 +657,25 @@ def report_article():
 def completed_phase():
     parameter = request.args.to_dict()
     try:
-        wave_completed = parameter['completed']
+        wave_completed = parameter['phase_completed']
     except:
-        wave_completed = "false"
+        wave_completed = 1
     try:
-        user_id = parameter['user']
+        user_id = parameter['id']
     except:
         user_id = " "
-    if user_id == current_user.id and wave_completed == 'true':
+    try:
+        fake = parameter['fake']
+    except:
+        fake = 0
+    if user_id == current_user.panel_id and wave_completed == 2:
         user = User.query.filter_by(id = current_user.id).first()
-        user.phase_completed = 1
+        user.phase_completed = wave_completed
+        user.fake = fake
         db.session.commit()
     return redirect(url_for('count_logins'))
 
-@app.route('/homepage/diversity', methods = ['POST'])
+@app.route('/diversity', methods = ['POST'])
 @login_required
 def get_diversity():
     div = request.form['diversity']
@@ -646,9 +684,11 @@ def get_diversity():
     db.session.commit()
     return redirect(url_for('count_logins'))
 
-@app.route('/homepage/num_recommended', methods = ['POST'])
+@app.route('/num_recommended', methods = ['POST'])
 @login_required
 def get_num_recommended():
+    #if current_user.fake == 0; needs to be set from questionnaire two for the ones that still continue
+    #if curernt_user.fake == 1
     number = request.form['num_recommended']
     number_rec = Num_recommended(num_recommended = number, user_id = current_user.id)
     db.session.add(number_rec)
