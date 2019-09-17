@@ -87,7 +87,8 @@ def register():
         panel_id = "noIDyet"
     form = RegistrationForm()
     if form.validate_on_submit():
-        group = random.randint(1,group_number)
+        group_list = list(range(1, group_number + 1))
+        group = random.choices(population = group_list, weights = [0.2, 0.3, 0.3, 0.2], k = 1)
         user = User(username=form.username.data, group = group)
         user.set_password(form.password.data)
         user.set_email(form.email.data)
@@ -619,14 +620,18 @@ def get_points():
     max_overall = max(points_overall)
     min_overall = min(points_overall)
     avg_overall  = round((sum(points_overall)/len(points_overall)), 2)
-    
+    group = current_user.group
     different_days = days_logged_in()['different_dates']
     points = points_overview()['points']
+    if group == 4:
+        points_min = p1_points_min
+    else:
+        points_min = p2_points_min
     if (different_days <= p1_day_min and points <= p1_points_min):
         phase = 1
     else:
         phase = 2
-    return render_template("display_points.html",points_min = p2_points_min,  max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall, phase = phase)
+    return render_template("display_points.html",points_min = points_min,  max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall, phase = phase)
 
 
 @app.route('/invite', methods = ['GET', 'POST'])
@@ -678,7 +683,10 @@ def completed_phase():
 @app.route('/diversity', methods = ['POST'])
 @login_required
 def get_diversity():
-    div = request.form['diversity']
+    if current_user.fake == 0:
+        div = 1
+    elif current_user.fake == 1:
+        div = request.form['diversity']
     div_final  = Diversity(diversity = div,  user_id = current_user.id)
     db.session.add(div_final)
     db.session.commit()
@@ -687,9 +695,10 @@ def get_diversity():
 @app.route('/num_recommended', methods = ['POST'])
 @login_required
 def get_num_recommended():
-    #if current_user.fake == 0; needs to be set from questionnaire two for the ones that still continue
-    #if curernt_user.fake == 1
-    number = request.form['num_recommended']
+    if current_user.fake == 0:
+        number = num_recommender
+    elif current_user.fake == 1:
+        number = request.form['num_recommended']
     number_rec = Num_recommended(num_recommended = number, user_id = current_user.id)
     db.session.add(number_rec)
     db.session.commit()

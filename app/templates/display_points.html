@@ -14,10 +14,7 @@
   </style>
 {% endblock %}
 {% block scripts %}
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 <script type=text/javascript>
 Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = '#858796';
@@ -53,15 +50,6 @@ var myPieChart = new Chart(ctx, {
   },
 });
 </script>
-
-<!---<script>
-    var submitFormOkay = false;
-    window.onbeforeunload = function () {
-    if (!submitFormOkay) {
-    return true;
-    }
-    }
-</script>--->
 
 <script>
 jQuery(function(){
@@ -104,16 +92,70 @@ window.onclick = function(event) {
 		    });
 		    </script>
 
+{% if device == "mobile" %}
+        <script>
+          $(document).ready(function () {
+          $("#sidebar-mobile").mCustomScrollbar({
+          theme: "minimal"
+          });
+
+          $('#sidebarCollapsemobile').on('click', function () {
+          $('#sidebar-mobile, #content-new-mobile, .square-mobile').toggleClass('active');
+          $('.collapse.in').toggleClass('in');
+          $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+          });
+          });
+        </script>
+{% else %}
+        <script>
+            $(document).ready(function () {
+                $("#sidebar").mCustomScrollbar({
+                    theme: "minimal"
+                });
+
+                $('#sidebarCollapse').on('click', function () {
+            $('#sidebar, #content-new').toggleClass('active');
+                    $('.collapse.in').toggleClass('in');
+            $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+                });
+            });
+        </script>
+
+	{% endif %}
+
+	{% if device == "mobile" %}
+	<script>
+	$(document).ready(function () {
+	$('#sidebar-mobile, #content-new-mobile, .square-mobile').toggleClass('active');
+	});
+	</script>
+	{% endif %}
+
 {% endblock %}
+
 {% block app_content %}
+<div class="container">
+  <div class="se-pre-con"></div>
+  {% if device == "mobile" %}
+  <button type="button" id="sidebarCollapsemobile" class="btn btn-info navbar-btn">
+    <i class="glyphicon glyphicon-align-left"></i>
+  </button>
+
+  {% else %}
+     <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+       <i class="glyphicon glyphicon-align-left"></i>
+             Menu
+     </button>
+     {% endif %}
+     </div>
 {% if (group == 4) %}
 <!-- Content Row -->
 <div class="row justify-content-center align-items-center">
   <div class="col-6 my-4">
     {% else %}
     <div class="row">
-	{% endif %}
-{% if (((group == 3) or (group==4)) and (phase == 2))  %}
+      {% endif %}
+{% if (((group == 3) and (phase == 2)) or group == 4)  %}
 <div class = "col my-4">
 	<div class="card shadow mb-4">
       <div class="card-header py-3">
@@ -140,7 +182,7 @@ window.onclick = function(event) {
   </h2>
 </div>
   <div class="card-body">
-      <div class="card-columns" style="margin:10px;">
+      <div class="card-columns" style="margin:8px;">
   <form action="{{ url_for('get_categories') }}" method="post">
   <label>
     <input type="checkbox" name="category" class="card-input-element d-none" value="Buitenland">
@@ -250,12 +292,16 @@ window.onclick = function(event) {
 	</div>
 	</div>
 {% endif %}
-{% if ((group == 2) and (phase == 2)) %}
+{% if ((group == 2) and (phase == 2) and (device != "mobile")) %}
 <div class = "col my-4">
 </div>
 {% endif %}
     {% if (((group == 2) or (group == 3)) and (phase == 2)) %}
-    <div class="col-6 my-4">
+{% if device == "mobile" %}
+<div class="col my-4">
+  {% else %}
+  <div class="col-6 my-4">
+    {% endif %}
     <div class="card shadow mb-4">
       <div class="card-header py-3">
   <h2 class="m-0 font-weight-bold text-primary">Personalisering
@@ -308,16 +354,22 @@ window.onclick = function(event) {
 </form>
   </div>
       </div>
-    </div>
-<div class="col my-4">
 </div>
+{% if device != "mobile" %}
+  <div class="col my-4">
+  </div>
+  {% endif %}
 {% endif %}
     </div>
     {% if ((group == 3) and (phase == 2)) %}
   </div>
 </div>
 {% endif %}
-  {% endif %}
+{% endif %}
+{% if group == 4 %}
+</div>
+</div>
+{% endif %}
   <!-- Content Column -->
   <div class="row">
   <div class="col my-4">
@@ -501,3 +553,34 @@ window.onclick = function(event) {
   <!-- Page level plugins -->
   <script src="{{url_for('.static', filename='vendor/chart.js/Chart.min.js')}}"></script>
 	  {% endblock %}
+
+ {% if device == "mobile" %}
+        <script>
+          $(document).ready(function () {
+          $("#sidebar-mobile").mCustomScrollbar({
+          theme: "minimal"
+          });
+
+          $('#sidebarCollapsemobile').on('click', function () {
+          $('#sidebar-mobile, #content-new-mobile, .square-mobile').toggleClass('active');
+          $('.collapse.in').toggleClass('in');
+          $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+          });
+          });
+        </script>
+{% else %}
+        <script>
+            $(document).ready(function () {
+                $("#sidebar").mCustomScrollbar({
+                    theme: "minimal"
+                });
+
+                $('#sidebarCollapse').on('click', function () {
+            $('#sidebar, #content-new').toggleClass('active');
+                    $('.collapse.in').toggleClass('in');
+            $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+                });
+            });
+        </script>
+
+{% endif %}

@@ -20,7 +20,12 @@
 <h4><b>Wat is 3bij3?</b></h4>
 <p>3bij3 is een nieuwssite waar wij testen hoe mensen diverse artikelen selecteren en beoordelen. Hierdoor is het heel belangrijk dat u deze website regelmatig en actief blijft gebruiken. Als je nog vragen hebt, neem dan gerust contact met ons op via het contactformulier.</p>
 <h4><b>Waar kan ik de studie afsluiten?</b></h4>
-<p>Je kunt onder "Punten" jouw actuele status inzien. Als u 100% bereikt heeft en de website op minstens 10 verschillende dagen hebt gebruikt krijg je een mededeling dat je de studie kunt afsluiten. Vervolgens kan je dan op een link klikken en een afsluitende vragenlijst invullen. Denk je dat je al aan de voorwaarden voldoet maar heeft nog geen mededeling gekregen? Stuur ons dan een bericht via het contactformulier.</p>
+{% if current_user.group == 4 %}
+<p>Je kunt onder "Punten" jouw actuele status inzien. Als u 100% bereikt heeft en de website op minstens 7 verschillende dagen hebt gebruikt krijg je een mededeling dat je de studie kunt afsluiten. Vervolgens kan je dan op een link klikken en een afsluitende vragenlijst invullen. Denk je dat je al aan de voorwaarden voldoet maar heeft nog geen mededeling gekregen? Stuur ons dan een bericht via het contactformulier.</p>
+{% endif %}
+{% if (current_user.group == 1 or current_user.group == 2 or current_user.group == 3) %}
+<p>De onderzoek bestaat uit twee delen. Je kunt onder "Punten" jouw actuele status inzien. Als u 80% bereikt heeft en de website op minstens 7 verschillende dagen hebt gebruikt krijg je een mededeling dat je de eerste deel van de studie kunt afsluiten. Vervolgens kan je dan op een link klikken en een vragenlijst invullen. Daarna moet je de website nog een paar dagen gebruiken en nog een vragenlijst invullen om het onderzoek af te ronden. Denk je dat je al aan de voorwaarden voldoet maar heeft nog geen mededeling gekregen? Stuur ons dan een bericht via het contactformulier.</p>
+{% endif %}
 <h4><b>Hoe kan ik punten verzamelen?</b></h4>
 <p>Er zijn vier verschillende manieren om punten te verzamelen: Als je inlogt op de website krijg je 2 punten, voor elk artikel dat je leest ontvang je 1 punt en voor elke beoordeling van een artikel krijg je een 0.5 punt. Ten slotte ontvang je punten voor het uitnodigen van jouw vrienden om ook de website te gebruiken (onder de voorwaarde dat zij de website enige tijd gebruikt hebben).Er is een grens aan het aantal punten dat je per dag kunt halen, dus je kunt ze niet allemaal tegelijk verzamelen. Een overzicht van jouw punten vindt u onder "Mijn 3bij3" - u kunt hier ook zien hoe andere mensen die de website gebruiken op dit moment presteren.</p>
 <h4><b>Hoe ga ik terug naar de homepage?</b></h4>
@@ -32,7 +37,7 @@
 <p>Jouw categoriekeuze wordt gebruikt om nieuwsberichten te wegen. Jouw favoriete categorieën verschijnen vaker dan andere categorieën, maar niet uitsluitend.</p>
 {% endif %}
 <h4><b>Als ik op "Terug naar selectie" klik ziet de website er anders uit dan eerst, hoe kan dat?</b></h4>
-<p>De artikelen worden altijd in willekeurige volgorde getoond - je blijft dus dezelfde artikelen zien, maar in een andere volgorde. Mocht u echter andere artikelen zien, dan is er iets mis - stuur in dit geval een bericht via het contactformulier.</p>
+<p>De artikelen worden altijd in willekeurige volgorde getoond - je blijft dus dezelfde artikelen zien, maar in een andere volgorde. Mocht je echter andere artikelen zien, dan is er iets mis - stuur in dit geval een bericht via het contactformulier.</p>
   </div>
   </div>
 {% endblock %}

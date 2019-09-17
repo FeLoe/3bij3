@@ -15,8 +15,60 @@
 
 {% block scripts %}
 {{super()}}
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+{% if device == "mobile" %}
+        <script>
+          $(document).ready(function () {
+          $("#sidebar-mobile").mCustomScrollbar({
+          theme: "minimal"
+          });
+
+          $('#sidebarCollapsemobile').on('click', function () {
+          $('#sidebar-mobile, #content-new-mobile, .square-mobile').toggleClass('active');
+          $('.collapse.in').toggleClass('in');
+          $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+          });
+          });
+        </script>
+{% else %}
+        <script>
+            $(document).ready(function () {
+                $("#sidebar").mCustomScrollbar({
+                    theme: "minimal"
+                });
+
+                $('#sidebarCollapse').on('click', function () {
+            $('#sidebar, #content-new').toggleClass('active');
+                    $('.collapse.in').toggleClass('in');
+            $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+                });
+            });
+        </script>
+
+        {% endif %}
+
+        {% if device == "mobile" %}
+        <script>
+        $(document).ready(function () {
+        $('#sidebar-mobile, #content-new-mobile, .square-mobile').toggleClass('active');
+        });
+        </script>
+        {% endif %}
 {% endblock %}
+<div class="container">
+  <div class="se-pre-con"></div>
+  {% if device == "mobile" %}
+  <button type="button" id="sidebarCollapsemobile" class="btn btn-info navbar-btn">
+    <i class="glyphicon glyphicon-align-left"></i>
+  </button>
+
+  {% else %}
+     <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+       <i class="glyphicon glyphicon-align-left"></i>
+             Menu
+     </button>
+     {% endif %}
+     </div>
 <div class="row">
   {% if device == "mobile" %}
   <div class = "col-md-12">
@@ -96,7 +148,7 @@
         </button>
       </div>
       <div class="modal-body">
-        Deze beoordeling gaat niet over de vraag of je het artikel persoonlijk goed vond of dat het interessant voor je was, maar eerder over de vraag of je het belangrijk vindt dat andere mensen in Nederland van dit artikel/lezen ervan op de hoogte zijn. Die twee beoordelingen kunnen hetzelfde zijn, maar ze kunnen ook verschillend zijn. 
+        Het gaat hier niet om of jij het artikel goed of interessant vond, maar of je vindt dat dit artikel voor andere mensen in Nederland belangrijk is.  
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Sluit</button>
@@ -176,18 +228,44 @@ $(".c-rating").customStarRatings({
     }
     }
   </script>
+{% if device == "mobile" %}
+        <script>
+          $(document).ready(function () {
+          $("#sidebar-mobile").mCustomScrollbar({
+          theme: "minimal"
+          });
+
+          $('#sidebarCollapsemobile').on('click', function () {
+          $('#sidebar-mobile, #content-new-mobile, .square-mobile').toggleClass('active');
+          $('.collapse.in').toggleClass('in');
+          $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+          });
+          });
+        </script>
+{% else %}
+        <script>
+            $(document).ready(function () {
+                $("#sidebar").mCustomScrollbar({
+                    theme: "minimal"
+                });
+
+                $('#sidebarCollapse').on('click', function () {
+            $('#sidebar, #content-new').toggleClass('active');
+                    $('.collapse.in').toggleClass('in');
+            $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+                });
+            });
+        </script>
+
+        {% endif %}
+
+        {% if device == "mobile" %}
+        <script>
+        $(document).ready(function () {
+        $('#sidebar-mobile, #content-new-mobile, .square-mobile').toggleClass('active');
+        });
+        </script>
+        {% endif %}
 
   
-          <!-- Bootstrap core JavaScript-->
-  <script src="{{url_for('.static', filename = 'vendor/jquery/jquery.min.js')}}"></script>
-  <script src="{{url_for('.static', filename = 'vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-
-  <!-- Core plugin JavaScript-->
-  <script src="{{url_for('.static', filename = 'vendor/jquery-easing/jquery.easing.min.js')}}"></script>
-
-  <!-- Custom scripts for all pages-->
-  <script src="{{url_for('.static', filename ='sb-admin-2.min.js')}}"></script>
-
-  <!-- Page level plugins -->
-  <script src="{{url_for('.static', filename='vendor/chart.js/Chart.min.js')}}"></script>
-          {% endblock %}
+{% endblock %}

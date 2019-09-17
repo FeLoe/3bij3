@@ -61,7 +61,7 @@
             );
         });
 </script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
 	<script src="{{url_for('.static', filename='addtohomescreen.js')}}"></script>
@@ -141,6 +141,15 @@ checkboxes.filter(':not(:checked)').prop('disabled', current >= max);
   
 				  });
 </script>
+
+        {% if device == "mobile" %}
+        <script>
+        $(document).ready(function () {
+        $('#sidebar-mobile, #content-new-mobile, .square-mobile').toggleClass('active');
+        });
+        </script>
+        {% endif %}
+
 {% endblock %}
 {% block wrapper %}
 <div class = "wrapper" >
