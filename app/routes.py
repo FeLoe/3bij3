@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request, make_response, session, Markup
 from app import app, db, mail
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, News, News_sel, Category, Points_logins, Points_stories, Points_invites, Points_ratings, User_invite, Num_recommended, Show_again
+from app.models import User, News, News_sel, Category, Points_logins, Points_stories, Points_invites, Points_ratings, User_invite, Num_recommended, Show_again, Diversity
 from werkzeug.urls import url_parse
 from app.forms import RegistrationForm, ChecklisteForm, LoginForm, ReportForm,  ResetPasswordRequestForm, ResetPasswordForm, rating, ContactForm
 import string
@@ -57,9 +57,9 @@ def logout():
 
 @app.route('/consent', methods = ['GET', 'POST'])
 def consent():
-    other_user = request.args.to_dict()
+    parameter = request.args.to_dict()
     try:
-        other_user = other_user['user']
+        other_user = parameter['user']
     except:
         other_user = None
     if other_user is not None:
@@ -67,9 +67,12 @@ def consent():
     else:
         other_user = None
     try:
-        panel_id = parameter['id']
+        panel_id = parameter['pid']
     except:
-        panel_id = "noIDyet"
+        try:
+            panel_id = parameter['PID']
+        except:
+            panel_id = "noIDyet"
     return render_template('consent.html', other_user = other_user, panel_id = panel_id)
 
 @app.route('/no_consent')
@@ -89,7 +92,7 @@ def register():
     if form.validate_on_submit():
         group_list = list(range(1, group_number + 1))
         group = random.choices(population = group_list, weights = [0.2, 0.3, 0.3, 0.2], k = 1)
-        user = User(username=form.username.data, group = group)
+        user = User(username=form.username.data, group = group, panel_id = panel_id)
         user.set_password(form.password.data)
         user.set_email(form.email.data)
         db.session.add(user)
@@ -167,7 +170,7 @@ def newspage(show_again = 'False'):
     group = current_user.group
     href_final = "https://vuamsterdam.eu.qualtrics.com/jfe/form/SV_38UP20nB0r7wv3f?id={}&group={}&fake={}".format(current_user.panel_id, current_user.group, current_user.fake)
     message_final = 'Je kunt deze studie nu afsluiten en een finale vragenlijst invullen - klik <a href={} class="alert-link">hier</a> - maar je kunt de webapp ook nog wel verder gebruiken.'.format(href_final)
-    href_first = "https://vuamsterdam.eu.qualtrics.com/jfe/form/SV_b7XIK4EZPElGJN3?id={}&group={}".format(current_user.id, current_user.group)
+    href_first = "https://vuamsterdam.eu.qualtrics.com/jfe/form/SV_b7XIK4EZPElGJN3?id={}&group={}".format(current_user.panel_id, current_user.group)
     message_first = 'Je kunt nu de eerste deel van deze studie afsluiten door een aantal vragen te beantwoorden. Klik <a href={} class="alert-link">hier</a> om naar de vragenlijst te gaan. aan het einde van de vragenlijst vindt je een link die je terugbrengt naar de website voor het tweede deel. Om de studie succesvol af te ronden, moet je aan beide delen deelnemen.'.format(href_first)
     message_final_b = 'Je kunt deze studie nu afsluiten en een finale vragenlijst invullen - klik <a href={} class="alert-link">hier</a> - maar je kunt de webapp ook nog wel verder gebruiken.'.format(href_first)
     
@@ -631,7 +634,15 @@ def get_points():
         phase = 1
     else:
         phase = 2
-    return render_template("display_points.html",points_min = points_min,  max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall, phase = phase)
+    try:
+        num_recommended = Num_recommended.query.filter_by(user_id = current_user.id).order_by(desc(Num_recommended.id)).first().real
+    except:
+        num_recommended = 6
+    try:
+        diversity = Diversity.query.filter_by(user_id = current_user.id).order_by(desc(Diversity.id)).first().real
+    except:
+        diversity = 1
+    return render_template("display_points.html",points_min = points_min,  max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall, phase = phase, num_recommended = num_recommended, diversity = diversity)
 
 
 @app.route('/invite', methods = ['GET', 'POST'])
@@ -662,7 +673,7 @@ def report_article():
 def completed_phase():
     parameter = request.args.to_dict()
     try:
-        wave_completed = parameter['phase_completed']
+        wave_completed =int(parameter['phase_completed'])
     except:
         wave_completed = 1
     try:
@@ -670,39 +681,50 @@ def completed_phase():
     except:
         user_id = " "
     try:
-        fake = parameter['fake']
+        fake = int(parameter['fake'])
     except:
         fake = 0
-    if user_id == current_user.panel_id and wave_completed == 2:
+    if str(user_id) == current_user.panel_id and wave_completed == 2:
         user = User.query.filter_by(id = current_user.id).first()
         user.phase_completed = wave_completed
         user.fake = fake
         db.session.commit()
+    #return render_template('test.html', parameter = parameter)
     return redirect(url_for('count_logins'))
 
 @app.route('/diversity', methods = ['POST'])
 @login_required
 def get_diversity():
     if current_user.fake == 0:
-        div = 1
-    elif current_user.fake == 1:
         div = request.form['diversity']
-    div_final  = Diversity(diversity = div,  user_id = current_user.id)
+        real = div
+    elif current_user.fake == 1:
+        div = 1
+        real = request.form['diversity']
+    else:
+        div = 1
+        real = 1
+    div_final  = Diversity(diversity = div,  user_id = current_user.id, real = real)
     db.session.add(div_final)
     db.session.commit()
-    return redirect(url_for('count_logins'))
+    return redirect(url_for('get_points'))
 
 @app.route('/num_recommended', methods = ['POST'])
 @login_required
 def get_num_recommended():
     if current_user.fake == 0:
-        number = num_recommender
-    elif current_user.fake == 1:
         number = request.form['num_recommended']
-    number_rec = Num_recommended(num_recommended = number, user_id = current_user.id)
+        real = number
+    elif current_user.fake == 1:
+        number = num_recommender
+        real = request.form['num_recommended']
+    else:
+        number = num_recommender
+        real = num_recommender
+    number_rec = Num_recommended(num_recommended = number, user_id = current_user.id, real = real)
     db.session.add(number_rec)
     db.session.commit()
-    return redirect(url_for('count_logins'))
+    return redirect(url_for('get_points'))
 
 @app.route('/privacy_policy', methods = ['GET', 'POST'])
 def privacy_policy():

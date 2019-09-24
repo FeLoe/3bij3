@@ -160,12 +160,15 @@ class Num_recommended(db.Model):
     num_recommended = db.Column(db.Integer, default=num_recommender)
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
+    real = db.Column(db.Integer, default=num_recommender)
+    
 class Diversity(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     diversity = db.Column(db.Integer, default=1)
     timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    real = db.Column(db.Integer, default=num_recommender)
+    
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))

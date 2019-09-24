@@ -333,8 +333,8 @@ window.onclick = function(event) {
 <h3 class="font-weight-bold">Aantal gepersonaliseerde artikelen</h3>
 <form action="{{ url_for('get_num_recommended') }}" method="post">
 <div class="range range-primary">
-    <input type="range" name="num_recommended" min="0" max="9" value="6" onchange="range.value=value"></input>
-    <output id="range">6</output>
+    <input type="range" name="num_recommended" min="0" max="9" value="{{ num_recommended }}" onchange="range.value=value"></input>
+    <output id="range">{{ num_recommended }}</output>
 </div>
 <br />
     <button type="submit" id="num_recommended" name="submitBtn" class="btn btn-primary btn-xlarge center" onclick="submitFormOkay = true;" style="margin:10px;height:30px;width:65px;font-size:12px;">Wijzigen</button>
@@ -346,8 +346,8 @@ window.onclick = function(event) {
   <h3 class="font-weight-bold">Diversiteit</h3>
   <form action="{{ url_for('get_diversity') }}" method="post">
   <div class="range range-primary">
-    <input type="range" name="diversity" min="1" max="5" value="1" onchange="range.value=value"></input>
-    <output id="range">1</output>
+    <input type="range" name="diversity" min="1" max="5" value="{{ diversity }}" onchange="range.value=value"></input>
+    <output id="range">{{ diversity }}</output>
   </div>
   <br />
     <button type="submit" id="diversity" name="submitBtn" class="btn btn-primary btn-xlarge center" onclick="submitFormOkay = true;" style="margin:10px;height:30px;width:65px;font-size:12px;">Wijzigen</button>

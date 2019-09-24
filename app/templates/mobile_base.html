@@ -4,13 +4,10 @@
       <a href="{{ url_for('newspage') }}"><img src="/static/logo_3bij3.png" style="width: 80%; height: 80%;"></a>
             </div>
     <li><a href="{{ url_for('newspage') }}"><i class = "fa fa-newspaper"></i>   Nieuws</a></li>
-    <li><a href="{{ url_for('invite') }}"><i class="fa fa-share-square"></i>   Uitnodiging</a></li>
     <li><a href="{{ url_for('get_points') }}"><i class="fa fa-chart-bar"></i>   Mijn 3bij3</a></li>
     <li><a href="{{ url_for('contact') }}"><i class="fa fa-envelope"></i>   Mail ons</a></li>
     <li><a href="{{ url_for('faq') }}"><i class="fa fa-question-circle"></i>   FAQ</a></li>
-    {% if (different_dates >= 10) and (points >= 100) %}
-    <li><a href="https://uvacommscience.eu.qualtrics.com/jfe/form/SV_cDanrLD2xY6uywJ?id={}".format(current_user.id)>Studie afsluiten</a></li>
-    {% endif %}
+    <li><a href="{{ url_for('invite') }}"><i class="fa fa-share-square"></i>   Uitnodiging</a></li>
     {% if current_user.is_anonymous %}
     <li><a href="{{ url_for('login') }}"><i class="fa fa-sign-in-alt"></i>   Login</a></li>
     {% else %}
