@@ -23,11 +23,11 @@ var ctx = document.getElementById("myPieChart");
 var myPieChart = new Chart(ctx, {
   type: 'doughnut',
   data: {
-    labels: ["Inloggen", "Lezen", "Beoordelingen", "Uitnodigingen", "Nog te behalen"],
+    labels: ["Inloggen", "Lezen", "Beoordelingen",  "Nog te behalen"],
     datasets: [{
-      data: [{{points_logins}}, {{points_stories}}, {{points_ratings}}, {{points_invites}}, {{points_min - (points_logins + points_stories + points_ratings + points_invites)}}],
-      backgroundColor: ['#e74a3b', '#f6c23e', '#4e73df', '#36b9cc', '#858796'],
-      hoverBackgroundColor: ['#d52a1a', '#f4b30d', '#2653d4', '#2a96a5', '#d3d3d3'],
+      data: [{{points_logins}}, {{points_stories}}, {{points_ratings}}, {{points_min - (points_logins + points_stories + points_ratings )}}],
+      backgroundColor: ['#e74a3b', '#f6c23e', '#4e73df', '#858796'],
+      hoverBackgroundColor: ['#d52a1a', '#f4b30d', '#2653d4', '#d3d3d3'],
       hoverBorderColor: "rgba(234, 236, 244, 1)",
     }],
   },
@@ -371,7 +371,9 @@ window.onclick = function(event) {
 </div>
 {% endif %}
   <!-- Content Column -->
+{% if ((phase == 2 and (group == 2 or group == 3)) or (group == 4)) %}
   <div class="row">
+    {% endif %}
   <div class="col my-4">
     <!-- Project Card Example -->
     <div class="card shadow mb-4">
@@ -449,7 +451,7 @@ window.onclick = function(event) {
       </div>
       {% endif %}
       {% endif %}
-      <h4 class="font-weight-bold">Uitnodigingen<span class="float-right">Max: {{ max_invites }} </span></h4>
+<!--      <h4 class="font-weight-bold">Uitnodigingen<span class="float-right">Max: {{ max_invites }} </span></h4>
       {% if max_invites == 0 %}
       </br>
       <h5><b> Helaas heeft niemand hier tot nu toe punten verzameld - wees de eerste! </b></h5>
@@ -464,7 +466,7 @@ window.onclick = function(event) {
 	<div class="progress-bar bg-info" role="progressbar" aria-valuenow={{ points_invites }} aria-valuemin= {{ min_invites }} aria-valuemax= {{ max_invites }} style = {{"width:number%; color:black;" | replace("number", (points_invites/(max_invites - min_invites))*100) }}></div>
       </div>
       {% endif %}
-      {% endif %}
+      {% endif %}-->
       <h4 class="font-weight-bold">Totaal<span class="float-right">Max: {{ max_overall }}</span></h4>
       {% if max_overall == 0 %}
       </br>
@@ -525,9 +527,6 @@ window.onclick = function(event) {
 	  </span>
 	  <span class="mr-2">
 	    <i class="fas fa-circle text-primary"></i> Beoordeling
-	  </span>
-	  <span class="mr-2">
-	   <i class="fas fa-circle text-success"></i> Uitnodiging
 	  </span>
 	  <span class="mr-2">
 	    <i class="fas fa-circle text-secondary"></i> Nog te besteden

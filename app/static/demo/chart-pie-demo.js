@@ -7,11 +7,11 @@ var ctx = document.getElementById("myPieChart");
 var myPieChart = new Chart(ctx, {
   type: 'doughnut',
   data: {
-    labels: ["Inloggen", "Lezen", "Beoordelingen", "Uitnodigingen", '--'],
+    labels: ["Inloggen", "Lezen", "Beoordelingen",  '--'],
     datasets: [{
       data: [10, 30, 15, 5, 5, 35],
-      backgroundColor: ['#e74a3b', '#f6c23e', '#4e73df', '#36b9cc', '#1cc88a'],
-      hoverBackgroundColor: ['#d52a1a', '#f4b30d', '#2653d4', '#2a96a5', '#169b6b'],
+      backgroundColor: ['#e74a3b', '#f6c23e', '#4e73df',  '#1cc88a'],
+      hoverBackgroundColor: ['#d52a1a', '#f4b30d', '#2653d4',  '#169b6b'],
       hoverBorderColor: "rgba(234, 236, 244, 1)",
     }],
   },

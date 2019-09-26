@@ -7,7 +7,7 @@ from app.forms import RegistrationForm, ChecklisteForm, LoginForm, ReportForm,  
 import string
 import random
 import re
-from app.email import send_password_reset_email
+from app.email import send_password_reset_email, send_registration_confirmation
 from datetime import datetime
 from app.recommender import recommender
 from sqlalchemy import desc
@@ -44,10 +44,7 @@ def login():
         if user_invite_guest is not None:
             user_invite_guest.times_logged_in = user_invite_guest.times_logged_in + 1
             db.session.commit()
-        next_page = request.args.get('next')
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('count_logins')
-        return redirect(next_page)
+        return redirect(url_for('count_logins'))
     return render_template('login.html', title='Inloggen', form=form)
 
 @app.route('/logout')
@@ -92,7 +89,7 @@ def register():
     if form.validate_on_submit():
         group_list = list(range(1, group_number + 1))
         group = random.choices(population = group_list, weights = [0.2, 0.3, 0.3, 0.2], k = 1)
-        user = User(username=form.username.data, group = group, panel_id = panel_id)
+        user = User(username=form.username.data, group = group, panel_id = panel_id, email_contact = form.email.data)
         user.set_password(form.password.data)
         user.set_email(form.email.data)
         db.session.add(user)
@@ -106,9 +103,27 @@ def register():
             user_invite = User_invite(stories_read = 0, times_logged_in = 0, user_host = other_user, user_guest = form.username.data)
             db.session.add(user_invite)
             db.session.commit()
-        flash('Gefeliciteerd, u bent nu een ingeschreven gebruiker!')
+        send_registration_confirmation(user, form.email.data)    
+        flash('Gefeliciteerd, je bent nu een ingeschreven gebruiker!')
         return redirect(url_for('login', panel_id = panel_id))
     return render_template('register.html', title = 'Registratie', form=form)
+
+
+
+@app.route('/activate', methods=['GET', 'POST'])
+def activate():
+    parameter = request.args.to_dict()
+    try:
+        user = parameter['user']
+    except:
+        user = "no_user"
+    check_user = User.query.filter_by(id = user).first()
+    if check_user is not None:
+        check_user.activated = 1
+        db.session.commit()
+        flash('Gefeliciteerd, je account is nu geactiveerd!')
+        return redirect(url_for('login'))
+        
 
 @app.route('/', methods = ['GET', 'POST'])
 @app.route('/homepage', methods = ['GET', 'POST'])
@@ -178,7 +193,7 @@ def newspage(show_again = 'False'):
         flash(Markup(message_final))
     elif p1_day_min <= different_days and p1_points_min <= points and current_user.phase_completed == 1 and (group == 1 or group == 2 or group == 3):
         flash(Markup(message_first))
-    elif different_days <= p2_day_min and points < p2_points_min and current_user.phase_completed == 2 and (group == 1 or group == 2 or group == 3):          
+    elif different_days <= p2_day_min and points < p2_points_min and current_user.phase_completed == 2 and (group == 2 or group == 3):          
         flash(Markup('Er zijn nu nieuwe functies om 3bij3 naar jouw wensen te personaliseren. Klik <a href="/points" class="alert-link">hier</a> of ga naar "Mijn 3bij3" en probeer ze uit!'))
     elif different_days >= p1_day_min and points >= p1_points_min and group == 4:
         flash(Markup(message_final_b))
@@ -234,6 +249,7 @@ def count_logins():
         show_again = "False"
     try:
         user_string = request.headers.get('User-Agent')
+        user_string = str(parse(user_string))
     except:
         user_string = " "
     points_logins = Points_logins.query.filter_by(user_id = current_user.id).all()
@@ -292,7 +308,7 @@ def save_selected(id):
                 points_today += 1
             else:
                 pass
-        if points_today >= 5:
+        if points_today >= 10:
             stories = Points_stories(points_stories = 0, user_id = current_user.id)
             db.session.add(stories)
         else:
@@ -391,8 +407,7 @@ def reset_password_request():
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
         email = form.email.data
-        email_hash = generate_password_hash(email)
-        user = User.query.filter_by(email_hash = email_hash).first()
+        user = User.query.filter_by(email_contact = email).first()
         if user:
             send_password_reset_email(user, email)
         flash('Controleer uw email, u hebt informatie ontvangen hoe u uw wachtwoord opnieuw kunt instellen.')

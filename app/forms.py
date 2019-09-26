@@ -23,8 +23,7 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Dit gebruikersnaam is al in gebruik, gebruik alstublieft een ander gebruikersnaam.')
 
     def validate_email(self, email):
-        email_hash = generate_password_hash(email.data)
-        user = User.query.filter_by(email_hash=email_hash).first()
+        user = User.query.filter_by(email_contact=email.data).first()
         if user is not None:
             raise ValidationError('Dit email adres is al in gebruik, gebruik alstublieft een ander email adres.')
 

@@ -15,6 +15,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), index = True, unique = True)
     password_hash = db.Column(db.String(128))
     email_hash = db.Column(db.String(128))
+    email_contact = db.Column(db.String(128))
     group = db.Column(db.Integer)
     first_login = db.Column(db.DateTime, index = True, default = datetime.utcnow)
     points_stories = db.relationship('Points_stories', backref = 'user', lazy = 'dynamic')
@@ -31,6 +32,8 @@ class User(UserMixin, db.Model):
     phase_completed = db.Column(db.Integer, default = 1)
     fake = db.Column(db.Integer, default = 0)
     panel_id = db.Column(db.String(128), default = "noIDyet")
+    activated = db.Column(db.Integer, default = 0)
+    reminder_sent = db.Column(db.Integer, default = 0)
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 

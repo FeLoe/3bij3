@@ -79,5 +79,7 @@ target/
 *testmodel*
 
 # Extras file
-**/extras/make_matrix.py
-**/extras/get_similarities.py
+**/make_matrix.py
+**/get_similarities.py
+**/email_reminder.py
+extras/get_similarities.py

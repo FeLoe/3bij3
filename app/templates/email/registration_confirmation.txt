@@ -1,0 +1,10 @@
+Geachte {{ user.username }},
+Je bent nu ingeschreven op de website "http://www.3bij3.nl". Om jouw account te activeren, klik je op deze link: {{"https://www.3bij3\.nl/activate?user=number" | replace('number', user.id) }}.
+
+Als je jouw wachtwoord bent vergeten, kan je het op de website resetten door te klikken op "Wachtwoord vergeten? Hier opnieuw instellen!".
+
+Met vriendelijke groeten,
+
+Felicia Löcherbach
+
+
