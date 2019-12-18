@@ -20,6 +20,7 @@ from app.vars import num_less, num_more, num_select, num_recommender
 from app.vars import topicfield, textfield, teaserfield, teaseralt, doctypefield, classifier_dict
 from app.vars import group_number
 from app.vars import p1_day_min, p1_points_min, p2_day_min, p2_points_min
+import webbrowser
 
 rec = recommender()
 paragraph = paragraph_processing()
@@ -33,6 +34,9 @@ def login():
         user = User.query.filter_by(username = form.username.data).first()
         if user is None or not user.check_password(form.password.data):
             flash('Ongeldige gebruikersnaam of wachtwoord')
+            return redirect(url_for('login'))
+        elif user.activated != 1:
+            flash('Je moet jouw account nog steeds  activeren, controleer hiervoor jouw email (ook jouw ongewenste e-mails of spam)')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
         try:
@@ -119,10 +123,22 @@ def activate():
         user = "no_user"
     check_user = User.query.filter_by(id = user).first()
     if check_user is not None:
-        check_user.activated = 1
-        db.session.commit()
-        flash('Gefeliciteerd, je account is nu geactiveerd!')
+        if check_user.activated == 0:
+            check_user.activated = 1
+            db.session.commit()
+            redirect_link = "".format(check_user.panel_id)
+            flash('Gefeliciteerd, je account is nu geactiveerd!')
+            try:
+                return webbrower.open_new_tab(redirect_link)
+            except:
+                return redirect(redirect_link)
+        elif check_user.activated == 1:
+            flash('Je account is al geactiveerd, veel plezier op de website!')
+            return redirect(url_for('login'))
+    else:
+        flash('Er ging iets mis. Heb je al een account aangemaakt op de website?')
         return redirect(url_for('login'))
+            
         
 
 @app.route('/', methods = ['GET', 'POST'])
@@ -189,15 +205,16 @@ def newspage(show_again = 'False'):
     message_first = 'Je kunt nu de eerste deel van deze studie afsluiten door een aantal vragen te beantwoorden. Klik <a href={} class="alert-link">hier</a> om naar de vragenlijst te gaan. aan het einde van de vragenlijst vindt je een link die je terugbrengt naar de website voor het tweede deel. Om de studie succesvol af te ronden, moet je aan beide delen deelnemen.'.format(href_first)
     message_final_b = 'Je kunt deze studie nu afsluiten en een finale vragenlijst invullen - klik <a href={} class="alert-link">hier</a> - maar je kunt de webapp ook nog wel verder gebruiken.'.format(href_first)
     
-    if different_days >= p2_day_min and points >= p2_points_min and (group == 1 or group == 2 or group == 3):
+    if different_days >= p2_day_min and points >= p2_points_min and (group == 1 or group == 2 or group == 3) and current_user.phase_completed == 2:
         flash(Markup(message_final))
+    elif current_user.phase_completed == 2 and (group == 2 or group == 3):
+        flash(Markup('Er zijn nu nieuwe functies om 3bij3 naar jouw wensen te personaliseren. Klik <a href="/points" class="alert-link">hier</a> of ga naar "Mijn 3bij3" en probeer ze uit!'))
     elif p1_day_min <= different_days and p1_points_min <= points and current_user.phase_completed == 1 and (group == 1 or group == 2 or group == 3):
         flash(Markup(message_first))
-    elif different_days <= p2_day_min and points < p2_points_min and current_user.phase_completed == 2 and (group == 2 or group == 3):          
-        flash(Markup('Er zijn nu nieuwe functies om 3bij3 naar jouw wensen te personaliseren. Klik <a href="/points" class="alert-link">hier</a> of ga naar "Mijn 3bij3" en probeer ze uit!'))
-    elif different_days >= p1_day_min and points >= p1_points_min and group == 4:
+    elif different_days >= p1_day_min and points >= p1_points_min and group == 4 and current_user.phase_completed == 1:
         flash(Markup(message_final_b))
-              
+    elif current_user.phase_completed == 3:
+        flash(Markup('Bedankt voor het afronden van de studie. Je kunt nog steeds 3bij3 blijven gebruiken als je dat wilt.')) 
     return render_template('newspage.html', results = results)
 
 def which_recommender():
@@ -267,8 +284,8 @@ def count_logins():
                 pass
         try:
             date = current_user.last_visit
-            if date is  None:
-                date = datetime.utcnow()
+            if date is None:
+                date = current_user.first_login
         except:
             date = datetime.utcnow()
         difference = now - date
@@ -355,7 +372,10 @@ def show_detail(id):
      if request.method == 'POST' and form.validate():
          selected.starttime = session.pop('start_time', None)
          selected.endtime =  datetime.utcnow()
-         selected.time_spent = selected.endtime - selected.starttime
+         try:
+             selected.time_spent = selected.endtime - selected.starttime
+         except:
+             selected.time_spent = None
          if request.form['rating'] == '':
              pass
          else:
@@ -516,6 +536,13 @@ def points_overview():
         except:
             points_invites = 0
         points = points_stories + points_invites + points_ratings + points_logins
+        if group == 4:
+            points_min = p1_points_min
+        else:
+            points_min = p2_points_min
+        rest = points_min - (points_logins + points_stories + points_ratings)
+        if rest <= 0:
+            rest = 0
     else:
         points_stories = 0
         points_invites = 0
@@ -524,8 +551,9 @@ def points_overview():
         points = 0
         group = 1
         phase_completed = 0
+        rest = 0
     
-    return dict(points = points, points_ratings = points_ratings, points_stories = points_stories, points_invites = points_invites, points_logins = points_logins, group = group, phase = phase_completed)
+    return dict(points = points, points_ratings = points_ratings, points_stories = points_stories, points_invites = points_invites, points_logins = points_logins, group = group, phase = phase_completed, rest = rest)
 
 @app.context_processor
 def user_agent():
@@ -641,14 +669,12 @@ def get_points():
     group = current_user.group
     different_days = days_logged_in()['different_dates']
     points = points_overview()['points']
+    rest = points_overview()['rest']
+    phase = current_user.phase_completed
     if group == 4:
         points_min = p1_points_min
     else:
         points_min = p2_points_min
-    if (different_days <= p1_day_min and points <= p1_points_min):
-        phase = 1
-    else:
-        phase = 2
     try:
         num_recommended = Num_recommended.query.filter_by(user_id = current_user.id).order_by(desc(Num_recommended.id)).first().real
     except:
@@ -657,7 +683,7 @@ def get_points():
         diversity = Diversity.query.filter_by(user_id = current_user.id).order_by(desc(Diversity.id)).first().real
     except:
         diversity = 1
-    return render_template("display_points.html",points_min = points_min,  max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall, phase = phase, num_recommended = num_recommended, diversity = diversity)
+    return render_template("display_points.html",points_min = points_min,  max_stories = max_stories, min_stories = min_stories, avg_stories = avg_stories, max_logins = max_logins, min_logins = min_logins, avg_logins = avg_logins, max_ratings = max_ratings, min_ratings = min_ratings, avg_ratings = avg_ratings, max_invites = max_invites, min_invites = min_invites, avg_invites = avg_invites, points_overall = points_overall, max_overall = max_overall, min_overall = min_overall, avg_overall = avg_overall, phase = phase, num_recommended = num_recommended, diversity = diversity, rest = rest)
 
 
 @app.route('/invite', methods = ['GET', 'POST'])
@@ -689,22 +715,22 @@ def completed_phase():
     parameter = request.args.to_dict()
     try:
         wave_completed =int(parameter['phase_completed'])
-    except:
-        wave_completed = 1
-    try:
         user_id = parameter['id']
+        try: 
+            fake = int(parameter['fake'])
+        except:
+            fake = 0
+        if str(user_id) == current_user.panel_id and wave_completed == 2:
+            user = User.query.filter_by(id = current_user.id).first()
+            user.phase_completed = wave_completed
+            user.fake = fake
+            db.session.commit()
+        elif str(user_id) == current_user.panel_id and wave_completed == 3:
+            user = User.query.filter_by(id = current_user.id).first()
+            user.phase_completed = wave_completed
+            db.session.commit()
     except:
-        user_id = " "
-    try:
-        fake = int(parameter['fake'])
-    except:
-        fake = 0
-    if str(user_id) == current_user.panel_id and wave_completed == 2:
-        user = User.query.filter_by(id = current_user.id).first()
-        user.phase_completed = wave_completed
-        user.fake = fake
-        db.session.commit()
-    #return render_template('test.html', parameter = parameter)
+        pass
     return redirect(url_for('count_logins'))
 
 @app.route('/diversity', methods = ['POST'])

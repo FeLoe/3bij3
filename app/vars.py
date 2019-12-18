@@ -59,7 +59,7 @@ p2_points_min: How many points do they need to collect in phase 1 and 2
 '''
 p1_day_min = 7
 p1_points_min = 80
-p2_day_min = 10
+p2_day_min = 9
 p2_points_min = 100
 '''
 TOPICS

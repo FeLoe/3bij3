@@ -18,21 +18,21 @@
   <div class="col-md-7 text-justify">
 <h1>Veelgestelde Vragen/FAQs</h1>
 <h4><b>Wat is 3bij3?</b></h4>
-<p>3bij3 is een nieuwssite waar wij testen hoe mensen diverse artikelen selecteren en beoordelen. Hierdoor is het heel belangrijk dat u deze website regelmatig en actief blijft gebruiken. Als je nog vragen hebt, neem dan gerust contact met ons op via het contactformulier.</p>
+<p>3bij3 is een nieuwssite waar wij testen hoe mensen diverse artikelen selecteren en beoordelen. Hierdoor is het heel belangrijk dat je deze website regelmatig en actief blijft gebruiken. Als je nog vragen hebt, neem dan gerust contact met ons op via het contactformulier.</p>
 <h4><b>Waar kan ik de studie afsluiten?</b></h4>
 {% if current_user.group == 4 %}
 <p>Je kunt onder "Punten" jouw actuele status inzien. Als je 100% bereikt heeft en de website op minstens 7 verschillende dagen hebt gebruikt krijg je een mededeling dat je de studie kunt afsluiten. Vervolgens kan je dan op een link klikken en een afsluitende vragenlijst invullen. Denk je dat je al aan de voorwaarden voldoet maar heeft nog geen mededeling gekregen? Stuur ons dan een bericht via het contactformulier.</p>
 {% endif %}
 {% if (current_user.group == 1 or current_user.group == 2 or current_user.group == 3) %}
-<p>De onderzoek bestaat uit twee delen. Je kunt onder "Punten" jouw actuele status inzien. Als u 80% bereikt heeft en de website op minstens 7 verschillende dagen hebt gebruikt krijg je een mededeling dat je de eerste deel van de studie kunt afsluiten. Vervolgens kan je dan op een link klikken en een vragenlijst invullen. Daarna moet je de website nog een paar dagen gebruiken en nog een vragenlijst invullen om het onderzoek af te ronden. Denk je dat je al aan de voorwaarden voldoet maar heeft nog geen mededeling gekregen? Stuur ons dan een bericht via het contactformulier.</p>
+<p>De onderzoek bestaat uit twee delen. Je kunt onder "Punten" jouw actuele status inzien. Als je 80% bereikt heeft en de website op minstens 7 verschillende dagen hebt gebruikt krijg je een mededeling dat je de eerste deel van de studie kunt afsluiten. Vervolgens kan je dan op een link klikken en een vragenlijst invullen. Daarna moet je de website nog een paar dagen gebruiken en nog een vragenlijst invullen om het onderzoek af te ronden. Denk je dat je al aan de voorwaarden voldoet maar heeft nog geen mededeling gekregen? Stuur ons dan een bericht via het contactformulier.</p>
 {% endif %}
 <h4><b>Hoe kan ik punten verzamelen?</b></h4>
-<p>Er zijn vier verschillende manieren om punten te verzamelen: Als je inlogt op de website krijg je 2 punten, voor elk artikel dat je leest ontvang je 1 punt en voor elke beoordeling van een artikel krijg je een 0.5 punt. Er is een grens aan het aantal punten dat je per dag kunt halen, dus je kunt ze niet allemaal tegelijk verzamelen. Een overzicht van jouw punten vindt u onder "Mijn 3bij3" - u kunt hier ook zien hoe andere mensen die de website gebruiken op dit moment presteren.</p>
+<p>Er zijn vier verschillende manieren om punten te verzamelen: Als je inlogt op de website krijg je 2 punten, voor elk artikel dat je leest ontvang je 1 punt en voor elke beoordeling van een artikel krijg je een 0.5 punt. Er is een grens aan het aantal punten dat je per dag kunt halen, dus je kunt ze niet allemaal tegelijk verzamelen. Een overzicht van jouw punten vind je onder "Mijn 3bij3" - je kunt hier ook zien hoe andere mensen die de website gebruiken op dit moment presteren.</p>
 <h4><b>Hoe ga ik terug naar de homepage?</b></h4>
 <p>Wanneer je een artikel heeft gelezen en een rating heeft gegeven, kan je kiezen of je naar de homepage met dezelfde artikelen terug wilt gaan of dat je liever nieuwe artikelen wil lezen. Wij werken op deze manier omdat wij graag jouw mening over de artikelen willen weten. Je kunt ook op het 3bij3-logo of op "Nieuws" klikken om terug te gaan naar de homepage.</p>
 {% if current_user.group == 4  %}
 <h4><b>Ik kan maar drie inhoudscategorieën kiezen - is er iets mis?</b></h4>
-<p>Nee, er is niets mis. Je kunt helaas maar drie categorieën kiezen - maar jee kunt jouw selectie zo vaak als je wilt wijzigen om andere categorieën te zien.</p>
+<p>Nee, er is niets mis. Je kunt helaas maar drie categorieën kiezen - maar je kunt jouw selectie zo vaak als je wilt wijzigen om andere categorieën te zien.</p>
 <h4><b>Als ik een categorie kies verschijnen er nog andere categorieën, zijn er niet genoeg nieuws voor dit categorie?</b></h4>
 <p>Jouw categoriekeuze wordt gebruikt om nieuwsberichten te wegen. Jouw favoriete categorieën verschijnen vaker dan andere categorieën, maar niet uitsluitend.</p>
 {% endif %}

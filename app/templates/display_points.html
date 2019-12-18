@@ -25,7 +25,7 @@ var myPieChart = new Chart(ctx, {
   data: {
     labels: ["Inloggen", "Lezen", "Beoordelingen",  "Nog te behalen"],
     datasets: [{
-      data: [{{points_logins}}, {{points_stories}}, {{points_ratings}}, {{points_min - (points_logins + points_stories + points_ratings )}}],
+      data: [{{points_logins}}, {{points_stories}}, {{points_ratings}}, {{rest}}],
       backgroundColor: ['#e74a3b', '#f6c23e', '#4e73df', '#858796'],
       hoverBackgroundColor: ['#d52a1a', '#f4b30d', '#2653d4', '#d3d3d3'],
       hoverBorderColor: "rgba(234, 236, 244, 1)",
@@ -296,7 +296,7 @@ window.onclick = function(event) {
 <div class = "col my-4">
 </div>
 {% endif %}
-    {% if (((group == 2) or (group == 3)) and (phase == 2)) %}
+    {% if ((phase == 2) and ((group == 2) or (group == 3))) %}
 {% if device == "mobile" %}
 <div class="col my-4">
   {% else %}
