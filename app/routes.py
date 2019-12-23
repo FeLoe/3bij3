@@ -1,20 +1,24 @@
-from flask import render_template, flash, redirect, url_for, request, make_response, session
-from app import app, db, mail
-from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, News, News_sel, Category, Points_logins, Points_stories, Points_invites, Points_ratings, User_invite
-from werkzeug.urls import url_parse
-from app.forms import RegistrationForm, ChecklisteForm, LoginForm, ReportForm,  ResetPasswordRequestForm, ResetPasswordForm, rating, ContactForm
-from elasticsearch import Elasticsearch
-import string
 import random
 import re
-from app.email import send_password_reset_email
 from datetime import datetime
-from app.recommender import recommender
+from werkzeug.urls import url_parse
+from elasticsearch import Elasticsearch
 from sqlalchemy import desc
+from flask import render_template, flash, redirect, url_for, request, session
 from flask_mail import Message
+from flask_login import current_user, login_user, logout_user, login_required
 from user_agents import parse
+from app import app, db, mail
+from app.forms import (RegistrationForm, LoginForm, ReportForm,
+                       ResetPasswordRequestForm, ResetPasswordForm,
+                       rating, ContactForm)
+from app.models import (User, News, News_sel, Category, Points_logins,
+                        Points_stories, Points_invites, Points_ratings,
+                        User_invite)
+from app.email import send_password_reset_email
+from app.recommender import recommender
 from app.processing import paragraph_processing
+
 
 host = "http://localhost:9200"
 indexName = "inca"
@@ -24,7 +28,6 @@ paragraph = paragraph_processing()
 day_min = 10
 points_min = 100
 classifier_dict = {'Binnenland':['13','14','20', '3', '4', '5', '6'], 'Buitenland':['16', '19', '2'], 'Economie':['1','15'], 'Milieu':['8', '7'],  'Wetenschap':['17'], 'Immigratie':['9'],  'Justitie':['12'], 'Sport':['29'], 'Entertainment':['23'], 'Anders':['10','99']}
-
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -111,7 +114,7 @@ def newspage(show_again = 'False'):
         if documents == "not enough stories":
             return render_template('no_stories_error.html')
     for result in documents:
-        news_displayed = News(elasticsearch = result["_id"], url = result["_source"]["url"], user_id = current_user.id, recommended = result['recommended'])
+        news_displayed = News(elasticsearch = result["_id"], url = result["_source"]["url"], user_id = current_user._id, recommended = result['recommended'])
         db.session.add(news_displayed)
         db.session.commit()
         result["new_id"] = news_displayed.id
@@ -149,7 +152,7 @@ def newspage(show_again = 'False'):
 def which_recommender():
     group = current_user.group
     if group == 1:
-        categories = Category.query.filter_by(user_id = current_user.id).order_by(desc(Category.id)).first()
+        categories = Category.query.filter_by(user_id = current_user._id).order_by(desc(Category._id)).first()
         if categories == None:
             method  = rec.random_selection()
         else:
@@ -171,7 +174,7 @@ def which_recommender():
     return(method)
  
 def last_seen():
-    news = News.query.filter_by(user_id = current_user.id).order_by(desc(News.id)).limit(9)
+    news = News.query.filter_by(user_id = current_user._id).order_by(desc(News._id)).limit(9)
     news_ids = [item.elasticsearch for item in news]
     recommended = [item.recommended for item in news]
     id_rec = zip(news_ids, recommended)
@@ -196,9 +199,9 @@ def count_logins():
         user_string = request.headers.get('User-Agent')
     except:
         user_string = " "
-    points_logins = Points_logins.query.filter_by(user_id = current_user.id).all()
+    points_logins = Points_logins.query.filter_by(user_id = current_user._id).all()
     if points_logins is None or points_logins == []:
-        logins = Points_logins(points_logins = 2, user_id = current_user.id)
+        logins = Points_logins(points_logins = 2, user_id = current_user._id)
         db.session.add(logins)
     else:
         dates = [item.timestamp.date() for item in points_logins]
@@ -219,10 +222,10 @@ def count_logins():
         difference = int(difference.seconds // (60 * 60))
         if difference > 1:
             if points_today >= 4:
-                logins = Points_logins(points_logins = 0, user_id = current_user.id, user_agent = user_string)
+                logins = Points_logins(points_logins = 0, user_id = current_user._id, user_agent = user_string)
                 db.session.add(logins)
             else:
-                logins = Points_logins(points_logins = 2, user_id = current_user.id, user_agent = user_string)
+                logins = Points_logins(points_logins = 2, user_id = current_user._id, user_agent = user_string)
                 db.session.add(logins)
         else:
             pass
@@ -232,16 +235,16 @@ def count_logins():
         
 @app.route('/save/<id>', methods = ['GET', 'POST'])
 @login_required
-def save_selected(id):
-    selected = News.query.filter_by(id = id).first()
+def save_selected(_id):
+    selected = News.query.filter_by(id = _id).first()
     es_id = selected.elasticsearch
-    news_selected = News_sel(news_id = selected.elasticsearch, user_id =current_user.id, )
+    news_selected = News_sel(news_id = selected.elasticsearch, user_id =current_user._id, )
     db.session.add(news_selected)
     db.session.commit()
-    selected_id = News_sel.query.filter_by(user_id = current_user.id).order_by(desc(News_sel.id)).first().__dict__['id']
-    points_stories = Points_stories.query.filter_by(user_id = current_user.id).all()
+    selected_id = News_sel.query.filter_by(user_id = current_user._id).order_by(desc(News_sel._id)).first().__dict__['id']
+    points_stories = Points_stories.query.filter_by(user_id = current_user._id).all()
     if points_stories is None:
-        stories = Points_stories(points_stories = 1, user_id = current_user.id)
+        stories = Points_stories(points_stories = 1, user_id = current_user._id)
         db.session.add(stories)
     else:
         dates = [item.timestamp.date() for item in points_stories]
@@ -253,18 +256,18 @@ def save_selected(id):
             else:
                 pass
         if points_today >= 5:
-            stories = Points_stories(points_stories = 0, user_id = current_user.id)
+            stories = Points_stories(points_stories = 0, user_id = current_user._id)
             db.session.add(stories)
         else:
-            stories = Points_stories(points_stories = 1, user_id = current_user.id)
+            stories = Points_stories(points_stories = 1, user_id = current_user._id)
             db.session.add(stories)
     db.session.commit()
-    return redirect(url_for('show_detail', id = selected_id))
+    return redirect(url_for('show_detail', _id = selected_id))
     
 @app.route('/detail/<id>', methods = ['GET', 'POST'])
 @login_required
-def show_detail(id):
-     selected = News_sel.query.filter_by(id = id).first()
+def show_detail(_id):
+     selected = News_sel.query.filter_by(id = _id).first()
      es_id = selected.news_id
      doc = es.search(index=indexName,
                   body={"query":{"term":{"_id":es_id}}}).get('hits',{}).get('hits',[""])
@@ -301,9 +304,9 @@ def show_detail(id):
          selected.time_spent = selected.endtime - selected.starttime
          selected.rating = request.form['rating']
          db.session.commit()
-         points_ratings = Points_ratings.query.filter_by(user_id = current_user.id).all()
+         points_ratings = Points_ratings.query.filter_by(user_id = current_user._id).all()
          if points_ratings is None:
-             ratings = Points_ratings(points_ratings = 0.5, user_id = current_user.id)
+             ratings = Points_ratings(points_ratings = 0.5, user_id = current_user._id)
              db.session.add(ratings)
          else:
              dates = [item.timestamp.date() for item in points_ratings]
@@ -317,10 +320,10 @@ def show_detail(id):
                  else:
                      pass
              if points_today >= 5:
-                 ratings = Points_ratings(points_ratings = 0, user_id = current_user.id)
+                 ratings = Points_ratings(points_ratings = 0, user_id = current_user._id)
                  db.session.add(ratings)
              else:
-                 ratings = Points_ratings(points_ratings = 0.5, user_id = current_user.id)
+                 ratings = Points_ratings(points_ratings = 0.5, user_id = current_user._id)
                  db.session.add(ratings)
          db.session.commit()
          return redirect(url_for('decision'))
@@ -379,7 +382,7 @@ def time_logged_in():
 @app.context_processor
 def days_logged_in():
     if current_user.is_authenticated:
-        points_logins = Points_logins.query.filter_by(user_id = current_user.id).all()
+        points_logins = Points_logins.query.filter_by(user_id = current_user._id).all()
         if points_logins is None:
             different_dates = 0
         else:
@@ -393,7 +396,7 @@ def days_logged_in():
 def number_read():
     if current_user.is_authenticated:
         try:
-            selected_news = News_sel.query.filter_by(user_id = current_user.id).all()
+            selected_news = News_sel.query.filter_by(user_id = current_user._id).all()
             selected_news = len(selected_news)
         except: 
             selected_news = 0
@@ -404,7 +407,7 @@ def number_read():
 @app.context_processor
 def points_overview():
     if current_user.is_authenticated:
-        user = User.query.filter_by(id = current_user.id).first()
+        user = User.query.filter_by(id = current_user._id).first()
         try:
             points_logins = user.sum_logins
             if points_logins is None:
@@ -423,7 +426,7 @@ def points_overview():
                 points_ratings = 0
         except:
             points_ratings = 0    
-        user_host = current_user.id
+        user_host = current_user._id
         user_invite_host = User_invite.query.filter_by(user_host = user_host).all()
         if user_invite_host is None:
             points_invites = 0
@@ -435,7 +438,7 @@ def points_overview():
                     number_invited.append(item1['id'])
                     invites_points = Points_invites.query.filter_by(user_guest_new = item1['user_guest']).first()
                     if invites_points is None:
-                         points_invites = Points_invites(user_guest_new = item1['user_guest'], points_invites = 5, user_id = current_user.id)
+                         points_invites = Points_invites(user_guest_new = item1['user_guest'], points_invites = 5, user_id = current_user._id)
                          db.session.add(points_invites)
                          db.session.commit()
                     else:
@@ -492,7 +495,7 @@ def get_categories():
         else:
             categories.append(0)
     category = Category(Binnenland = categories[0], Buitenland = categories[1], Economie = categories[2], Milieu = categories[3], Wetenschap = categories[4], \
-Immigratie = categories[5], Justitie = categories[6], Sport = categories[7], Entertainment = categories[8], Anders = categories[9],  user_id = current_user.id)
+Immigratie = categories[5], Justitie = categories[6], Sport = categories[7], Entertainment = categories[8], Anders = categories[9],  user_id = current_user._id)
     db.session.add(category)
     db.session.commit()  
     return redirect(url_for('count_logins')) 
@@ -506,9 +509,9 @@ def contact():
             return 'Vul alstublieft alle velden in <p><a href="/contact">Probeer het opnieuw!!! </a></p>'
         else:
             name =  current_user.username
-            id = str(current_user.id)
+            _id = str(current_user._id)
             email =  current_user.email
-            msg = Message("Message from your visitor " + name + "with ID: " + id,
+            msg = Message("Message from your visitor " + name + "with ID: " + _id,
                           sender= email,
                           recipients=app.config['ADMINS'])
             msg.body = """
@@ -536,21 +539,21 @@ def get_points():
     if points_stories_all is None:
         points_stories_all = [0]
     else:
-        points_stories_all = [0 if x==None else x for x in points_stories_all]
+        points_stories_all = [0 if x is None else x for x in points_stories_all]
     max_stories = max(points_stories_all)
     min_stories = min(points_stories_all)
     avg_stories  = round((sum(points_stories_all)/len(points_stories_all)),1)            
     if points_invites_all is None:
         points_invites_all = [0]
     else:
-        points_invites_all = [0 if x==None else x for x in points_invites_all]
+        points_invites_all = [0 if x is None else x for x in points_invites_all]
     max_invites = max(points_invites_all)
     min_invites = min(points_invites_all)
     avg_invites  = round((sum(points_invites_all)/len(points_invites_all)), 1)        
     if points_ratings_all is None:
         points_ratings_all = [0]
     else:
-        points_ratings_all = [0 if x==None else x for x in points_ratings_all]
+        points_ratings_all = [0 if x is None else x for x in points_ratings_all]
     points_ratings_all = [float(i) for i in points_ratings_all]
     max_ratings = max(points_ratings_all)
     min_ratings = min(points_ratings_all)
@@ -558,7 +561,7 @@ def get_points():
     if points_logins_all is None:
         points_logins_all = [0]
     else:
-        points_logins_all = [0 if x==None else x for x in points_logins_all]                                                                       
+        points_logins_all = [0 if x is None else x for x in points_logins_all]                                                                       
     max_logins = max(points_logins_all)
     min_logins = min(points_logins_all)
     avg_logins  = round((sum(points_logins_all)/len(points_logins_all)),1)
@@ -574,9 +577,9 @@ def get_points():
 @app.route('/invite', methods = ['GET', 'POST'])
 @login_required
 def invite():
-    id = current_user.id
-    url = "https://www.3bij3.nl/consent?user={}".format(current_user.id)
-    return render_template("invite.html", url = url, id = id)
+    _id = current_user._id
+    url = "https://www.3bij3.nl/consent?user={}".format(current_user._id)
+    return render_template("invite.html", url = url, id = _id)
 
 @app.route('/report_article', methods = ['GET', 'POST'])
 @login_required

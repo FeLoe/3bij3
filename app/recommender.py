@@ -1,18 +1,19 @@
-from app import classifier, vectorizer, dictionary, index, article_ids
-from flask_login import current_user
-from app.models import User, News, News_sel, Category
-from elasticsearch import Elasticsearch
+'''Provides news recommender functionality.'''
 import random
 from collections import Counter, defaultdict
 from operator import itemgetter
+from flask_login import current_user
+from elasticsearch import Elasticsearch
 from sqlalchemy import desc
-from gensim.models import TfidfModel
+from gensim.models import TfidfModel, ldamodel
+from app.models import User, Category
+from app import dictionary, index, article_isd
 
 #Connect with elasticsearch, specify the name of the index and the sources that should be included
 
 host = "http://localhost:9200"
 indexName = "inca"
-es = Elasticsearch(host, timeout = 60)
+es = Elasticsearch(host, timeout=60)
 list_of_sources = ["ad (www)", "bd (www)", "telegraaf (www)", "volkskrant (www)", "nu"]
 
 class recommender():
@@ -20,13 +21,21 @@ class recommender():
     def __init__(self):
         '''
         num_less is the initial number of articles per source that will be scraped, 
-        num_more is the number that will be used when running out of stories(e.g. person has already seen all the stories retrieved)
+
+        num_more is the number that will be used when running out of stories 
+        (e.g. person has already seen all the stories retrieved)
         num_select is the number of stories that will be displayed to the user
-        num_recommender is the number of stories that will be chosen by the recommender (if applicable)
+        num_recommender is the number of stories that will be chosen by the recommender
+        (if applicable)
+        
         textfield is the elasticsearch field where the text can be found (should already be processed and tokenized)
+
         teaserfield is the elasticsearch field where the teaser can be found
-        teaseralt is the elasticsearch field where an alternative teaser can be found (e.g. a rss teaser)
-        classifier_dict is the dictionary that has the results of a prediction with the topic classifier as key and the topic or topics (as list) as value
+        
+        teaseralt is the elasticsearch field where an alternative teaser can be found
+        (e.g. a rss teaser)
+        classifier_dict is the dictionary that has the results of a prediction with the
+        topic classifier as key and the topic or topics (as list) as value
         ''' 
         self.num_less = 20
         self.num_more = 100
@@ -36,10 +45,18 @@ class recommender():
         self.textfield = "text_njr"
         self.teaserfield = "teaser"
         self.teaseralt = "teaser_rss"
-        self.classifier_dict = {'Binnenland':['13','14','20', '3', '4', '5', '6'], 'Buitenland':['16', '19', '2'], 'Economie':['1','15'], 'Milieu':['8', '7'],  'Wetenschap':['17'], 'Immigratie':['9'],  'Justitie':['12'], 'Sport':['29'], 'Entertainment':['23'], 'Anders':['10','99']}
+        self.classifier_dict = {'Binnenland': ['13', '14', '20', '3', '4', '5', '6'],
+                                'Buitenland': ['16', '19', '2'],
+                                'Economie': ['1', '15'], 'Milieu':['8', '7'],
+                                'Wetenschap': ['17'],
+                                'Immigratie': ['9'],
+                                'Justitie': ['12'],
+                                'Sport': ['29'],
+                                'Entertainment': ['23'],
+                                'Anders': ['10','99']}
 
     def get_selected(self):
-        user = User.query.get(current_user.id)
+        user = User.query.get(current_user._id)
         selected_articles = user.selected_news.all()
         selected_ids = [a.news_id for a in selected_articles]
         docs = []
@@ -53,20 +70,20 @@ class recommender():
     def doctype_last(self, doctype, by_field = "META.ADDED", num = None):
         if num == None:
             num = self.num_less
-        user = User.query.get(current_user.id)
+        user = User.query.get(current_user._id)
         selected_articles = self.get_selected()
         displayed_articles = user.displayed_news.all()
         displayed_ids = [a.elasticsearch for a in displayed_articles]
         docs = es.search(index=indexName,
                   body={
                       "sort": [
-                          { by_field : {"order":"desc"}}
+                          {by_field : {"order":"desc"}}
                           ],
                       "size":num,
                       "query": { "bool":
-                          { "filter":
-                              { "term":
-                                  { "doctype": doctype
+                          {"filter":
+                              {"term":
+                                  {"doctype": doctype
                                   }
                               }
                           }
@@ -109,7 +126,8 @@ class recommender():
         '''
         Recommends articles based on the stories the user has selected in the past, using SoftCosineSimilarity
         '''
-        #get newest articles, list ids, make corpus (+dictionary, + similarity_matrix) and finally index (against which the query is run)
+        # get newest articles, list ids, make corpus (+dictionary, + similarity_matrix)
+        # and finally index (against which the query is run)
         tfidf = TfidfModel(dictionary=dictionary)
         docs = self.get_selected()
         query_list = [a for a in docs]
@@ -122,7 +140,7 @@ class recommender():
                 body={"query":{"terms":{"_id":[item]}}}).get('hits',{}).get('hits',[""])
             for d in doc:
                 new_articles.append(d)
-        #Get the three most similar new articles for each past article and store their ids in a list                
+        # Get the three most similar new articles for each past article and store their ids in a list                
         selection = []
         ids = []
         for text in query_generator:
@@ -133,10 +151,13 @@ class recommender():
             sims_ids = sorted(enumerate(sims_ids), key=lambda item: -item[0])
             for i in range(3):
                 selection.append(sims_ids[i][1])
-        #Use a counter to determine the most frequently named articles and take the first ones (specified by variable)
+        # Use a counter to determine the most frequently named articles
+        # and take the first ones (specified by variable)
         recommender_ids = [a[1] for a, count in Counter(selection).most_common(self.num_recommender)]
         recommender_selection = [a for a in new_articles if a["_id"] in recommender_ids] 
-        #Mark the selected articles as recommended, select random articles from the non-recommended articles (and get more if not enough unseen articles available), put the two lists together, randomize the ordering and return them
+        # Mark the selected articles as recommended, select random articles from the non-recommended
+        # articles (and get more if not enough unseen articles available), put the two lists
+        # together, randomize the ordering and return them
         num_random = self.num_select - len(recommender_selection)
         random_list = [a for a in new_articles if a["_id"] not in recommender_ids and a["_id"] not in query_ids]             
         try:
@@ -165,7 +186,8 @@ class recommender():
         '''
          Recommends articles based on the topics of the stories the user has selected in the past (topics indicated by classifier)
         '''
-        #Get the topics of the stories the user selected in the past and randomly select up to three of them
+        # Get the topics of the stories the user selected in the past and randomly select up to
+        # three of them
         selected_articles = self.get_selected()
         topics = [item['_source']['topic'] for item in selected_articles]
         if len(topics) >= 3:
@@ -181,7 +203,7 @@ class recommender():
         else:
             num_category_select = 0
             
-        #Retrieve new articles
+        # Retrieve new articles
         new_articles = [self.doctype_last(s) for s in list_of_sources]
         new_articles = [a for b in new_articles for a in b]
         
@@ -210,7 +232,9 @@ class recommender():
                     for item in topic_selection:
                         category_selection.append(item)
         
-      #Mark the selected articles as recommended, select random articles from the non-recommended articles (and get more if not enough unseen articles available), put the two lists together, randomize the ordering and return them        
+      # Mark the selected articles as recommended, select random articles from the non-recommended
+      # articles (and get more if not enough unseen articles available), put the two lists together,
+      # randomize the ordering and return them        
         recommender_selection = [a for a in new_articles if a["_id"] in category_selection]
         for article in recommender_selection:
             article['recommended'] = 1
@@ -240,16 +264,18 @@ class recommender():
         '''
         Uses a classifier to determine the topic categories of each article
         '''
-        #Get the categories the user selected last
+        # Get the categories the user selected last
         categories = Category.query.filter_by(user_id = current_user.id).order_by(desc(Category.id)).first().__dict__
         sel_categories = []
         for key, value in self.classifier_dict.items():
             if categories[key] == 1:
                 sel_categories.append(value)
-        #Retrieve new articles, make one list containing the processed texts and one of all the ids and zip them into a dict
+        # Retrieve new articles, make one list containing the processed texts and one of all the
+        # ids and zip them into a dict
         new_articles = [self.doctype_last(s) for s in list_of_sources]
         new_articles = [a for b in new_articles for a in b]
-        #Determine how many articles per topic will be retrieved (dependent on the number of categories selected) 
+        # Determine how many articles per topic will be retrieved (dependent on the number of
+        # categories selected) 
         selection = []
         if len(sel_categories) == 1: 
             num_category_select = 6
@@ -259,7 +285,10 @@ class recommender():
             num_category_select = 2
         else:
             num_category_select = 0
-        #For each selected category retrieve the articles that fit this category (and randomly select if the list is longer than needed) and fill the rest with random articles (could also be more than normally as some topics might not appear in the article selection often enough)
+        # For each selected category retrieve the articles that fit this category (and
+        # randomly select if the list is longer than needed) and fill the rest with random articles
+        # (could also be more than normally as some topics might not appear in the article
+        # selection often enough)
         category_selection = []
         for category in sel_categories:
             topic_selection = []
@@ -285,7 +314,9 @@ class recommender():
                     for item in topic_selection:
                         category_selection.append(item)
                 
-        #Mark the selected articles as recommended, select random articles from the non-recommended articles (and get more if not enough unseen articles available), put the two lists together, randomize the ordering and return them        
+        # Mark the selected articles as recommended, select random articles from the non-recommended
+        # articles (and get more if not enough unseen articles available), put the two lists
+        # together, randomize the ordering and return them        
         recommender_selection = [a for a in new_articles if a["_id"] in category_selection]
         for article in recommender_selection:
             article['recommended'] = 1
@@ -316,13 +347,14 @@ class recommender():
         '''
         Uses an lda model to determine which articles fit the selected topic categories best
         '''
-        #Get the categories the user selected last
+        # Get the categories the user selected last
         categories = Category.query.filter_by(user_id = current_user.id).order_by(desc(Category.id)).first().__dict__
         
-        #Retrieve the numbers the selected categories have in the lda model
+        # Retrieve the numbers the selected categories have in the lda model
         categories = [c for c in self.classifier_dict.keys() if categories[c] == 1]
         
-        #Retrieve new articles, build one corpus (containing the processed texts) and a list of all the ids and zip them into a dict
+        # Retrieve new articles, build one corpus (containing the processed texts) and a list of
+        # all the ids and zip them into a dict
         new_articles = [self.doctype_last(s) for s in list_of_sources]
         new_articles = [a for b in new_articles for a in b]
         corpus = [a["_source"][self.textfield] for a in new_articles]
@@ -330,7 +362,8 @@ class recommender():
         article_ids = [a["_id"] for a in new_articles]
         ids_text = dict(zip(article_ids, corpus))
         
-        #Make one dictionary that has all the topics as keys and a list of tuples (article id and degree of match with the topic) as values
+        # Make one dictionary that has all the topics as keys and a list of tuples (article id and
+        # degree of match with the topic) as values
         topic_dictionary = defaultdict(list)
         for article_id, text in ids_text.items():
             bow = lda_dict.doc2bow(text)
@@ -338,7 +371,8 @@ class recommender():
             for tuple_topic in topic_per_text:
                 topic_dictionary[tuple_topic[0]].append((article_id, tuple_topic[1]))
                 
-        #Determine how many articles per topic will be retrieved (dependent on the number of categories selected)        
+        # Determine how many articles per topic will be retrieved (dependent on the number of
+        # categories selected)        
         selection = []
         if len(categories) == 1: 
             num_category_select = 6
@@ -347,14 +381,18 @@ class recommender():
         elif len(categories) == 3: 
             num_category_select = 2
             
-        #Find the most fitting articles for each selected category by retrieving the list of tuples for the category sorting it by degree of match, taking the most fitting (number depending on number of selected categories) and appending it to the overall selection
+        # Find the most fitting articles for each selected category by retrieving the list of
+        # tuples for the category sorting it by degree of match, taking the most fitting (number
+        # depending on number of selected categories) and appending it to the overall selection
         for category in categories:
             list_documents = topic_dictionary[category]
             most_selected = sorted(list_documents,key=itemgetter(1))[:num_category_select]
             for item in most_selected: 
                 selection.append(item[0])
 
-        #Mark the selected articles as recommended, select random articles from the non-recommended articles (and get more if not enough unseen articles available), put the two lists together, randomize the ordering and return them 
+        # Mark the selected articles as recommended, select random articles from the non-recommended
+        # articles (and get more if not enough unseen articles available), put the two lists
+        # together, randomize the ordering and return them 
         recommender_selection = [a for a in new_articles if a["_id"] in selection]
         for article in recommender_selection:
             article['recommended'] = 1
@@ -379,4 +417,3 @@ class recommender():
         final_list = random_selection + recommender_selection
         final_list = random.sample(final_list, len(final_list))
         return final_list
-            
