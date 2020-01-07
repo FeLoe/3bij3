@@ -1,45 +1,27 @@
-import re
-
+'''String processing functionality to process article text to be displayed'''
 class paragraph_processing():
     def check(self, string):
-        if string.strip().count(" ")< 20:
+        if string.strip().count(" ") < 4:
             return True
         else:
             return False
 
-    def right_punctuation(self, text_list):
-        result = [i for i in text_list if re.match(r"^[,@\'?\.$%_:;!]\s", i)]
-        for item in result:
-            ind = text_list.index(item)
-            punct = item[0]
-            text_list[ind] = item[2:]
-            text_list[ind - 1] = text_list[ind - 1] + str(punct)
-            result = [i for i in text_list if re.match(r"^[,@\'?\.$%_:;!]", i)]
-        for item in result:
-            ind = text_list.index(item)
-            punct = item[0]
-            text_list[ind] = item[1:]
-            text_list[ind - 1] = text_list[ind - 1] + str(punct)
-        return text_list
-
-
-        
     def join_text(self, list_new):
-        c = True
-        while c == True:
+        keep_running = True
+        while keep_running:
             final_list = []
             for i, item in enumerate(list_new):
-                if i == len(list_new) - 1 and self.check(item) == False:
+                if i == len(list_new) - 1 and not self.check(item):
                     final_list = list_new
-                    c = False
-                elif i == len(list_new)-1 and self.check(item) == True:
+                    keep_running = False
+                elif i == len(list_new)-1 and self.check(item):
                     final_list = list_new[:-2]
                     new_item = list_new[i - 1] + " " + item
                     final_list.append(new_item)
-                    c = False
-                elif self.check(item) == False:
+                    keep_running = False
+                elif not self.check(item):
                     final_list.append(item)
-                elif self.check(item) == True:
+                elif self.check(item):
                     if i - 1 == -1:
                         new_item = item + " " + list_new[i + 1]
                     else:
@@ -47,19 +29,16 @@ class paragraph_processing():
                         final_list = final_list[:-1]
                     final_list.append(new_item)
                     if (i + 2) == (len(list_new) - 1):
-                        if self.check(list_new[i + 2]) == True:
+                        if self.check(list_new[i + 2]):
                             final_list = final_list[:-1]
                             new_item = new_item + " " + list_new[i + 2]
                             final_list.append(new_item)
                         else:
-                            final_list = final_list[:-1]
                             final_list.append(list_new[i + 2])
-                        c = False
+                        keep_running = False
                     else:
                         for textrest in range((i + 2),len(list_new)):
                             final_list.append(list_new[textrest])
                         list_new = final_list
                         break
-        final_list = [re.sub(r'\s([?.!"](?:\s|$))', r'\1', item) for item in final_list]
-        final_list = self.right_punctuation(final_list)
         return final_list

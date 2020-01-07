@@ -1,3 +1,4 @@
+'''Provides functionality to return pages with error messages'''
 from flask import render_template
 from app import app, db
 
