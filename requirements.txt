@@ -30,7 +30,7 @@ PyMySQL>=0.8.0
 python-dateutil==2.7.1
 python-dotenv>=0.7.1
 python-editor>=1.0.3
-requests==2.20.0
+requests==2.31.0
 scikit-learn==0.19.1
 six==1.11.0
 smart-open==1.5.6
